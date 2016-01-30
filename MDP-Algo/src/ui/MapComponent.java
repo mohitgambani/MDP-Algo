@@ -30,7 +30,15 @@ public class MapComponent extends JButton {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (!isStartZone && !isGoalZone && !isRobot) {
+			if(isRobot){
+				Thread t = new Thread() {
+			         @Override
+			         public void run() {
+			            MapManager.move();
+			         }
+			      };
+			      t.start();
+			}else if (!isStartZone && !isGoalZone) {
 				setObstacle();
 			}
 		}

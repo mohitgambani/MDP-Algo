@@ -29,11 +29,6 @@ import java.awt.Dimension;
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
-
-	// private static JButton button = new JButton("JButton5");
-	// private DrawCanvas drawCanvas;
-	// ArrayList<MapComponent> humanMapComponents;
-	// ArrayList<MapComponent> robotMapComponents;
 	/**
 	 * Launch the application.
 	 */
@@ -104,49 +99,6 @@ public class MainWindow extends JFrame {
 		
 		MapManager.drawStartZone();
 		MapManager.drawGoalZone();
-		// topPanel.add(new JButton("JButton3"));
-
-		// subSplitPane.setTopComponent(new JButton("JButton3"));
-		// subSplitPane.setTopComponent(topPanel);
-		// subSplitPane.setBottomComponent(bottomPanel);
-		// subSplitPane.setResizeWeight(0.5);
-
-		// splitPane.setRightComponent(subSplitPane);
-
-		// drawCanvas = new DrawCanvas();
-		// splitPane.setRightComponent(drawCanvas);
 
 	}
-
-	// public void setFill(JButton button){
-	// button.setBackground(Color.BLACK);
-	// }
-	//
-	// public static JButton getButton(){
-	// return button;
-	// }
-
-	// private class DrawCanvas extends JPanel {
-	//
-	// @Override
-	// public void paintComponent(Graphics g) {
-	// super.paintComponent(g); // paint parent's background
-	// setBackground(Color.BLACK); // set background color for this JPanel
-	//
-	// // Your custom painting codes. For example,
-	// // Drawing primitive shapes
-	// g.setColor(Color.YELLOW); // set the drawing color
-	// g.drawLine(30, 40, 100, 200);
-	// g.drawOval(150, 180, 10, 10);
-	// g.drawRect(200, 210, 20, 30);
-	// g.setColor(Color.RED); // change the drawing color
-	// g.fillOval(300, 310, 30, 50);
-	// g.fillRect(400, 350, 60, 50);
-	// // Printing texts
-	// g.setColor(Color.WHITE);
-	// g.setFont(new Font("Monospaced", Font.PLAIN, 12));
-	// g.drawString("Testing custom drawing ...", 10, 20);
-	// }
-	// }
-
 }

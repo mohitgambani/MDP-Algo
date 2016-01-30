@@ -1,27 +1,26 @@
 package algorithm;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class SimpleMove implements Movable {
 
-	private static int current_move = 0;
-	private static ArrayList<Integer> moves = new ArrayList<Integer>();
+	private static final int STEP_LIMIT = 10;
+	private static int current_move = 1;
 
-	public SimpleMove() {
-		int counter = 10;
-		Random rand = new Random();
-
-		while (counter > 0) {
-			moves.add(rand.nextInt(4));
-			--counter;
-		}
-		moves.add(STOP);
-	}
-
+	
 	@Override
 	public int nextMove() {
-		return moves.get(current_move++);
+
+		int nextMove;
+		if (current_move == STEP_LIMIT) {
+			nextMove = STOP;
+			current_move = 1;
+		} else {
+			Random rand = new Random();
+			nextMove = rand.nextInt(4);
+			++current_move;
+		}
+		return nextMove;
 	}
 
 	@Override

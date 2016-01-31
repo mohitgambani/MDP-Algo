@@ -50,14 +50,14 @@ public class MapManager {
 		}
 	}
 
-	protected static void setRobot(int robotId, final int ROBOT_DIRECTION) {
+	protected static void setRobot(int robotId, final int ROBOT_DIRECTION, boolean init) {
 		int x, y;
 		boolean failed = false;
 		ArrayList<MapComponent> robotComponents = new ArrayList<MapComponent>();
 
 		for (x = idToX(robotId); x < idToX(robotId) + RobotManager.ROBOT_WIDTH && !failed; ++x) {
 			for (y = idToY(robotId); y < idToY(robotId) + RobotManager.ROBOT_HEIGHT && !failed; ++y) {
-				if (isOutBoundary(x, y, MAP_WIDTH / 2, MAP_HEIGHT)) {
+				if (isOutBoundary(x, y, init? MAP_WIDTH / 2: MAP_WIDTH, MAP_HEIGHT)) {
 					failed = true;
 				} else if (humanMapComponents.get(XYToId(x, y)).isObstacle()) {
 					failed = true;
@@ -99,26 +99,22 @@ public class MapManager {
 
 	protected static void moveLeft() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		robotHeadLeft();
-		setRobot(XYToId(idToX(robotUpLeft) - 1, idToY(robotUpLeft)), RobotManager.HEAD_LEFT);
+		setRobot(XYToId(idToX(robotUpLeft) - 1, idToY(robotUpLeft)), RobotManager.HEAD_LEFT, false);
 	}
 
 	protected static void moveRight() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		robotHeadRight();
-		setRobot(XYToId(idToX(robotUpLeft) + 1, idToY(robotUpLeft)), RobotManager.HEAD_RIGHT);
+		setRobot(XYToId(idToX(robotUpLeft) + 1, idToY(robotUpLeft)), RobotManager.HEAD_RIGHT, false);
 	}
 
 	protected static void moveUp() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		robotHeadUp();
-		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) - 1), RobotManager.HEAD_UP);
+		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) - 1), RobotManager.HEAD_UP, false);
 	}
 
 	protected static void moveDown() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		robotHeadDown();
-		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) + 1), RobotManager.HEAD_DOWN);
+		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) + 1), RobotManager.HEAD_DOWN, false);
 	}
 
 	protected static void move() {

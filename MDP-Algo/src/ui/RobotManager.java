@@ -40,33 +40,37 @@ public class RobotManager {
 	}
 
 	public static void move() {
-		moveStrategy = new SimpleMove();
 		int nextMove;
 
 		do {
-			switch (robotOrientation) {
-			case HEAD_UP:
-				senseUp(FRONT_SENSING_RANGE);
-				senseLeft(SIDE_SENSING_RANGE);
-				senseRight(SIDE_SENSING_RANGE);
-				break;
-			case HEAD_DOWN:
-				senseDown(FRONT_SENSING_RANGE);
-				senseLeft(SIDE_SENSING_RANGE);
-				senseRight(SIDE_SENSING_RANGE);
-				break;
-			case HEAD_LEFT:
-				senseLeft(FRONT_SENSING_RANGE);
-				senseUp(SIDE_SENSING_RANGE);
-				senseDown(SIDE_SENSING_RANGE);
-				break;
-			case HEAD_RIGHT:
-				senseRight(FRONT_SENSING_RANGE);
-				senseUp(SIDE_SENSING_RANGE);
-				senseDown(SIDE_SENSING_RANGE);
-				break;
-			}
-
+			Thread thread = new Thread() {
+				@Override
+				public void run() {
+					switch (robotOrientation) {
+					case HEAD_UP:
+						senseUp(FRONT_SENSING_RANGE);
+						senseLeft(SIDE_SENSING_RANGE);
+						senseRight(SIDE_SENSING_RANGE);
+						break;
+					case HEAD_DOWN:
+						senseDown(FRONT_SENSING_RANGE);
+						senseLeft(SIDE_SENSING_RANGE);
+						senseRight(SIDE_SENSING_RANGE);
+						break;
+					case HEAD_LEFT:
+						senseLeft(FRONT_SENSING_RANGE);
+						senseUp(SIDE_SENSING_RANGE);
+						senseDown(SIDE_SENSING_RANGE);
+						break;
+					case HEAD_RIGHT:
+						senseRight(FRONT_SENSING_RANGE);
+						senseUp(SIDE_SENSING_RANGE);
+						senseDown(SIDE_SENSING_RANGE);
+						break;
+					}
+				}
+			};
+			thread.start();
 			nextMove = moveStrategy.nextMove();
 			if (nextMove == Movable.LEFT) {
 				moveLeft();

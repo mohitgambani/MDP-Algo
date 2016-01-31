@@ -6,6 +6,8 @@ public interface Movable {
 	public final int LEFT = 2;
 	public final int RIGHT = 3;
 	public final int STOP = -1;
+	
+	
 
 	public int nextMove();
 

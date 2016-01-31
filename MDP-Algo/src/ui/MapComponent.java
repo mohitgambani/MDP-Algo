@@ -59,7 +59,7 @@ public class MapComponent extends JButton {
 				if (isObstacle) {
 					unSetObstacle();
 				} else {
-					MapManager.setRobot(id, MapManager.HEAD_UP);
+					MapManager.setRobot(id, RobotManager.HEAD_UP);
 					requestFocusInWindow();
 				}
 			}

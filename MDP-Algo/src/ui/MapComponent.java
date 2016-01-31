@@ -3,6 +3,8 @@ package ui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -23,6 +25,7 @@ public class MapComponent extends JButton {
 		isObstacle = isStartZone = isGoalZone = isRobot = false;
 		addActionListener(new MyActionListener());
 		addMouseListener(new MyMouseListener());
+		addKeyListener(new MyKeyListener());
 		setBackground(Color.WHITE);
 	}
 
@@ -30,15 +33,15 @@ public class MapComponent extends JButton {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(isRobot){
+			if (isRobot) {
 				Thread t = new Thread() {
-			         @Override
-			         public void run() {
-			            MapManager.move();
-			         }
-			      };
-			      t.start();
-			}else if (!isStartZone && !isGoalZone) {
+					@Override
+					public void run() {
+						MapManager.move();
+					}
+				};
+				t.start();
+			} else if (!isStartZone && !isGoalZone) {
 				setObstacle();
 			}
 		}
@@ -51,8 +54,9 @@ public class MapComponent extends JButton {
 			if (SwingUtilities.isRightMouseButton(e)) {
 				if (isObstacle) {
 					unSetObstacle();
-				}else {
+				} else {
 					MapManager.setRobot(id);
+					requestFocusInWindow();
 				}
 			}
 		}
@@ -71,6 +75,33 @@ public class MapComponent extends JButton {
 
 		@Override
 		public void mouseExited(MouseEvent e) {
+		}
+
+	}
+
+	private class MyKeyListener implements KeyListener {
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (isRobot) {
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					System.out.println("R");
+				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+
+				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+
+				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
 		}
 
 	}
@@ -116,19 +147,19 @@ public class MapComponent extends JButton {
 	public boolean isRobot() {
 		return isRobot;
 	}
-	
+
 	public void setIsRobot() {
 		isRobot = true;
 		setBackground(Color.GREEN);
 	}
-	
-	public void unSetIsRobot(){
+
+	public void unSetIsRobot() {
 		isRobot = false;
-		if(isStartZone){
+		if (isStartZone) {
 			setStartZone();
-		}else if(isGoalZone){
+		} else if (isGoalZone) {
 			setGoalZone();
-		}else{
+		} else {
 			setBackground(Color.WHITE);
 		}
 	}

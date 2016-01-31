@@ -1,34 +1,19 @@
 package ui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.util.ArrayList;
 
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
 
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
+
 	/**
 	 * Launch the application.
 	 */
@@ -96,7 +81,7 @@ public class MainWindow extends JFrame {
 
 		splitPane.setTopComponent(topPanel);
 		splitPane.setBottomComponent(bottomPanel);
-		
+
 		MapManager.drawStartZone();
 		MapManager.drawGoalZone();
 

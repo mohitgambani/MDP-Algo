@@ -1,5 +1,7 @@
 package algorithm;
 
+import java.util.Hashtable;
+
 public interface Movable {
 	public final int UP = 0;
 	public final int DOWN = 1;
@@ -11,5 +13,5 @@ public interface Movable {
 
 	public int nextMove();
 
-	public void getMapUpdate();
+	public void getMapUpdate(Hashtable<Integer, Integer> results);
 }

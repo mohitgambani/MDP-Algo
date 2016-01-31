@@ -1,10 +1,11 @@
 package algorithm;
 
+import java.util.Hashtable;
 import java.util.Random;
 
 public class SimpleMove implements Movable {
 
-	private static final int STEP_LIMIT = 10;
+	private static final int STEP_LIMIT = 20;
 	private static int current_move = 1;
 
 	
@@ -24,8 +25,8 @@ public class SimpleMove implements Movable {
 	}
 
 	@Override
-	public void getMapUpdate() {
-		// TODO Auto-generated method stub
+	public void getMapUpdate(Hashtable<Integer, Integer> senseUpResult) {
+		
 
 	}
 

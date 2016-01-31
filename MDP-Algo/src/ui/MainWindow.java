@@ -74,7 +74,7 @@ public class MainWindow extends JFrame {
 			MapComponent humanMapComponent = new MapComponent(num);
 			topPanel.add(humanMapComponent);
 			MapManager.humanMapComponents.add(humanMapComponent);
-			MapComponent robotMapComponent = new MapComponent(num);
+			MapComponent robotMapComponent = new MapComponent(-(num + 1));
 			bottomPanel.add(robotMapComponent);
 			MapManager.robotMapComponents.add(robotMapComponent);
 		}

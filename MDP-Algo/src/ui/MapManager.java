@@ -36,6 +36,7 @@ public class MapManager {
 		for (x = START_X; x < START_ZONE_WIDTH; ++x) {
 			for (y = START_Y; y < START_ZONE_HEIGHT; ++y) {
 				humanMapComponents.get(XYToId(x, y)).setStartZone();
+				robotMapComponents.get(XYToId(x, y)).setStartZone();
 			}
 		}
 	}
@@ -48,6 +49,7 @@ public class MapManager {
 		for (x = GOAL_X; x >= MAP_WIDTH - GOAL_ZONE_WIDTH; --x) {
 			for (y = GOAL_Y; y >= MAP_HEIGHT - GOAL_ZONE_HEIGHT; --y) {
 				humanMapComponents.get(XYToId(x, y)).setGoalZone();
+				robotMapComponents.get(XYToId(x, y)).setGoalZone();
 			}
 		}
 	}

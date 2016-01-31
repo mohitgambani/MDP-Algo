@@ -18,14 +18,18 @@ public class MapComponent extends JButton {
 	private boolean isStartZone;
 	private boolean isGoalZone;
 	private boolean isRobot;
+	private boolean isActive;
 
 	public MapComponent(int id) {
 		super();
 		this.id = id;
+		isActive = id < 0 ? false : true;
 		isObstacle = isStartZone = isGoalZone = isRobot = false;
-		addActionListener(new MyActionListener());
-		addMouseListener(new MyMouseListener());
-		addKeyListener(new MyKeyListener());
+		if (isActive) {
+			addActionListener(new MyActionListener());
+			addMouseListener(new MyMouseListener());
+			addKeyListener(new MyKeyListener());
+		}
 		setBackground(Color.WHITE);
 	}
 
@@ -94,7 +98,7 @@ public class MapComponent extends JButton {
 					MapManager.robotHeadLeft();
 				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
 					MapManager.robotHeadUp();
-				}else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					MapManager.robotHeadDown();
 				}
 			}

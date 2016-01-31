@@ -55,7 +55,7 @@ public class MapComponent extends JButton {
 				if (isObstacle) {
 					unSetObstacle();
 				} else {
-					MapManager.setRobot(id);
+					MapManager.setRobot(id, MapManager.HEAD_UP);
 					requestFocusInWindow();
 				}
 			}
@@ -89,13 +89,13 @@ public class MapComponent extends JButton {
 		public void keyPressed(KeyEvent e) {
 			if (isRobot) {
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					System.out.println("R");
+					MapManager.robotHeadRight();
 				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-
-				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-
+					MapManager.robotHeadLeft();
 				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
-
+					MapManager.robotHeadUp();
+				}else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					MapManager.robotHeadDown();
 				}
 			}
 		}
@@ -162,6 +162,11 @@ public class MapComponent extends JButton {
 		} else {
 			setBackground(Color.WHITE);
 		}
+	}
+
+	public void setRobotHead() {
+		isRobot = true;
+		setBackground(Color.MAGENTA);
 	}
 
 	@Override

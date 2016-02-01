@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,35 +18,23 @@ public class MapComponent extends JButton {
 	private boolean isStartZone;
 	private boolean isGoalZone;
 	private boolean isRobot;
-	private boolean isActive;
 
 	public MapComponent(int id) {
 		super();
 		this.id = id;
-		isActive = id < 0 ? false : true;
-		isObstacle = isStartZone = isGoalZone = isRobot = false;
-		if (isActive) {
+		setOpenSpace();
+		if (id >= 0) {
 			addActionListener(new MyActionListener());
 			addMouseListener(new MyMouseListener());
 			addKeyListener(new MyKeyListener());
 		}
-		setBackground(Color.WHITE);
-		this.setSize(new Dimension(50, 50));
 	}
 
 	private class MyActionListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (isRobot) {
-				Thread t = new Thread() {
-					@Override
-					public void run() {
-						MapManager.move();
-					}
-				};
-				t.start();
-			} else if (!isStartZone && !isGoalZone) {
+			if (!isStartZone && !isGoalZone && !isRobot) {
 				setObstacle();
 			}
 		}
@@ -59,9 +46,9 @@ public class MapComponent extends JButton {
 		public void mouseClicked(MouseEvent e) {
 			if (SwingUtilities.isRightMouseButton(e)) {
 				if (isObstacle) {
-					unSetObstacle();
+					setOpenSpace();
 				} else {
-					MapManager.setRobot(id, RobotManager.HEAD_UP, true);
+					MapManager.setRobot(id, RobotManager.getRobotOrientation(), true);
 					requestFocusInWindow();
 				}
 			}
@@ -125,14 +112,6 @@ public class MapComponent extends JButton {
 		setBackground(Color.BLACK);
 	}
 
-	public void unSetObstacle() {
-		if (isObstacle) {
-			isObstacle = false;
-			setBackground(Color.WHITE);
-		}
-	}
-
-
 	public boolean isStartZone() {
 		return isStartZone;
 	}
@@ -167,8 +146,13 @@ public class MapComponent extends JButton {
 		} else if (isGoalZone) {
 			setGoalZone();
 		} else {
-			setBackground(Color.WHITE);
+			setOpenSpace();
 		}
+	}
+
+	public void setOpenSpace() {
+		isObstacle = isStartZone = isRobot = isGoalZone = false;
+		setBackground(Color.WHITE);
 	}
 
 	public void setRobotHead() {

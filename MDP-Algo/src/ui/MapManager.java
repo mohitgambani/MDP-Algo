@@ -52,12 +52,18 @@ public class MapManager {
 
 	protected static void setRobot(int robotId, final int ROBOT_DIRECTION, boolean init) {
 		int x, y;
+		int width = MAP_WIDTH;
 		boolean failed = false;
 		ArrayList<MapComponent> robotComponents = new ArrayList<MapComponent>();
+		
+		if(init){
+			RobotManager.setRobot(true);
+			width /= 2;
+		}
 
 		for (x = idToX(robotId); x < idToX(robotId) + RobotManager.ROBOT_WIDTH && !failed; ++x) {
 			for (y = idToY(robotId); y < idToY(robotId) + RobotManager.ROBOT_HEIGHT && !failed; ++y) {
-				if (isOutBoundary(x, y, init ? MAP_WIDTH / 2 : MAP_WIDTH, MAP_HEIGHT)) {
+				if (isOutBoundary(x, y, width, MAP_HEIGHT)) {
 					failed = true;
 				} else if (humanMapComponents.get(XYToId(x, y)).isObstacle()) {
 					failed = true;
@@ -119,9 +125,6 @@ public class MapManager {
 		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) + 1), RobotManager.HEAD_DOWN, false);
 	}
 
-	protected static void move() {
-		RobotManager.move();
-	}
 
 	protected static void startExploration() {
 		RobotManager.startExploration();
@@ -183,7 +186,7 @@ public class MapManager {
 					results.put(XYToId(x, y), MAP_STARTZONE);
 				} else {
 					results.put(XYToId(x, y), MAP_OPENSPACE);
-					robotMapComponents.get(XYToId(x, y)).unSetObstacle();
+					robotMapComponents.get(XYToId(x, y)).setOpenSpace();
 				}
 			}
 		}
@@ -192,11 +195,14 @@ public class MapManager {
 
 	protected static void resetMap() {
 		for (MapComponent mapComponent : humanMapComponents) {
-			mapComponent.unSetObstacle();
+			mapComponent.setOpenSpace();
 		}
 		for (MapComponent mapComponent : robotMapComponents) {
-			mapComponent.unSetObstacle();
+			mapComponent.setOpenSpace();
 		}
+		drawStartZone();
+		drawGoalZone();
+		RobotManager.setRobot(false);
 	}
 
 	protected static int idToX(int id) {
@@ -214,4 +220,5 @@ public class MapManager {
 	private static boolean isOutBoundary(int x, int y, final int WIDTH, final int HEIGHT) {
 		return (x >= WIDTH) || (x < 0) || (y >= HEIGHT) || (y < 0);
 	}
+	
 }

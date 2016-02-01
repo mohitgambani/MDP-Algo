@@ -77,7 +77,6 @@ public class MainWindow extends JFrame {
 		rightPanel.add(resetMap, gridBagConstraint);
 		
 		startExp = new JButton("Start Exploration");
-		startExp.setEnabled(false);
 		startExp.addActionListener(new startExpListener());
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
@@ -87,7 +86,6 @@ public class MainWindow extends JFrame {
 		rightPanel.add(startExp, gridBagConstraint);
 		
 		startFastRun = new JButton("Start Fastest Run");
-		startFastRun.setEnabled(false);
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 4;

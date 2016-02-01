@@ -17,6 +17,7 @@ public class RobotManager {
 
 	private static int robotUpLeft = 0;
 	private static int robotOrientation = HEAD_UP;
+	private static boolean isRobotSet = false;
 
 	private static final int FRONT_SENSING_RANGE = 2;
 	private static final int SIDE_SENSING_RANGE = 1;
@@ -40,10 +41,25 @@ public class RobotManager {
 	}
 	
 	public static void startExploration(){
-		move();
+		if(isRobotSet){
+			Thread thread = new Thread(){
+				@Override
+				public void run() {
+					move();
+				}
+			};
+			thread.start();
+		}
+	}
+	
+	public static void setRobot(boolean setRobot){
+		isRobotSet = setRobot;
+		if(!setRobot){
+			MainControl.mainWindow.setRobotPosition("unknown");
+		}
 	}
 
-	public static void move() {
+	private static void move() {
 		int nextMove;
 
 		do {

@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class SimpleMove implements Movable {
 
-	private static final int STEP_LIMIT = 20;
+	private static final int STEP_LIMIT = 40;
 	private static int current_move = 1;
 
 	

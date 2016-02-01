@@ -1,6 +1,9 @@
 package ui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -47,7 +50,7 @@ public class MainWindow extends JFrame {
 	public MainWindow() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(600, 800);
+		setSize(750, 800);
 		setLocationRelativeTo(null);
 		setTitle("Robot Simulation");
 		contentPane = new JPanel();
@@ -55,17 +58,43 @@ public class MainWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		splitPane.setResizeWeight(0.5);
+		// JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		// splitPane.setResizeWeight(0.5);
+		// contentPane.add(splitPane);
+		//
+		// JPanel topPanel = new JPanel(new GridLayout(15, 20));
+		// JPanel bottomPanel = new JPanel(new GridLayout(15, 20));
+		//
+		// int num;
+		// for (num = 0; num < MapManager.MAP_WIDTH * MapManager.MAP_HEIGHT;
+		// ++num) {
+		// MapComponent humanMapComponent = new MapComponent(num);
+		// topPanel.add(humanMapComponent);
+		// MapManager.humanMapComponents.add(humanMapComponent);
+		// MapComponent robotMapComponent = new MapComponent(-(num + 1));
+		// bottomPanel.add(robotMapComponent);
+		// MapManager.robotMapComponents.add(robotMapComponent);
+		// }
+		//
+		// splitPane.setTopComponent(topPanel);
+		// splitPane.setBottomComponent(bottomPanel);
+		//
+		// MapManager.drawStartZone();
+		// MapManager.drawGoalZone();
+
+		JPanel rightPanel = new JPanel(new GridLayout(10, 1));
+		rightPanel.setMinimumSize(new Dimension(200, 800));
+		
+		JSplitPane subSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		subSplitPane.setResizeWeight(0.5);
+
+		JButton jbutton = new JButton("JButton");
+		rightPanel.add(jbutton);
+
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, subSplitPane, rightPanel);
 		contentPane.add(splitPane);
+		splitPane.setResizeWeight(1.0);
 
-		// humanMapComponents = new ArrayList<MapComponent>();
-		// robotMapComponents = new ArrayList<MapComponent>();
-
-		// splitPane.setLeftComponent(button);
-
-		// JSplitPane subSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		// subSplitPane.setLayout(new GridLayout(15, 20, 0, 0));
 		JPanel topPanel = new JPanel(new GridLayout(15, 20));
 		JPanel bottomPanel = new JPanel(new GridLayout(15, 20));
 
@@ -79,8 +108,8 @@ public class MainWindow extends JFrame {
 			MapManager.robotMapComponents.add(robotMapComponent);
 		}
 
-		splitPane.setTopComponent(topPanel);
-		splitPane.setBottomComponent(bottomPanel);
+		subSplitPane.setTopComponent(topPanel);
+		subSplitPane.setBottomComponent(bottomPanel);
 
 		MapManager.drawStartZone();
 		MapManager.drawGoalZone();

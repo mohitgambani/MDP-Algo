@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +32,7 @@ public class MapComponent extends JButton {
 			addKeyListener(new MyKeyListener());
 		}
 		setBackground(Color.WHITE);
+		this.setSize(new Dimension(50, 50));
 	}
 
 	private class MyActionListener implements ActionListener {

@@ -18,7 +18,7 @@ public class RobotManager {
 	private static int robotUpLeft = 0;
 	private static int robotOrientation = HEAD_UP;
 
-	private static final int FRONT_SENSING_RANGE = 1;
+	private static final int FRONT_SENSING_RANGE = 2;
 	private static final int SIDE_SENSING_RANGE = 1;
 
 	private static Movable moveStrategy = new SimpleMove();

@@ -3,9 +3,6 @@ package ui;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import algorithm.Movable;
-import algorithm.SimpleMove;
-
 public class MapManager {
 	protected static final int MAP_WIDTH = 20;
 	protected static final int MAP_HEIGHT = 15;
@@ -50,30 +47,20 @@ public class MapManager {
 		}
 	}
 
-	
-	protected static void initialiseRobot(int robotUpLeft){
-		int x, y;
-		boolean failed = false;
-		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH && !failed; ++x) {
-			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT && !failed; ++y) {
-				if (isOutBoundary(x, y, MAP_WIDTH / 2, MAP_HEIGHT) || humanMap.get(XYToId(x, y)).isObstacle()) {
-					failed = true;
-				}
-			}
-		}
-		if(!failed){
-			unSetRobot();
-			RobotManager.setRobotUpLeft(robotUpLeft);
+	protected static void initialiseRobot(int robotUpLeft) {
+
+		if (idToX(robotUpLeft) <= MAP_WIDTH / 2 - RobotManager.getRobotWidth()) {
+			setRobot(robotUpLeft);
 			robotHeadUp();
 		}
 	}
-	
-	protected static void setRobot(int robotUpLeft, final int ROBOT_DIRECTION) {
+
+	protected static void setRobot(int robotUpLeft) {
 		int x, y;
 		boolean failed = false;
-		
-		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH && !failed; ++x) {
-			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT && !failed; ++y) {
+
+		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.getRobotWidth() && !failed; ++x) {
+			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.getRobotHeight() && !failed; ++y) {
 				if (isOutBoundary(x, y, MAP_WIDTH, MAP_HEIGHT) || humanMap.get(XYToId(x, y)).isObstacle()) {
 					failed = true;
 				}
@@ -82,20 +69,6 @@ public class MapManager {
 		if (!failed) {
 			unSetRobot();
 			RobotManager.setRobotUpLeft(robotUpLeft);
-			switch (ROBOT_DIRECTION) {
-			case RobotManager.HEAD_UP:
-				robotHeadUp();
-				break;
-			case RobotManager.HEAD_DOWN:
-				robotHeadDown();
-				break;
-			case RobotManager.HEAD_LEFT:
-				robotHeadLeft();
-				break;
-			case RobotManager.HEAD_RIGHT:
-				robotHeadRight();
-				break;
-			}
 		}
 	}
 
@@ -103,8 +76,8 @@ public class MapManager {
 		int x, y;
 		int robotUpLeft = RobotManager.getRobotUpLeft();
 
-		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH; ++x) {
-			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT; ++y) {
+		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.getRobotWidth(); ++x) {
+			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.getRobotHeight(); ++y) {
 				humanMap.get(XYToId(x, y)).unSetIsRobot();
 			}
 		}
@@ -113,66 +86,66 @@ public class MapManager {
 
 	protected static void moveLeft() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		setRobot(XYToId(idToX(robotUpLeft) - 1, idToY(robotUpLeft)), RobotManager.HEAD_LEFT);
+
+		setRobot(XYToId(idToX(robotUpLeft) - 1, idToY(robotUpLeft)));
+		robotHeadLeft();
 	}
 
 	protected static void moveRight() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		setRobot(XYToId(idToX(robotUpLeft) + 1, idToY(robotUpLeft)), RobotManager.HEAD_RIGHT);
+
+		setRobot(XYToId(idToX(robotUpLeft) + 1, idToY(robotUpLeft)));
+		robotHeadRight();
 	}
 
 	protected static void moveUp() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) - 1), RobotManager.HEAD_UP);
+
+		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) - 1));
+		robotHeadUp();
 	}
 
 	protected static void moveDown() {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) + 1), RobotManager.HEAD_DOWN);
+		setRobot(XYToId(idToX(robotUpLeft), idToY(robotUpLeft) + 1));
+		robotHeadDown();
 	}
-
 
 	protected static void startExploration() {
 		RobotManager.startExploration();
 	}
 
-	protected static void robotHeadUp() {
-		int upLeft;
+	protected static void robotTurn(int robotHeadX, int robotHeadY) {
 		int robotUpLeft = RobotManager.getRobotUpLeft();
-		for (upLeft = idToX(robotUpLeft); upLeft < idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH; ++upLeft) {
-			humanMap.get(XYToId(upLeft, idToY(robotUpLeft))).setRobotHead();
-			humanMap.get(XYToId(upLeft, idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT - 1)).setIsRobot();
+		int x, y;
+		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.getRobotWidth(); ++x) {
+			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.getRobotHeight(); ++y) {
+				if (y == robotHeadY || x == robotHeadX) {
+					humanMap.get(XYToId(x, y)).setRobotHead();
+				} else {
+					humanMap.get(XYToId(x, y)).setIsRobot();
+				}
+			}
 		}
+	}
+
+	protected static void robotHeadUp() {
+		robotTurn(-1, idToY(RobotManager.getRobotUpLeft()));
 		RobotManager.setRobotOrientation(RobotManager.HEAD_UP);
 	}
 
 	protected static void robotHeadDown() {
-		int upLeft;
-		int robotUpLeft = RobotManager.getRobotUpLeft();
-		for (upLeft = idToX(robotUpLeft); upLeft < idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH; ++upLeft) {
-			humanMap.get(XYToId(upLeft, idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT - 1)).setRobotHead();
-			humanMap.get(XYToId(upLeft, idToY(robotUpLeft))).setIsRobot();
-		}
+		robotTurn(-1, idToY(RobotManager.getRobotUpLeft()) + RobotManager.getRobotHeight() - 1);
 		RobotManager.setRobotOrientation(RobotManager.HEAD_DOWN);
 	}
 
 	protected static void robotHeadLeft() {
-		int upLeft;
-		int robotUpLeft = RobotManager.getRobotUpLeft();
-		for (upLeft = idToY(robotUpLeft); upLeft < idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT; ++upLeft) {
-			humanMap.get(XYToId(idToX(robotUpLeft), upLeft)).setRobotHead();
-			humanMap.get(XYToId(idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH - 1, upLeft)).setIsRobot();
-		}
+		robotTurn(idToX(RobotManager.getRobotUpLeft()), -1);
 		RobotManager.setRobotOrientation(RobotManager.HEAD_LEFT);
 	}
 
 	protected static void robotHeadRight() {
-		int upLeft;
-		int robotUpLeft = RobotManager.getRobotUpLeft();
-		for (upLeft = idToY(robotUpLeft); upLeft < idToY(robotUpLeft) + RobotManager.ROBOT_HEIGHT; ++upLeft) {
-			humanMap.get(XYToId(idToX(robotUpLeft) + RobotManager.ROBOT_WIDTH - 1, upLeft)).setRobotHead();
-			humanMap.get(XYToId(idToX(robotUpLeft), upLeft)).setIsRobot();
-		}
+		robotTurn(idToX(RobotManager.getRobotUpLeft()) + RobotManager.getRobotWidth() - 1, -1);
 		RobotManager.setRobotOrientation(RobotManager.HEAD_RIGHT);
 	}
 
@@ -226,5 +199,5 @@ public class MapManager {
 	private static boolean isOutBoundary(int x, int y, final int WIDTH, final int HEIGHT) {
 		return (x >= WIDTH) || (x < 0) || (y >= HEIGHT) || (y < 0);
 	}
-	
+
 }

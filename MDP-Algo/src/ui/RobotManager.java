@@ -7,8 +7,8 @@ import algorithm.SimpleMove;
 
 public class RobotManager {
 
-	protected static final int ROBOT_WIDTH = 2;
-	protected static final int ROBOT_HEIGHT = 2;
+	private static final int ROBOT_WIDTH = 2;
+	private static final int ROBOT_HEIGHT = 2;
 
 	protected static final int HEAD_UP = 0;
 	protected static final int HEAD_DOWN = 1;
@@ -149,5 +149,13 @@ public class RobotManager {
 		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotUpLeft) + ROBOT_WIDTH,
 				MapManager.idToY(robotUpLeft), RANGE, ROBOT_HEIGHT);
 		moveStrategy.getMapUpdate(results);
+	}
+	
+	public static int getRobotWidth(){
+		return ROBOT_WIDTH;
+	}
+	
+	public static int getRobotHeight(){
+		return ROBOT_HEIGHT;
 	}
 }

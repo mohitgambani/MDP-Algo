@@ -30,6 +30,8 @@ public class RobotManager {
 
 	public static void setRobotUpLeft(int upLeft) {
 		robotUpLeft = upLeft;
+		isRobotSet = true;
+		MainControl.mainWindow.setRobotPosition(MapManager.idToX(robotUpLeft) + "," + MapManager.idToY(robotUpLeft));
 	}
 
 	public static int getRobotOrientation() {

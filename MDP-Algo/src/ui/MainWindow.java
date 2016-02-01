@@ -128,10 +128,10 @@ public class MainWindow extends JFrame {
 		for (num = 0; num < MapManager.MAP_WIDTH * MapManager.MAP_HEIGHT; ++num) {
 			MapComponent humanMapComponent = new MapComponent(num);
 			topPanel.add(humanMapComponent);
-			MapManager.humanMapComponents.add(humanMapComponent);
+			MapManager.humanMap.add(humanMapComponent);
 			MapComponent robotMapComponent = new MapComponent(-(num + 1));
 			bottomPanel.add(robotMapComponent);
-			MapManager.robotMapComponents.add(robotMapComponent);
+			MapManager.robotMap.add(robotMapComponent);
 		}
 
 		subSplitPane.setTopComponent(topPanel);

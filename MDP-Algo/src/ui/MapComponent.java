@@ -48,7 +48,7 @@ public class MapComponent extends JButton {
 				if (isObstacle) {
 					setOpenSpace();
 				} else {
-					MapManager.setRobot(id, RobotManager.getRobotOrientation(), true);
+					MapManager.initialiseRobot(id);
 					requestFocusInWindow();
 				}
 			}

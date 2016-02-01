@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Insets;
@@ -89,29 +90,80 @@ public class MainWindow extends JFrame {
 		JPanel rightPanel = new JPanel(new GridBagLayout());
 //		JPanel rightPanel = new JPanel(new GridLayout(0,1));
 		rightPanel.setMinimumSize(new Dimension(200, 800));
-		rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+//		rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		JSplitPane subSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		subSplitPane.setResizeWeight(0.5);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, subSplitPane, rightPanel);
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.NORTH;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = 0;
-		JLabel robot_position = new JLabel("Robot Position (x,y)");
-		rightPanel.add(robot_position);
+		
+		
+		GridBagConstraints gridBagConstraint = new GridBagConstraints();
+//		gridBagConstraint.anchor = GridBagConstraints.PAGE_START;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 0;
+		JLabel robot_position = new JLabel("Robot Position: unknown");
+		rightPanel.add(robot_position, gridBagConstraint);
+		
+		JButton generateMap = new JButton("Generate Random Map");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 1;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(generateMap, gridBagConstraint);
+		
+		JButton resetMap = new JButton("Reset Map");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 2;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(resetMap, gridBagConstraint);
+		
+		JButton startExp = new JButton("Start Exploration");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 3;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(startExp, gridBagConstraint);
+		
+		JButton startFastRun = new JButton("Start Fastest Run");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 4;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(startFastRun, gridBagConstraint);
+		
+		JLabel timer = new JLabel("Timer");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 5;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(timer, gridBagConstraint);
+		
+		JLabel mapExplored = new JLabel("Map Explored");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 6;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 0.1;
+		rightPanel.add(mapExplored, gridBagConstraint);
+		
+		JTextArea freeOutput = new JTextArea("Free Output Area");
+		gridBagConstraint = new GridBagConstraints();
+		gridBagConstraint.gridx = 0;
+		gridBagConstraint.gridy = 7;
+		gridBagConstraint.weightx = 1.0;
+		gridBagConstraint.weighty = 1.0;
+		rightPanel.add(freeOutput, gridBagConstraint);
 
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.anchor = GridBagConstraints.NORTH;
-		JButton jbutton = new JButton("JButton");
-		rightPanel.add(jbutton);
+
 		
 		
 		contentPane.add(splitPane);

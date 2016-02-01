@@ -16,21 +16,26 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class MainWindow extends JFrame {
 
+	private final int TIMER_DELAY = 1;
+
 	private JPanel contentPane;
-	
 	private JLabel robot_position;
 	private JButton generateMap;
 	private JButton resetMap;
 	private JButton startExp;
 	private JButton startFastRun;
-	private JLabel timer;
+	private JLabel timerDisplay;
 	private JLabel mapExplored;
 	private JTextArea freeOutput;
+	private Timer timer;
+
+	private static int timerCounter = 0;
 
 	public MainWindow() {
 		setResizable(false);
@@ -42,6 +47,7 @@ public class MainWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
+		timer = new Timer(TIMER_DELAY, new TimerPerformer());
 
 		JPanel rightPanel = new JPanel(new GridBagLayout());
 		rightPanel.setMinimumSize(new Dimension(200, 800));
@@ -50,7 +56,7 @@ public class MainWindow extends JFrame {
 		subSplitPane.setResizeWeight(0.5);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, subSplitPane, rightPanel);
-		
+
 		robot_position = new JLabel("Robot Position: unknown");
 		GridBagConstraints gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.weightx = 1.0;
@@ -58,7 +64,7 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 0;
 		rightPanel.add(robot_position, gridBagConstraint);
-		
+
 		generateMap = new JButton("Generate Random Map");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
@@ -66,25 +72,25 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(generateMap, gridBagConstraint);
-		
+
 		resetMap = new JButton("Reset Map");
-		resetMap.addActionListener(new resetMapListener());
+		resetMap.addActionListener(new ResetMapListener());
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 2;
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(resetMap, gridBagConstraint);
-		
+
 		startExp = new JButton("Start Exploration");
-		startExp.addActionListener(new startExpListener());
+		startExp.addActionListener(new StartExpListener());
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 3;
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(startExp, gridBagConstraint);
-		
+
 		startFastRun = new JButton("Start Fastest Run");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
@@ -92,15 +98,15 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(startFastRun, gridBagConstraint);
-		
-		timer = new JLabel("Timer");
+
+		timerDisplay = new JLabel("0s0ms");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 5;
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
-		rightPanel.add(timer, gridBagConstraint);
-		
+		rightPanel.add(timerDisplay, gridBagConstraint);
+
 		mapExplored = new JLabel("Map Explored");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
@@ -108,7 +114,7 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weightx = 1.0;
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(mapExplored, gridBagConstraint);
-		
+
 		freeOutput = new JTextArea("Free Output Area");
 		freeOutput.setMinimumSize(new Dimension(200, 400));
 		gridBagConstraint = new GridBagConstraints();
@@ -138,26 +144,48 @@ public class MainWindow extends JFrame {
 		subSplitPane.setBottomComponent(bottomPanel);
 
 	}
-	
-	private class resetMapListener implements ActionListener{
+
+	private class ResetMapListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MapManager.resetMap();
 		}
-		
+
 	}
-	
-	private class startExpListener implements ActionListener{
+
+	private class StartExpListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+//			startTimer();
 			MapManager.startExploration();
+//			stopTimer();
 		}
-		
+
+	}
+
+	private class TimerPerformer implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+//			timerDisplay.setText(timerCounter / 1000 + "s" + timerCounter % 1000 + "ms");
+			timerDisplay.setText(timerCounter + "ms");
+			++timerCounter;
+		}
+
+	}
+
+	public void startTimer() {
+		timerCounter = 0;
+		timer.start();
 	}
 	
-	public void setRobotPosition(String position){
+	public void stopTimer(){
+		timer.stop();
+	}
+
+	public void setRobotPosition(String position) {
 		robot_position.setText("Robot Position: " + position);
 	}
 }

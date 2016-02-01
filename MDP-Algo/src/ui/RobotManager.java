@@ -44,10 +44,13 @@ public class RobotManager {
 	
 	public static void startExploration(){
 		if(isRobotSet){
+			
 			Thread thread = new Thread(){
 				@Override
 				public void run() {
+					MainControl.mainWindow.startTimer();
 					move();
+					MainControl.mainWindow.stopTimer();
 				}
 			};
 			thread.start();

@@ -28,7 +28,6 @@ public class MainControl {
 					mainWindow.setVisible(true);
 					MapManager.drawStartZone();
 					MapManager.drawGoalZone();
-//					MapManager.drawRobot();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

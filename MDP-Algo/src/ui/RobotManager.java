@@ -38,6 +38,10 @@ public class RobotManager {
 	public static void setRobotOrientation(int orientation) {
 		robotOrientation = orientation;
 	}
+	
+	public static void startExploration(){
+		move();
+	}
 
 	public static void move() {
 		int nextMove;

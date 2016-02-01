@@ -132,6 +132,7 @@ public class MapComponent extends JButton {
 		}
 	}
 
+
 	public boolean isStartZone() {
 		return isStartZone;
 	}

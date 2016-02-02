@@ -58,6 +58,7 @@ public class MainWindow extends JFrame {
 		rightPanel.add(robot_position, gridBagConstraint);
 
 		generateMap = new JButton("Generate Random Map");
+		generateMap.addActionListener(new GenerateMapListener());
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 1;
@@ -153,6 +154,15 @@ public class MainWindow extends JFrame {
 			MapManager.startExploration();
 		}
 
+	}
+	
+	private class GenerateMapListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			MapManager.generateMap();
+		}
+		
 	}
 	
 	public void setTimerDisplay(String display){

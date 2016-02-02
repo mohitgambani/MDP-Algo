@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -16,13 +15,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class MainWindow extends JFrame {
 
-	private final int TIMER_DELAY = 1;
 
 	private JPanel contentPane;
 	private JLabel robot_position;
@@ -33,9 +28,6 @@ public class MainWindow extends JFrame {
 	private JLabel timerDisplay;
 	private JLabel mapExplored;
 	private JTextArea freeOutput;
-	private Timer timer;
-
-	private static int timerCounter = 0;
 
 	public MainWindow() {
 		setResizable(false);
@@ -47,7 +39,7 @@ public class MainWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
-		timer = new Timer(TIMER_DELAY, new TimerPerformer());
+
 
 		JPanel rightPanel = new JPanel(new GridBagLayout());
 		rightPanel.setMinimumSize(new Dimension(200, 800));
@@ -158,31 +150,13 @@ public class MainWindow extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-//			startTimer();
 			MapManager.startExploration();
-//			stopTimer();
 		}
 
-	}
-
-	private class TimerPerformer implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-//			timerDisplay.setText(timerCounter / 1000 + "s" + timerCounter % 1000 + "ms");
-			timerDisplay.setText(timerCounter + "ms");
-			++timerCounter;
-		}
-
-	}
-
-	public void startTimer() {
-		timerCounter = 0;
-		timer.start();
 	}
 	
-	public void stopTimer(){
-		timer.stop();
+	public void setTimerDisplay(String display){
+		timerDisplay.setText(display);
 	}
 
 	public void setRobotPosition(String position) {

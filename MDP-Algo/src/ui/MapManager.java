@@ -202,10 +202,10 @@ public class MapManager {
 	}
 	
 	protected static void unsetObstacle(int id){
-		humanMap.get(id).setOpenSpace();
-		--numOfObstacles;
 		if(humanMap.get(id).isExplored())
 			--obstaclesExplored;
+		humanMap.get(id).setOpenSpace();
+		--numOfObstacles;
 		try{
 			RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
 		}catch(ArithmeticException ex){

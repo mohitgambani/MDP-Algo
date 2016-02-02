@@ -9,9 +9,13 @@ public interface Movable {
 	public final int RIGHT = 3;
 	public final int STOP = -1;
 	
-	
+//	public enum Movement {
+//		UP, DOWN, LEFT, RIGHT, STOP
+//	}
 
 	public int nextMove();
 
 	public void getMapUpdate(Hashtable<Integer, Integer> results);
+	
+	public String textualOutput(String output);
 }

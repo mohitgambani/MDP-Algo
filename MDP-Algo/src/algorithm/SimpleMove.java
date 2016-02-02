@@ -19,6 +19,7 @@ public class SimpleMove implements Movable {
 		} else {
 			Random rand = new Random();
 			nextMove = rand.nextInt(4);
+//			textualOutput("Move " + current_move + ": " + )
 			++current_move;
 		}
 		return nextMove;
@@ -28,6 +29,11 @@ public class SimpleMove implements Movable {
 	public void getMapUpdate(Hashtable<Integer, Integer> senseUpResult) {
 		
 
+	}
+
+	@Override
+	public String textualOutput(String output) {
+		return output;
 	}
 
 }

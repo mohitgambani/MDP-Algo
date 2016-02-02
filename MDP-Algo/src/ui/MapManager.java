@@ -20,6 +20,9 @@ public class MapManager {
 
 	protected static ArrayList<MapComponent> humanMap = new ArrayList<MapComponent>();
 	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
+	
+	private static int numOfObstacles = 0;
+	private static int obstaclesExplored = 0;
 
 	protected static void drawStartZone() {
 		final int START_X = 0;
@@ -159,6 +162,11 @@ public class MapManager {
 				} else if (humanMap.get(XYToId(x, y)).isObstacle()) {
 					results.put(XYToId(x, y), MAP_OBSTACLE);
 					robotMap.get(XYToId(x, y)).setObstacle();
+					if(!humanMap.get(XYToId(x, y)).isExplored()){
+						++obstaclesExplored;
+						humanMap.get(XYToId(x, y)).setIsExplored(true);
+						RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
+					}
 				} else if (humanMap.get(XYToId(x, y)).isGoalZone()) {
 					results.put(XYToId(x, y), MAP_GOALZONE);
 				} else if (humanMap.get(XYToId(x, y)).isStartZone()) {
@@ -182,6 +190,26 @@ public class MapManager {
 		drawStartZone();
 		drawGoalZone();
 		RobotManager.setRobot(false);
+		numOfObstacles = 0;
+		obstaclesExplored = 0;
+		RobotManager.getExplorationPercentage(0.0);
+	}
+	
+	protected static void setObstacle(int id){
+		humanMap.get(id).setObstacle();
+		++numOfObstacles;
+		RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
+	}
+	
+	protected static void unsetObstacle(int id){
+		humanMap.get(id).setOpenSpace();
+		--numOfObstacles;
+		--obstaclesExplored;
+		try{
+			RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
+		}catch(ArithmeticException ex){
+			RobotManager.getExplorationPercentage(0.0);
+		}
 	}
 
 	protected static int idToX(int id) {

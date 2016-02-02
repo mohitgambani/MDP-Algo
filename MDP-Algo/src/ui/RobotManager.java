@@ -177,4 +177,8 @@ public class RobotManager {
 	public static int getRobotHeight(){
 		return ROBOT_HEIGHT;
 	}
+	
+	protected static void getExplorationPercentage(double percentage){
+		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", percentage * 100.0));
+	}
 }

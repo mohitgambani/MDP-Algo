@@ -99,7 +99,7 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(timerDisplay, gridBagConstraint);
 
-		mapExplored = new JLabel("Map Explored");
+		mapExplored = new JLabel("Map Explored: 0%");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 6;
@@ -161,5 +161,9 @@ public class MainWindow extends JFrame {
 
 	public void setRobotPosition(String position) {
 		robot_position.setText("Robot Position: " + position);
+	}
+	
+	public void setMapExplored(String explored){
+		mapExplored.setText(explored);
 	}
 }

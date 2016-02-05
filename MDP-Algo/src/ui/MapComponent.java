@@ -150,18 +150,22 @@ public class MapComponent extends JButton {
 			setOpenSpace();
 		}
 	}
-	
-	public boolean isExplored(){
+
+	public boolean isExplored() {
 		return isExplored;
 	}
-	
-	public void setIsExplored(boolean isExplored){
+
+	public void setIsExplored(boolean isExplored) {
 		this.isExplored = isExplored;
 	}
 
 	public void setOpenSpace() {
 		isObstacle = isStartZone = isRobot = isGoalZone = isExplored = false;
 		setBackground(Color.WHITE);
+	}
+	
+	public void setRobotRoute(){
+		setBackground(Color.YELLOW);
 	}
 
 	public void setRobotHead() {

@@ -31,9 +31,9 @@ public class SimpleMove implements Movable {
 
 	}
 
-	@Override
-	public String textualOutput(String output) {
-		return output;
-	}
+//	@Override
+//	public String textualOutput(String output) {
+//		return output;
+//	}
 
 }

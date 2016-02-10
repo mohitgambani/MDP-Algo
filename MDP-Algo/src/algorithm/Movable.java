@@ -17,5 +17,5 @@ public interface Movable {
 
 	public void getMapUpdate(Hashtable<Integer, Integer> results);
 	
-	public String textualOutput(String output);
+//	public String textualOutput(String output);
 }

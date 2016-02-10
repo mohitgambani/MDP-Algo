@@ -34,8 +34,8 @@ public class MapManager {
 			for (y = START_Y; y < START_ZONE_HEIGHT; ++y) {
 				humanMap.get(XYToId(x, y)).setOpenSpace();
 				humanMap.get(XYToId(x, y)).setStartZone();
-				robotMap.get(XYToId(x, y)).setOpenSpace();
-				robotMap.get(XYToId(x, y)).setStartZone();
+//				robotMap.get(XYToId(x, y)).setOpenSpace();
+//				robotMap.get(XYToId(x, y)).setStartZone();
 			}
 		}
 	}
@@ -49,8 +49,8 @@ public class MapManager {
 			for (y = GOAL_Y; y >= MAP_HEIGHT - GOAL_ZONE_HEIGHT; --y) {
 				humanMap.get(XYToId(x, y)).setOpenSpace();
 				humanMap.get(XYToId(x, y)).setGoalZone();
-				robotMap.get(XYToId(x, y)).setOpenSpace();
-				robotMap.get(XYToId(x, y)).setGoalZone();
+//				robotMap.get(XYToId(x, y)).setOpenSpace();
+//				robotMap.get(XYToId(x, y)).setGoalZone();
 			}
 		}
 	}
@@ -173,13 +173,9 @@ public class MapManager {
 						humanMap.get(XYToId(x, y)).setIsExplored(true);
 						RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
 					}
-				} else if (humanMap.get(XYToId(x, y)).isGoalZone()) {
-					results.put(XYToId(x, y), MAP_GOALZONE);
-				} else if (humanMap.get(XYToId(x, y)).isStartZone()) {
-					results.put(XYToId(x, y), MAP_STARTZONE);
 				} else {
 					results.put(XYToId(x, y), MAP_OPENSPACE);
-					robotMap.get(XYToId(x, y)).setOpenSpace();
+					robotMap.get(XYToId(x, y)).setRobotRoute();;
 				}
 			}
 		}

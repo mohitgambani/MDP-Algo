@@ -34,7 +34,7 @@ public class RobotManager {
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
 	private static long startTime;
-	private static long timeElasped;
+	private static long timeElapsed;
 
 	private static Movable moveStrategy = new SimpleMove();
 	
@@ -61,15 +61,15 @@ public class RobotManager {
 	}
 	
 	public static void startExploration(){
-		startTime = System.currentTimeMillis();
-		timer = new Timer(TIMER_DELAY, new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timeElasped = System.currentTimeMillis() - startTime;
-				MainControl.mainWindow.setTimerDisplay(timeElasped / 1000 + "s" + timeElasped % 1000 + "ms");
-			}
-		});
 		if(isRobotSet){
+			startTime = System.currentTimeMillis();
+			timer = new Timer(TIMER_DELAY, new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					timeElapsed = System.currentTimeMillis() - startTime;
+					MainControl.mainWindow.setTimerDisplay(timeElapsed / 1000 + "s" + timeElapsed % 1000 + "ms");
+				}
+			});
 			Thread thread = new Thread(){
 				@Override
 				public void run() {

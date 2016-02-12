@@ -150,12 +150,12 @@ public class MapComponent extends JButton {
 			setOpenSpace();
 		}
 	}
-	
-	public boolean isExplored(){
+
+	public boolean isExplored() {
 		return isExplored;
 	}
-	
-	public void setIsExplored(boolean isExplored){
+
+	public void setIsExplored(boolean isExplored) {
 		this.isExplored = isExplored;
 	}
 
@@ -164,6 +164,7 @@ public class MapComponent extends JButton {
 		setBackground(Color.WHITE);
 	}
 	
+
 	public void setNotAnObstacleColour() {
 		setBackground(Color.YELLOW);
 	}

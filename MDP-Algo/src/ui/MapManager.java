@@ -36,8 +36,8 @@ public class MapManager {
 			for (y = START_Y; y < START_ZONE_HEIGHT; ++y) {
 				humanMap.get(XYToId(x, y)).setOpenSpace();
 				humanMap.get(XYToId(x, y)).setStartZone();
-				robotMap.get(XYToId(x, y)).setOpenSpace();
-				robotMap.get(XYToId(x, y)).setStartZone();
+//				robotMap.get(XYToId(x, y)).setOpenSpace();
+//				robotMap.get(XYToId(x, y)).setStartZone();
 			}
 		}
 	}
@@ -51,8 +51,8 @@ public class MapManager {
 			for (y = GOAL_Y; y >= MAP_HEIGHT - GOAL_ZONE_HEIGHT; --y) {
 				humanMap.get(XYToId(x, y)).setOpenSpace();
 				humanMap.get(XYToId(x, y)).setGoalZone();
-				robotMap.get(XYToId(x, y)).setOpenSpace();
-				robotMap.get(XYToId(x, y)).setGoalZone();
+//				robotMap.get(XYToId(x, y)).setOpenSpace();
+//				robotMap.get(XYToId(x, y)).setGoalZone();
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class MapManager {
 	protected static void initialiseRobot(int robotUpLeft) {
 
 		if (idToX(robotUpLeft) <= MAP_WIDTH / 2 - RobotManager.getRobotWidth()) {
-			if(setRobot(robotUpLeft))
+			if (setRobot(robotUpLeft))
 				robotHeadUp();
 		}
 	}
@@ -69,14 +69,9 @@ public class MapManager {
 		int x, y;
 		boolean failed = false;
 
-		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft)
-				+ RobotManager.getRobotWidth()
-				&& !failed; ++x) {
-			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft)
-					+ RobotManager.getRobotHeight()
-					&& !failed; ++y) {
-				if (isOutBoundary(x, y, MAP_WIDTH, MAP_HEIGHT)
-						|| humanMap.get(XYToId(x, y)).isObstacle()) {
+		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.getRobotWidth() && !failed; ++x) {
+			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.getRobotHeight() && !failed; ++y) {
+				if (isOutBoundary(x, y, MAP_WIDTH, MAP_HEIGHT) || humanMap.get(XYToId(x, y)).isObstacle()) {
 					failed = true;
 				}
 			}
@@ -92,10 +87,8 @@ public class MapManager {
 		int x, y;
 		int robotUpLeft = RobotManager.getRobotUpLeft();
 
-		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft)
-				+ RobotManager.getRobotWidth(); ++x) {
-			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft)
-					+ RobotManager.getRobotHeight(); ++y) {
+		for (x = idToX(robotUpLeft); x < idToX(robotUpLeft) + RobotManager.getRobotWidth(); ++x) {
+			for (y = idToY(robotUpLeft); y < idToY(robotUpLeft) + RobotManager.getRobotHeight(); ++y) {
 				humanMap.get(XYToId(x, y)).unSetIsRobot();
 			}
 		}
@@ -161,10 +154,7 @@ public class MapManager {
 	}
 
 	protected static void robotHeadDown() {
-		robotTurn(
-				-1,
-				idToY(RobotManager.getRobotUpLeft())
-						+ RobotManager.getRobotHeight() - 1);
+		robotTurn(-1, idToY(RobotManager.getRobotUpLeft()) + RobotManager.getRobotHeight() - 1);
 		RobotManager.setRobotOrientation(RobotManager.HEAD_DOWN);
 	}
 
@@ -174,9 +164,7 @@ public class MapManager {
 	}
 
 	protected static void robotHeadRight() {
-		robotTurn(
-				idToX(RobotManager.getRobotUpLeft())
-						+ RobotManager.getRobotWidth() - 1, -1);
+		robotTurn(idToX(RobotManager.getRobotUpLeft()) + RobotManager.getRobotWidth() - 1, -1);
 		RobotManager.setRobotOrientation(RobotManager.HEAD_RIGHT);
 	}
 
@@ -243,8 +231,7 @@ public class MapManager {
 		humanMap.get(id).setOpenSpace();
 		humanMap.get(id).setObstacle();
 		++numOfObstacles;
-		RobotManager.getExplorationPercentage(1.0 * obstaclesExplored
-				/ numOfObstacles);
+		RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
 	}
 
 	protected static void unsetObstacle(int id) {
@@ -253,8 +240,7 @@ public class MapManager {
 		humanMap.get(id).setOpenSpace();
 		--numOfObstacles;
 		try {
-			RobotManager.getExplorationPercentage(1.0 * obstaclesExplored
-					/ numOfObstacles);
+			RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
 		} catch (ArithmeticException ex) {
 			RobotManager.getExplorationPercentage(0.0);
 		}
@@ -263,8 +249,7 @@ public class MapManager {
 	protected static void generateMap() {
 		resetMap();
 		Random rand = new Random();
-		int numOfObstacles = rand.nextInt(MAP_WIDTH * MAP_HEIGHT / 6)
-				+ MAP_WIDTH * MAP_HEIGHT / 6;
+		int numOfObstacles = rand.nextInt(MAP_WIDTH * MAP_HEIGHT / 12) + MAP_WIDTH * MAP_HEIGHT / 12;
 		while (numOfObstacles > 0) {
 			setObstacle(rand.nextInt(MAP_WIDTH * MAP_HEIGHT));
 			--numOfObstacles;
@@ -285,8 +270,7 @@ public class MapManager {
 		return y * MAP_WIDTH + x;
 	}
 
-	private static boolean isOutBoundary(int x, int y, final int WIDTH,
-			final int HEIGHT) {
+	private static boolean isOutBoundary(int x, int y, final int WIDTH, final int HEIGHT) {
 		return (x >= WIDTH) || (x < 0) || (y >= HEIGHT) || (y < 0);
 	}
 

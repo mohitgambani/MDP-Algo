@@ -163,6 +163,10 @@ public class MapComponent extends JButton {
 		isObstacle = isStartZone = isRobot = isGoalZone = isExplored = false;
 		setBackground(Color.WHITE);
 	}
+	
+	public void setNotAnObstacleColour() {
+		setBackground(Color.YELLOW);
+	}
 
 	public void setRobotHead() {
 		isRobot = true;

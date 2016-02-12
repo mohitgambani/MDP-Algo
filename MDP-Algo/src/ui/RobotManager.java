@@ -23,8 +23,13 @@ public class RobotManager {
 	private static int robotOrientation = HEAD_UP;
 	private static boolean isRobotSet = false;
 
-	private static final int FRONT_SENSING_RANGE = 2;
+	private static final int FRONT_SENSING_RANGE = 1;
 	private static final int SIDE_SENSING_RANGE = 1;
+	
+	private static final int START_X = 0;
+	private static final int START_Y = 0;
+	private static final int END_X = START_X + MapManager.MAP_WIDTH - 1;
+	private static final int END_Y = START_Y + MapManager.MAP_HEIGHT - 1;
 	
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
@@ -32,6 +37,10 @@ public class RobotManager {
 	private static long timeElasped;
 
 	private static Movable moveStrategy = new SimpleMove();
+	
+	public int getRobotPos() {
+		return this.robotUpLeft;
+	}
 
 	public static int getRobotUpLeft() {
 		return robotUpLeft;
@@ -83,7 +92,7 @@ public class RobotManager {
 	private static void move() {
 		int nextMove;
 
-		do {
+		
 			Thread thread = new Thread() {
 				@Override
 				public void run() {
@@ -111,39 +120,113 @@ public class RobotManager {
 					}
 				}
 			};
-			thread.start();
-			nextMove = moveStrategy.nextMove();
-			if (nextMove == Movable.LEFT) {
-				moveLeft();
-			} else if (nextMove == Movable.RIGHT) {
-				moveRight();
-			} else if (nextMove == Movable.UP) {
-				moveUp();
-			} else if (nextMove == Movable.DOWN) {
-				moveDown();
+			thread.start();			
+			
+			int robotPos = getRobotUpLeft();
+			int robotPosX = MapManager.idToX(robotPos);
+			int robotPosY = MapManager.idToY(robotPos);
+			
+			if(robotPosX > START_X){
+				if( MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 1, robotPosY)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 1, robotPosY + 1)) == false ||
+						((robotPosX > START_X + 1) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 2, robotPosY)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 2, robotPosY + 1)) == false)) ||
+						((robotPosY < END_Y) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 1, robotPosY + 2)) == false))){
+					if(moveLeft()){
+						pause();
+						
+						move();
+						
+						if(MapManager.exploredSpaces.size() == MapManager.MAP_HEIGHT * MapManager.MAP_WIDTH)
+							return;
+						
+						moveRight();
+						
+						pause();
+					}
+				}
 			}
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
+			if(robotPosX < END_X - 1){
+				if( MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 2, robotPosY)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 2, robotPosY + 1)) == false ||
+						((robotPosX < END_X - 2) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 3, robotPosY)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 3, robotPosY + 1)) == false)) || 
+						((robotPosY < END_Y) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 2, robotPosY + 2)) == false))){
+					if(moveRight()){
+						pause();
+						
+						move();
+						
+						if(MapManager.exploredSpaces.size() == MapManager.MAP_HEIGHT * MapManager.MAP_WIDTH)
+							return;
+						
+						moveLeft();
+						
+						pause();
+					}
+				}
 			}
-		} while (nextMove != Movable.STOP);
+			if(robotPosY > START_Y){
+				if( MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX, robotPosY - 1)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 1 , robotPosY - 1)) == false ||
+						((robotPosY > START_Y + 1) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX, robotPosY - 2)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 1 , robotPosY - 2)) == false)) || 
+						((robotPosX > START_X) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX - 1, robotPosY - 1)) == false)) ||
+						((robotPosX < END_X) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 2, robotPosY - 1)) == false))){
+					if(moveUp()){
+						pause();
+						
+						move();
+						
+						if(MapManager.exploredSpaces.size() == MapManager.MAP_HEIGHT * MapManager.MAP_WIDTH)
+							return;
+						
+						moveDown();
+						
+						pause();
+					}
+				}
+			}
+			if(robotPosY < END_Y - 1){
+				if( MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX, robotPosY + 2)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 1 , robotPosY + 2)) == false ||
+						((robotPosY < END_Y - 2) && (MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX, robotPosY + 3)) == false ||
+						MapManager.exploredSpaces.contains(MapManager.XYToId(robotPosX + 1 , robotPosY + 3)) == false))){
+					if(moveDown()){
+						
+						
+						pause();
+						
+						move();
+						
+						if(MapManager.exploredSpaces.size() == MapManager.MAP_HEIGHT * MapManager.MAP_WIDTH)
+							return;
+						
+						moveUp();
+						
+						pause();
+					}
+				}
+			}
+			
+						
+		
 	}
 
-	private static void moveLeft() {
-		MapManager.moveLeft();
+	private static boolean moveLeft() {
+		return MapManager.moveLeft();
 	}
 
-	private static void moveRight() {
-		MapManager.moveRight();
+	private static boolean moveRight() {
+		return MapManager.moveRight();
 	}
 
-	private static void moveUp() {
-		MapManager.moveUp();
+	private static boolean moveUp() {
+		return MapManager.moveUp();
 	}
 
-	private static void moveDown() {
-		MapManager.moveDown();
+	private static boolean moveDown() {
+		return MapManager.moveDown();
 	}
 
 	private static void senseUp(final int RANGE) {
@@ -180,5 +263,13 @@ public class RobotManager {
 	
 	protected static void getExplorationPercentage(double percentage){
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", percentage * 100.0));
+	}
+	
+	private static void pause(){
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 }

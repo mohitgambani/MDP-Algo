@@ -19,7 +19,7 @@ public class RobotManager {
 	protected static final int HEAD_LEFT = 2;
 	protected static final int HEAD_RIGHT = 3;
 
-	private static int robotUpLeft = 0;
+	private static int robotPosition = 0; //Up left corner of the robot
 	private static int robotOrientation = HEAD_UP;
 	private static boolean isRobotSet = false;
 
@@ -38,18 +38,14 @@ public class RobotManager {
 
 	private static Movable moveStrategy = new SimpleMove();
 	
-	public int getRobotPos() {
-		return this.robotUpLeft;
+	public static int getRobotPosition() {
+		return robotPosition;
 	}
 
-	public static int getRobotUpLeft() {
-		return robotUpLeft;
-	}
-
-	public static void setRobotUpLeft(int upLeft) {
-		robotUpLeft = upLeft;
+	public static void setRobotPosition(int position) {
+		robotPosition = position;
 		isRobotSet = true;
-		MainControl.mainWindow.setRobotPosition(MapManager.idToX(robotUpLeft) + "," + MapManager.idToY(robotUpLeft));
+		MainControl.mainWindow.setRobotPosition(MapManager.idToX(robotPosition) + "," + MapManager.idToY(robotPosition));
 	}
 
 	public static int getRobotOrientation() {
@@ -122,7 +118,7 @@ public class RobotManager {
 			};
 			thread.start();			
 			
-			int robotPos = getRobotUpLeft();
+			int robotPos = robotPosition;
 			int robotPosX = MapManager.idToX(robotPos);
 			int robotPosY = MapManager.idToY(robotPos);
 			
@@ -230,26 +226,26 @@ public class RobotManager {
 	}
 
 	private static void senseUp(final int RANGE) {
-		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotUpLeft),
-				MapManager.idToY(robotUpLeft) - RANGE, ROBOT_WIDTH, RANGE);
+		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotPosition),
+				MapManager.idToY(robotPosition) - RANGE, ROBOT_WIDTH, RANGE);
 		moveStrategy.getMapUpdate(results);
 	}
 
 	private static void senseDown(final int RANGE) {
-		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotUpLeft),
-				MapManager.idToY(robotUpLeft) + ROBOT_HEIGHT, ROBOT_WIDTH, RANGE);
+		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotPosition),
+				MapManager.idToY(robotPosition) + ROBOT_HEIGHT, ROBOT_WIDTH, RANGE);
 		moveStrategy.getMapUpdate(results);
 	}
 
 	private static void senseLeft(final int RANGE) {
-		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotUpLeft) - RANGE,
-				MapManager.idToY(robotUpLeft), RANGE, ROBOT_HEIGHT);
+		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotPosition) - RANGE,
+				MapManager.idToY(robotPosition), RANGE, ROBOT_HEIGHT);
 		moveStrategy.getMapUpdate(results);
 	}
 
 	private static void senseRight(final int RANGE) {
-		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotUpLeft) + ROBOT_WIDTH,
-				MapManager.idToY(robotUpLeft), RANGE, ROBOT_HEIGHT);
+		Hashtable<Integer, Integer> results = MapManager.robotSensing(MapManager.idToX(robotPosition) + ROBOT_WIDTH,
+				MapManager.idToY(robotPosition), RANGE, ROBOT_HEIGHT);
 		moveStrategy.getMapUpdate(results);
 	}
 	
@@ -267,7 +263,7 @@ public class RobotManager {
 	
 	private static void pause(){
 		try {
-			Thread.sleep(500);
+			Thread.sleep(300);
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}

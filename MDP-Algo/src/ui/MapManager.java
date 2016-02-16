@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import algorithm.Movable;
-import algorithm.Robot;
 import algorithm.RobotManager;
 
 public class MapManager {
@@ -60,27 +59,13 @@ public class MapManager {
 	protected static void initialiseRobot(int robotPosition) {
 
 		if (idToX(robotPosition) <= MAP_WIDTH / 2 - RobotManager.getRobotWidth()) {
-			if (setRobot(robotPosition))
-				headNorth();
+			setRobot(robotPosition);
+			headNorth();
 		}
 	}
 
-	protected static boolean setRobot(int robotPosition) {
-		int x, y;
-		boolean failed = false;
-
-//		for (x = idToX(robotPosition); x < idToX(robotPosition) + RobotManager.getRobotWidth() && !failed; ++x) {
-//			for (y = idToY(robotPosition); y < idToY(robotPosition) + RobotManager.getRobotHeight() && !failed; ++y) {
-//				if (isOutBoundary(x, y, MAP_WIDTH, MAP_HEIGHT) || humanMap.get(XYToId(x, y)).isObstacle()) {
-//					failed = true;
-//				}
-//			}
-//		}
-//		if (!failed) {
-//			unSetRobot();
-			RobotManager.setRobot(idToX(robotPosition), idToY(robotPosition), Robot.ORIENTATION.NORTH);
-//		}
-		return !failed;
+	protected static void setRobot(int robotPosition) {
+		RobotManager.setRobot(idToX(robotPosition), idToY(robotPosition), RobotManager.ORIENTATION.NORTH);
 	}
 
 	public static void unSetRobot() {
@@ -96,28 +81,28 @@ public class MapManager {
 	public static void headWest() {
 
 		robotTurn(RobotManager.getRobotPositionX(), -1);
-		RobotManager.setRobotOrientation(Robot.ORIENTATION.WEST);
+		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.WEST);
 		pause();
 	}
 
 	public static void headEast() {
 
 		robotTurn(RobotManager.getRobotPositionX() + RobotManager.getRobotWidth() - 1, -1);
-		RobotManager.setRobotOrientation(Robot.ORIENTATION.EAST);
+		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.EAST);
 		pause();
 	}
 
 	public static void headNorth() {
 
 		robotTurn(-1, RobotManager.getRobotPositionY());
-		RobotManager.setRobotOrientation(Robot.ORIENTATION.NORTH);
+		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.NORTH);
 		pause();
 	}
 
 	public static void headSouth() {
 
 		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.getRobotHeight() - 1);
-		RobotManager.setRobotOrientation(Robot.ORIENTATION.SOUTH);
+		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.SOUTH);
 		pause();
 	}
 
@@ -140,70 +125,6 @@ public class MapManager {
 		}
 	}
 
-//	protected static void robotHeadNorth() {
-//		robotTurn(-1, RobotManager.getRobotPositionY());
-//		
-//	}
-//
-//	protected static void robotHeadSouth() {
-//		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.getRobotHeight() - 1);
-//		
-//	}
-//
-//	protected static void robotHeadWest() {
-//		robotTurn(RobotManager.getRobotPositionX(), -1);
-//		
-//	}
-//
-//	protected static void robotHeadEast() {
-//		robotTurn(RobotManager.getRobotPositionX() + RobotManager.getRobotWidth() - 1, -1);
-//		
-//	}
-
-//	public static Hashtable<Integer, Movable.GRID_TYPE> robotSensing(int startX,
-//			int startY, int xLimit, int yLimit) {
-//		int x, y;
-//		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
-//		for (x = startX; x < startX + xLimit; ++x) {
-//			for (y = startY; y < startY + yLimit; ++y) {
-//				if (isOutBoundary(x, y, MAP_WIDTH, MAP_HEIGHT)) {
-////					results.put(-1, Movable.GRID_TYPE.WALL);
-//				} else if (humanMap.get(XYToId(x, y)).isObstacle()) {
-////					addExploredSpace(XYToId(x, y));
-//					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
-//					robotMap.get(XYToId(x, y)).setObstacle();
-//					if (!humanMap.get(XYToId(x, y)).isExplored()) {
-//						++obstaclesExplored;
-//						humanMap.get(XYToId(x, y)).setIsExplored(true);
-////						RobotManager.getExplorationPercentage(1.0
-////								* obstaclesExplored / numOfObstacles);
-//					}
-////				} else if (humanMap.get(XYToId(x, y)).isGoalZone()) {
-////					results.put(XYToId(x, y), MAP_GOALZONE);
-////					robotMap.get(XYToId(x, y)).setNotAnObstacleColour();
-////					addExploredSpace(XYToId(x, y));
-////				} else if (humanMap.get(XYToId(x, y)).isStartZone()) {
-////					results.put(XYToId(x, y), MAP_STARTZONE);
-////					robotMap.get(XYToId(x, y)).setNotAnObstacleColour();
-////					addExploredSpace(XYToId(x, y));
-//				} else {
-//					results.put(XYToId(x, y), Movable.GRID_TYPE.OPEN_SPACE);
-//					robotMap.get(XYToId(x, y)).setOpenSpace();
-////					robotMap.get(XYToId(x, y)).setNotAnObstacleColour();
-//					robotMap.get(XYToId(x, y)).setIsExplored(true);
-////					addExploredSpace(XYToId(x, y));
-//				}
-//			}
-//		}
-//		return results;
-//	}
-	
-//	public static void addExploredSpace(int id){
-//		if(exploredSpaces.contains(id) == false){
-//			exploredSpaces.add(id);
-//		}
-//	}
-
 	protected static void resetMap() {
 		for (MapComponent mapComponent : humanMap) {
 			mapComponent.setOpenSpace();
@@ -215,8 +136,7 @@ public class MapManager {
 		drawGoalZone();
 		numOfObstacles = 0;
 		obstaclesExplored = 0;
-		RobotManager.setRobot(0, 0, Robot.ORIENTATION.NORTH);
-//		exploredSpaces.clear();
+		RobotManager.setRobot(0, 0, RobotManager.ORIENTATION.NORTH);
 //		RobotManager.getExplorationPercentage(0.0);
 	}
 

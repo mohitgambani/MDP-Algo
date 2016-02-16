@@ -5,8 +5,6 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import algorithm.Robot;
-
 public class MainControl {
 	
 	public static MainWindow mainWindow;

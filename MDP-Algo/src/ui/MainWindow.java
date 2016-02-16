@@ -92,7 +92,7 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(startFastRun, gridBagConstraint);
 
-		timerDisplay = new JLabel("0s0ms");
+		timerDisplay = new JLabel("0 min 0 s 0 ms");
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 5;
@@ -175,5 +175,9 @@ public class MainWindow extends JFrame {
 	
 	public void setMapExplored(String explored){
 		mapExplored.setText(explored);
+	}
+	
+	public void setFreeOutput(String output){
+		freeOutput.setText(freeOutput.getText() + "\n" + output);
 	}
 }

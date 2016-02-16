@@ -14,14 +14,14 @@ public class RobotManager {
 
 	public static final int MAP_WIDTH = 20;
 	public static final int MAP_HEIGHT = 15;
-	
+
 	private static final int ROBOT_WIDTH = 2;
 	private static final int ROBOT_HEIGHT = 2;
-	
+
 	private static final int FRONT_SENSING_RANGE = 1;
 	private static final int SIDE_SENSING_RANGE = 1;
 
-	public static enum ORIENTATION{
+	public static enum ORIENTATION {
 		NORTH, SOUTH, EAST, WEST
 	}
 
@@ -54,7 +54,7 @@ public class RobotManager {
 		}
 	}
 
-	public static void unsetRobot() {
+	private static void unsetRobot() {
 		MapManager.unSetRobot();
 	}
 
@@ -70,20 +70,17 @@ public class RobotManager {
 		return orientation;
 	}
 
-	public static void setRobotOrientation(Enum<ORIENTATION> ori) {
-		orientation = ori;
-	}
-
 	public static void startExploration() {
 		startTime = System.currentTimeMillis();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timeElapsed = System.currentTimeMillis() - startTime;
-				MainControl.mainWindow.setTimerDisplay(timeElapsed / 1000 + "s" + timeElapsed % 1000 + "ms");
+				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms",
+						timeElapsed / 1000 / 60, timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
-		
+
 		moveStrategy = new FloodFillMove();
 		Thread thread = new Thread() {
 			@Override
@@ -107,63 +104,71 @@ public class RobotManager {
 						moveNorth();
 					} else if (nextMove == Movable.MOVE.SOUTH) {
 						moveSouth();
-					} else if( nextMove == Movable.MOVE.TURN_EAST){
+					} else if (nextMove == Movable.MOVE.TURN_EAST) {
 						headEast();
-					} else if( nextMove == Movable.MOVE.TURN_WEST){
+					} else if (nextMove == Movable.MOVE.TURN_WEST) {
 						headWest();
-					}else if(nextMove == Movable.MOVE.TURN_NORTH){
+					} else if (nextMove == Movable.MOVE.TURN_NORTH) {
 						headNorth();
-					}else if(nextMove == Movable.MOVE.TURN_SOUTH){
+					} else if (nextMove == Movable.MOVE.TURN_SOUTH) {
 						headSouth();
 					}
-					System.out.println(nextMove);
+					displayExplorationPercentage();
+					// System.out.println(nextMove);
+//					MainControl.mainWindow.setFreeOutput(nextMove.toString());
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
 			}
 		};
 		thread.start();
-		
+
 	}
 
-	public static void headWest(){
+	private static void headWest() {
+		orientation = ORIENTATION.WEST;
 		MapManager.headWest();
 	}
-	public static void headEast(){
+
+	private static void headEast() {
+		orientation = ORIENTATION.EAST;
 		MapManager.headEast();
 	}
-	public static void headNorth(){
+
+	private static void headNorth() {
+		orientation = ORIENTATION.NORTH;
 		MapManager.headNorth();
 	}
-	public static void headSouth(){
+
+	private static void headSouth() {
+		orientation = ORIENTATION.SOUTH;
 		MapManager.headSouth();
 	}
-	
-	
-	public static void moveWest() {
+
+	private static void moveWest() {
 		unsetRobot();
 		setRobot(positionX - 1, positionY, ORIENTATION.WEST);
-		MapManager.headWest();
+		headWest();
 	}
 
-	public static void moveEast() {
+	private static void moveEast() {
 		unsetRobot();
 		setRobot(positionX + 1, positionY, ORIENTATION.EAST);
-		MapManager.headEast();
+		headEast();
 	}
 
-	public static void moveNorth() {
+	private static void moveNorth() {
 		unsetRobot();
 		setRobot(positionX, positionY - 1, ORIENTATION.NORTH);
-		MapManager.headNorth();
+		headNorth();
 	}
 
-	public static void moveSouth() {
+	private static void moveSouth() {
 		unsetRobot();
 		setRobot(positionX, positionY + 1, ORIENTATION.SOUTH);
-		MapManager.headSouth();
+		headSouth();
 	}
 
-	public static void senseNorth() {
+	private static void senseNorth() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -196,7 +201,7 @@ public class RobotManager {
 		}
 	}
 
-	public static void senseSouth() {
+	private static void senseSouth() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -208,8 +213,7 @@ public class RobotManager {
 			sensingRange = SIDE_SENSING_RANGE;
 		}
 		for (x = positionX + ROBOT_WIDTH - 1; x >= positionX; --x) {
-			for (y = positionY + ROBOT_HEIGHT; y < positionY + ROBOT_HEIGHT + sensingRange
-					&& !stop; ++y) {
+			for (y = positionY + ROBOT_HEIGHT; y < positionY + ROBOT_HEIGHT + sensingRange && !stop; ++y) {
 				if (isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
@@ -230,7 +234,7 @@ public class RobotManager {
 		}
 	}
 
-	public static void senseWest() {
+	private static void senseWest() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -263,7 +267,7 @@ public class RobotManager {
 		}
 	}
 
-	public static void senseEast() {
+	private static void senseEast() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -275,8 +279,7 @@ public class RobotManager {
 			sensingRange = SIDE_SENSING_RANGE;
 		}
 		for (y = positionY + ROBOT_HEIGHT - 1; y >= positionY; --y) {
-			for (x = positionX + ROBOT_WIDTH; x < positionX + ROBOT_WIDTH + sensingRange
-					&& !stop; ++x) {
+			for (x = positionX + ROBOT_WIDTH; x < positionX + ROBOT_WIDTH + sensingRange && !stop; ++x) {
 				if (isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
@@ -297,6 +300,13 @@ public class RobotManager {
 		}
 	}
 
+	public static void reset() {
+		setRobot(0, 0, RobotManager.ORIENTATION.EAST);
+		MainControl.mainWindow.setRobotPosition("unknown");
+		MainControl.mainWindow.setTimerDisplay(0 + "s" + 0 + "ms");
+		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));
+	}
+
 	public static int getRobotWidth() {
 		return ROBOT_WIDTH;
 	}
@@ -305,8 +315,9 @@ public class RobotManager {
 		return ROBOT_HEIGHT;
 	}
 
-	protected static void getExplorationPercentage(double percentage) {
-		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", percentage * 100.0));
+	protected static void displayExplorationPercentage() {
+		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%",
+				100.0 * moveStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT)));
 	}
 
 	private static boolean isOutBoundary(int x, int y) {

@@ -1,10 +1,7 @@
 package ui;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Random;
-
-import algorithm.Movable;
 import algorithm.RobotManager;
 
 public class MapManager {
@@ -16,17 +13,8 @@ public class MapManager {
 	private static final int GOAL_ZONE_WIDTH = 3;
 	private static final int GOAL_ZONE_HEIGHT = 3;
 
-//	public static final int MAP_WALL = 1;
-//	public static final int MAP_OBSTACLE = 2;
-//	public static final int MAP_OPENSPACE = 3;
-//	public static final int MAP_STARTZONE = 4;
-//	public static final int MAP_GOALZONE = 5;
-
 	protected static ArrayList<MapComponent> humanMap = new ArrayList<MapComponent>();
 	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
-
-	private static int numOfObstacles = 0;
-	private static int obstaclesExplored = 0;
 
 	protected static void drawStartZone() {
 		final int START_X = 0;
@@ -60,12 +48,12 @@ public class MapManager {
 
 		if (idToX(robotPosition) <= MAP_WIDTH / 2 - RobotManager.getRobotWidth()) {
 			setRobot(robotPosition);
-			headNorth();
+			headEast();
 		}
 	}
 
 	protected static void setRobot(int robotPosition) {
-		RobotManager.setRobot(idToX(robotPosition), idToY(robotPosition), RobotManager.ORIENTATION.NORTH);
+		RobotManager.setRobot(idToX(robotPosition), idToY(robotPosition), RobotManager.ORIENTATION.EAST);
 	}
 
 	public static void unSetRobot() {
@@ -79,30 +67,22 @@ public class MapManager {
 	}
 
 	public static void headWest() {
-
 		robotTurn(RobotManager.getRobotPositionX(), -1);
-		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.WEST);
 		pause();
 	}
 
 	public static void headEast() {
-
 		robotTurn(RobotManager.getRobotPositionX() + RobotManager.getRobotWidth() - 1, -1);
-		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.EAST);
 		pause();
 	}
 
 	public static void headNorth() {
-
 		robotTurn(-1, RobotManager.getRobotPositionY());
-		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.NORTH);
 		pause();
 	}
 
 	public static void headSouth() {
-
 		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.getRobotHeight() - 1);
-		RobotManager.setRobotOrientation(RobotManager.ORIENTATION.SOUTH);
 		pause();
 	}
 
@@ -134,29 +114,16 @@ public class MapManager {
 		}
 		drawStartZone();
 		drawGoalZone();
-		numOfObstacles = 0;
-		obstaclesExplored = 0;
-		RobotManager.setRobot(0, 0, RobotManager.ORIENTATION.NORTH);
-//		RobotManager.getExplorationPercentage(0.0);
+		RobotManager.reset();
 	}
 
 	protected static void setObstacle(int id) {
 		humanMap.get(id).setOpenSpace();
 		humanMap.get(id).setObstacle();
-		++numOfObstacles;
-//		RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
 	}
 
 	protected static void unsetObstacle(int id) {
-		if (humanMap.get(id).isExplored())
-			--obstaclesExplored;
 		humanMap.get(id).setOpenSpace();
-		--numOfObstacles;
-//		try {
-//			RobotManager.getExplorationPercentage(1.0 * obstaclesExplored / numOfObstacles);
-//		} catch (ArithmeticException ex) {
-//			RobotManager.getExplorationPercentage(0.0);
-//		}
 	}
 	
 	public static boolean isObstacle(int x, int y){
@@ -206,9 +173,5 @@ public class MapManager {
 	protected static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
 	}
-
-//	private static boolean isOutBoundary(int x, int y, final int WIDTH, final int HEIGHT) {
-//		return (x >= WIDTH) || (x < 0) || (y >= HEIGHT) || (y < 0);
-//	}
 
 }

@@ -54,5 +54,8 @@ public abstract class Movable {
 	public boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}
+	public int numOfExploredSpace(){
+		return mapExplored.size();
+	}
 	
 }

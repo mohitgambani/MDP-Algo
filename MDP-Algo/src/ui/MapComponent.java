@@ -11,6 +11,8 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
+import algorithm.RobotManager;
+
 public class MapComponent extends JButton {
 
 	private int id;
@@ -83,13 +85,17 @@ public class MapComponent extends JButton {
 		public void keyPressed(KeyEvent e) {
 			if (isRobot) {
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					MapManager.robotHeadRight();
+//					MapManager.headEast();
+					RobotManager.moveEast();
 				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-					MapManager.robotHeadLeft();
+//					MapManager.headWest();
+					RobotManager.moveWest();
 				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
-					MapManager.robotHeadUp();
+//					MapManager.headNorth();
+					RobotManager.moveNorth();
 				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					MapManager.robotHeadDown();
+//					MapManager.headSouth();
+					RobotManager.moveSouth();
 				}
 			}
 		}
@@ -155,8 +161,10 @@ public class MapComponent extends JButton {
 		return isExplored;
 	}
 
-	public void setIsExplored(boolean isExplored) {
-		this.isExplored = isExplored;
+	public void setIsExplored() {
+		this.isExplored = true;
+		if(id < 0)
+			setBackground(Color.YELLOW);
 	}
 
 	public void setOpenSpace() {
@@ -165,9 +173,9 @@ public class MapComponent extends JButton {
 	}
 	
 
-	public void setNotAnObstacleColour() {
-		setBackground(Color.YELLOW);
-	}
+//	public void setNotAnObstacleColour() {
+//		setBackground(Color.YELLOW);
+//	}
 
 	public void setRobotHead() {
 		isRobot = true;

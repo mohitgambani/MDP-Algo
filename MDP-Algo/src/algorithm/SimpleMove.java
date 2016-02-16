@@ -1,9 +1,9 @@
 package algorithm;
 
-import java.util.Hashtable;
 import java.util.Random;
 
-public class SimpleMove implements Movable {
+
+public class SimpleMove extends Movable {
 
 	private static final int STEP_LIMIT = 70;
 	private static int current_move = 1;
@@ -18,30 +18,26 @@ public class SimpleMove implements Movable {
 	 */
 	
 	@Override
-	public int nextMove() {
+	public Enum<Movable.MOVE> nextMove() {
 
-		int nextMove;
+		Enum<Movable.MOVE> nextMove = MOVE.STOP;
 		if (current_move == STEP_LIMIT) {
-			nextMove = STOP;
+			nextMove = MOVE.STOP;
 			current_move = 1;
 		} else {
 			Random rand = new Random();
-			nextMove = rand.nextInt(4);
-//			textualOutput("Move " + current_move + ": " + )
+			do{
+				nextMove = Movable.MOVE.values()[rand.nextInt(Movable.MOVE.values().length)];
+			}while(nextMove == Movable.MOVE.STOP);
 			++current_move;
 		}
 		return nextMove;
 	}
 
 	@Override
-	public void getMapUpdate(Hashtable<Integer, Integer> senseUpResult) {
-		
-
+	public void getMapUpdate(int id, Enum<GRID_TYPE> type) {
+		super.getMapUpdate(id, type);
+		System.out.println(getMapExplored());
 	}
-
-//	@Override
-//	public String textualOutput(String output) {
-//		return output;
-//	}
 
 }

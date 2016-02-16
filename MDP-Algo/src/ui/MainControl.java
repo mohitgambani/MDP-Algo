@@ -5,9 +5,12 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import algorithm.Robot;
+
 public class MainControl {
 	
-	protected static MainWindow mainWindow;
+	public static MainWindow mainWindow;
+	
 	
 	public static void main(String[] args) {
 		try {
@@ -33,7 +36,5 @@ public class MainControl {
 				}
 			}
 		});
-		
-		
 	}
 }

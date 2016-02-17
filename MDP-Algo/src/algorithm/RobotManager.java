@@ -114,7 +114,6 @@ public class RobotManager {
 						headSouth();
 					}
 					displayExplorationPercentage();
-					// System.out.println(nextMove);
 					MainControl.mainWindow.setFreeOutput(nextMove.toString());
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();

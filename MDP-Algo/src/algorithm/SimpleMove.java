@@ -9,14 +9,6 @@ public class SimpleMove extends Movable {
 	private static int current_move = 1;
 
 	
-	/**
-	 * 1. Start
-	 * 2. Add start, nearby sensed grids to array of grids scanned
-	 * 3. If upward grids unscanned, move up, move back down
-	 * 4. 
-	 * 
-	 */
-	
 	@Override
 	public Enum<Movable.MOVE> nextMove() {
 

@@ -31,8 +31,9 @@ public class MainWindow extends JFrame {
 	private JLabel robot_position;
 	private JLabel movePerSecondLabel;
 	private JTextField movePerSecondText;
-	private JTextField robotInitialX;
-	private JTextField robotInitialY;
+	private JTextField percentageExplored;
+	private JTextField timeLimitMin;
+	private JTextField timeLimitSec;
 	private JButton generateMap;
 	private JButton loadMap;
 	private JButton saveMap;
@@ -75,7 +76,7 @@ public class MainWindow extends JFrame {
 		timerDisplay = new JLabel("0 min 0 s 0 ms", JLabel.CENTER);
 		rightUpPanel.add(timerDisplay);
 
-		mapExplored = new JLabel("Map Explored: 0%", JLabel.CENTER);
+		mapExplored = new JLabel("Map Explored: 0.00%", JLabel.CENTER);
 		rightUpPanel.add(mapExplored);
 		
 		JPanel movePerSecondPanel = new JPanel(new GridLayout(1, 2, 5, 5));
@@ -86,15 +87,24 @@ public class MainWindow extends JFrame {
 		movePerSecondPanel.add(movePerSecondText);
 		rightUpPanel.add(movePerSecondPanel);
 		
-//		rightUpPanel.add(new JLabel("Initial Robot Position:"));
-//		JPanel robotInitialPos = new JPanel(new GridLayout(1, 4));
-//		robotInitialPos.add(new JLabel("X:", JLabel.CENTER));
-//		robotInitialX = new JTextField();
-//		robotInitialY = new JTextField();
-//		robotInitialPos.add(robotInitialX);
-//		robotInitialPos.add(new JLabel("Y:", JLabel.CENTER));
-//		robotInitialPos.add(robotInitialY);
-//		rightUpPanel.add(robotInitialPos);
+		rightUpPanel.add(new JLabel("Automatic Termination After:"));
+		JPanel mapExplored = new JPanel(new GridLayout(1, 2, 5, 5));
+		percentageExplored = new JTextField();
+		percentageExplored.getDocument().addDocumentListener(new PercentageExploredDocumentListener());
+		mapExplored.add(percentageExplored);
+		mapExplored.add(new JLabel("% Map Explored", JLabel.CENTER));
+		rightUpPanel.add(mapExplored);
+		
+		JPanel timeLimitPanel = new JPanel(new GridLayout(1, 4, 5, 5));
+		timeLimitMin = new JTextField();
+		timeLimitMin.getDocument().addDocumentListener(new TimeLimitMinDocumentListener());
+		timeLimitSec = new JTextField();
+		timeLimitSec.getDocument().addDocumentListener(new TimeLimitSecDocumentListener());
+		timeLimitPanel.add(timeLimitMin);
+		timeLimitPanel.add(new JLabel("Min", JLabel.CENTER));
+		timeLimitPanel.add(timeLimitSec);
+		timeLimitPanel.add(new JLabel("Sec", JLabel.CENTER));
+		rightUpPanel.add(timeLimitPanel);
 		
 
 		generateMap = new JButton("Generate Random Map");
@@ -195,7 +205,7 @@ public class MainWindow extends JFrame {
 		public void changedUpdate(DocumentEvent e) {
 			detectPositiveInteger();
 		}
-		private void detectPositiveInteger(){
+		public void detectPositiveInteger(){
 			
 			Runnable detectPostiveInteger = new Runnable() {
 		        @Override
@@ -216,7 +226,76 @@ public class MainWindow extends JFrame {
 		    };
 		    SwingUtilities.invokeLater(detectPostiveInteger);
 		}
-		
+	}
+	private class PercentageExploredDocumentListener extends MovePerSecondDocumentListener{
+		@Override
+		public void detectPositiveInteger(){
+			Runnable detectPostiveInteger = new Runnable() {
+		        @Override
+		        public void run() {
+		        	int value = 0;
+					try{
+						value = Integer.parseInt(percentageExplored.getText());
+					}catch(NumberFormatException exception){
+						percentageExplored.setText("");
+					}finally {
+						if(value <= 0 || value > 100){
+							percentageExplored.setText("");
+						}else{
+//							MapManager.setMovePerSecond(value);
+						}
+					}
+		        }
+		    };
+		    SwingUtilities.invokeLater(detectPostiveInteger);
+		}
+	}
+	private class TimeLimitMinDocumentListener extends MovePerSecondDocumentListener{
+		@Override
+		public void detectPositiveInteger(){
+			Runnable detectPostiveInteger = new Runnable() {
+		        @Override
+		        public void run() {
+		        	int value = 0;
+					try{
+						value = Integer.parseInt(timeLimitMin.getText());
+					}catch(NumberFormatException exception){
+						timeLimitMin.setText("");
+					}finally {
+						if(value <= 0 || value >= 60){
+							timeLimitMin.setText("");
+						}else{
+//							MapManager.setMovePerSecond(value);
+						}
+					}
+		        }
+		    };
+		    SwingUtilities.invokeLater(detectPostiveInteger);
+		}
+	}
+	
+	private class TimeLimitSecDocumentListener extends MovePerSecondDocumentListener{
+		@Override
+		public void detectPositiveInteger(){
+			Runnable detectPostiveInteger = new Runnable() {
+		        @Override
+		        public void run() {
+		        	int value = 0;
+					try{
+						value = Integer.parseInt(timeLimitSec.getText());
+					}catch(NumberFormatException exception){
+						timeLimitSec.setText("");
+					}finally {
+						if(value <= 0 || value >= 60){
+							timeLimitSec.setText("");
+						}else{
+//							MapManager.setMovePerSecond(value);
+						}
+					}
+		        }
+		    };
+		    SwingUtilities.invokeLater(detectPostiveInteger);
+		}
 	}
 
 	public void setTimerDisplay(String display) {

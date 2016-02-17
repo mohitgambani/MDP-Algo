@@ -20,6 +20,8 @@ public class RobotManager {
 
 	private static final int FRONT_SENSING_RANGE = 1;
 	private static final int SIDE_SENSING_RANGE = 1;
+	
+	
 
 	public static enum ORIENTATION {
 		NORTH, SOUTH, EAST, WEST
@@ -71,7 +73,7 @@ public class RobotManager {
 	}
 
 	public static void startExploration() {
-		startTime = System.currentTimeMillis();
+		reset();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -80,20 +82,23 @@ public class RobotManager {
 						timeElapsed / 1000 / 60, timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
-
+		startTime = System.currentTimeMillis();
 		moveStrategy = new FloodFillMove();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
 				timer.start();
+				int counter = 0;
 				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
 				do {
-					if (orientation == ORIENTATION.NORTH || orientation == ORIENTATION.SOUTH) {
-						senseNorth();
-						senseSouth();
-					} else {
-						senseWest();
+					if(orientation == ORIENTATION.EAST){
 						senseEast();
+					}else if(orientation == ORIENTATION.NORTH){
+						senseNorth();
+					}else if(orientation == ORIENTATION.SOUTH){
+						senseSouth();
+					}else{
+						senseWest();
 					}
 					nextMove = moveStrategy.nextMove();
 					if (nextMove == Movable.MOVE.EAST) {
@@ -113,8 +118,9 @@ public class RobotManager {
 					} else if (nextMove == Movable.MOVE.TURN_SOUTH) {
 						headSouth();
 					}
+					++counter;
 					displayExplorationPercentage();
-					MainControl.mainWindow.setFreeOutput(nextMove.toString());
+					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
 			}
@@ -301,9 +307,15 @@ public class RobotManager {
 
 	public static void reset() {
 		setRobot(0, 0, RobotManager.ORIENTATION.EAST);
+		headEast();
 		MainControl.mainWindow.setRobotPosition("unknown");
-		MainControl.mainWindow.setTimerDisplay(0 + "s" + 0 + "ms");
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));
+		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", 0.0));
+		MainControl.mainWindow.clearFreeOutput();
+	}
+	
+	private static void displayMoves(Enum<Movable.MOVE> nextMove, int counter){
+		MainControl.mainWindow.setFreeOutput(String.format("%d %s\n", counter, nextMove.toString()));
 	}
 
 	public static int getRobotWidth() {
@@ -326,4 +338,8 @@ public class RobotManager {
 	protected static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
 	}
+	
+	
+	
+	
 }

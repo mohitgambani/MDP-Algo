@@ -8,7 +8,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
+
+import org.omg.CORBA.portable.ValueBase;
+
+import algorithm.RobotManager;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,13 +23,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
 	private JLabel robot_position;
-	private JLabel gridsPerMoveLabel;
-	private JTextField gridsPerMoveText;
+	private JLabel movePerSecondLabel;
+	private JTextField movePerSecondText;
 	private JTextField robotInitialX;
 	private JTextField robotInitialY;
 	private JButton generateMap;
@@ -71,22 +78,23 @@ public class MainWindow extends JFrame {
 		mapExplored = new JLabel("Map Explored: 0%", JLabel.CENTER);
 		rightUpPanel.add(mapExplored);
 		
-		JPanel gridsPerMovePanel = new JPanel(new GridLayout(1, 2));
-		gridsPerMoveLabel = new JLabel("Grid(s)/Move:");
-		gridsPerMoveText = new JTextField("1");
-		gridsPerMovePanel.add(gridsPerMoveLabel);
-		gridsPerMovePanel.add(gridsPerMoveText);
-		rightUpPanel.add(gridsPerMovePanel);
+		JPanel movePerSecondPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		movePerSecondLabel = new JLabel("Move(s)/Second:");
+		movePerSecondText = new JTextField(MapManager.getMovePerSecond() + "");
+		movePerSecondText.getDocument().addDocumentListener(new MovePerSecondDocumentListener());
+		movePerSecondPanel.add(movePerSecondLabel);
+		movePerSecondPanel.add(movePerSecondText);
+		rightUpPanel.add(movePerSecondPanel);
 		
-		rightUpPanel.add(new JLabel("Initial Robot Position:"));
-		JPanel robotInitialPos = new JPanel(new GridLayout(1, 4));
-		robotInitialPos.add(new JLabel("X:", JLabel.CENTER));
-		robotInitialX = new JTextField();
-		robotInitialY = new JTextField();
-		robotInitialPos.add(robotInitialX);
-		robotInitialPos.add(new JLabel("Y:", JLabel.CENTER));
-		robotInitialPos.add(robotInitialY);
-		rightUpPanel.add(robotInitialPos);
+//		rightUpPanel.add(new JLabel("Initial Robot Position:"));
+//		JPanel robotInitialPos = new JPanel(new GridLayout(1, 4));
+//		robotInitialPos.add(new JLabel("X:", JLabel.CENTER));
+//		robotInitialX = new JTextField();
+//		robotInitialY = new JTextField();
+//		robotInitialPos.add(robotInitialX);
+//		robotInitialPos.add(new JLabel("Y:", JLabel.CENTER));
+//		robotInitialPos.add(robotInitialY);
+//		rightUpPanel.add(robotInitialPos);
 		
 
 		generateMap = new JButton("Generate Random Map");
@@ -170,6 +178,46 @@ public class MainWindow extends JFrame {
 		}
 
 	}
+	
+	private class MovePerSecondDocumentListener implements DocumentListener{
+
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			detectPositiveInteger();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			detectPositiveInteger();
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			detectPositiveInteger();
+		}
+		private void detectPositiveInteger(){
+			
+			Runnable detectPostiveInteger = new Runnable() {
+		        @Override
+		        public void run() {
+		        	int value = 0;
+					try{
+						value = Integer.parseInt(movePerSecondText.getText());
+					}catch(NumberFormatException exception){
+						movePerSecondText.setText("");
+					}finally {
+						if(value <= 0){
+							movePerSecondText.setText("");
+						}else{
+							MapManager.setMovePerSecond(value);
+						}
+					}
+		        }
+		    };
+		    SwingUtilities.invokeLater(detectPostiveInteger);
+		}
+		
+	}
 
 	public void setTimerDisplay(String display) {
 		timerDisplay.setText(display);
@@ -184,7 +232,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void setFreeOutput(String output) {
-		freeOutput.append(output + "\n");
-		
+		freeOutput.append(output);
+	}
+	public void clearFreeOutput(){
+		freeOutput.setText("");
 	}
 }

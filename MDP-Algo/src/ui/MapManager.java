@@ -12,6 +12,8 @@ public class MapManager {
 	private static final int START_ZONE_HEIGHT = 3;
 	private static final int GOAL_ZONE_WIDTH = 3;
 	private static final int GOAL_ZONE_HEIGHT = 3;
+	
+	private static int movesPerSecond = 10;
 
 	protected static ArrayList<MapComponent> humanMap = new ArrayList<MapComponent>();
 	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
@@ -142,13 +144,6 @@ public class MapManager {
 		robotMap.get(XYToId(x, y)).setIsExplored();
 	}
 	
-	private static void pause() {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-	}
 
 	protected static void generateMap() {
 		resetMap();
@@ -161,6 +156,14 @@ public class MapManager {
 		drawStartZone();
 		drawGoalZone();
 	}
+	
+	private static void pause() {
+		try {
+			Thread.sleep(1000 / movesPerSecond);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
 
 	protected static int idToX(int id) {
 		return id % MAP_WIDTH;
@@ -172,6 +175,14 @@ public class MapManager {
 
 	protected static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
+	}
+	
+	public static int getMovePerSecond(){
+		return movesPerSecond;
+	}
+	
+	public static void setMovePerSecond(int speed){
+		movesPerSecond = speed;
 	}
 
 }

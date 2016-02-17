@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,7 +18,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
 public class MainWindow extends JFrame {
-
 
 	private JPanel contentPane;
 	private JLabel robot_position;
@@ -39,7 +39,6 @@ public class MainWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
-
 
 		JPanel rightPanel = new JPanel(new GridBagLayout());
 		rightPanel.setMinimumSize(new Dimension(200, 800));
@@ -108,14 +107,17 @@ public class MainWindow extends JFrame {
 		gridBagConstraint.weighty = 0.1;
 		rightPanel.add(mapExplored, gridBagConstraint);
 
-		freeOutput = new JTextArea("Free Output Area");
-		freeOutput.setMinimumSize(new Dimension(200, 400));
+		freeOutput = new JTextArea("Free Output", 5, 30);
+		freeOutput.setPreferredSize(new Dimension(200, 400));
+		
 		gridBagConstraint = new GridBagConstraints();
 		gridBagConstraint.gridx = 0;
 		gridBagConstraint.gridy = 7;
 		gridBagConstraint.weightx = 1.0;
-		gridBagConstraint.weighty = 1.0;
-		rightPanel.add(freeOutput, gridBagConstraint);
+		gridBagConstraint.weighty = 0.5;
+//		JScrollPane scrollPane = new JScrollPane(freeOutput);
+//		 rightPanel.add(freeOutput, gridBagConstraint);
+		rightPanel.add(new JScrollPane(freeOutput), gridBagConstraint);
 
 		contentPane.add(splitPane);
 		splitPane.setResizeWeight(1.0);
@@ -155,29 +157,29 @@ public class MainWindow extends JFrame {
 		}
 
 	}
-	
-	private class GenerateMapListener implements ActionListener{
+
+	private class GenerateMapListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			MapManager.generateMap();
 		}
-		
+
 	}
-	
-	public void setTimerDisplay(String display){
+
+	public void setTimerDisplay(String display) {
 		timerDisplay.setText(display);
 	}
 
 	public void setRobotPosition(String position) {
 		robot_position.setText("Robot Position: " + position);
 	}
-	
-	public void setMapExplored(String explored){
+
+	public void setMapExplored(String explored) {
 		mapExplored.setText(explored);
 	}
-	
-	public void setFreeOutput(String output){
+
+	public void setFreeOutput(String output) {
 		freeOutput.setText(freeOutput.getText() + "\n" + output);
 	}
 }

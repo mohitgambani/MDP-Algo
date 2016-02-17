@@ -223,17 +223,7 @@ public class FloodFillMove extends Movable {
 		Enum<MOVE> nextMove = MOVE.STOP;
 
 		if (getMapExplored().size() == MAP_HEIGHT * MAP_WIDTH)
-			return nextMove;
-
-		int x, y;
-
-		for (x = robotPosX; x < robotPosX + RobotManager.getRobotWidth(); ++x) {
-			for (y = robotPosY; y < robotPosY + RobotManager.getRobotHeight(); ++y) {
-				if (!mapTraversed.contains(XYToId(x, y))) {
-					mapTraversed.add(XYToId(x, y));
-				}
-			}
-		}
+			return backTrack();
 
 		nextMove = attemptEast();
 		if (nextMove == MOVE.NO_MOVE) {

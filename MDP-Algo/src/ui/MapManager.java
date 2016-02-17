@@ -144,7 +144,7 @@ public class MapManager {
 	
 	private static void pause() {
 		try {
-			Thread.sleep(200);
+			Thread.sleep(100);
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}

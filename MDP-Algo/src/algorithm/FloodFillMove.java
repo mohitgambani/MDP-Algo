@@ -222,6 +222,9 @@ public class FloodFillMove extends Movable {
 
 		Enum<MOVE> nextMove = MOVE.STOP;
 
+		if(isConditionalStop())
+			return backTrack();
+		
 		if (getMapExplored().size() == MAP_HEIGHT * MAP_WIDTH)
 			return backTrack();
 

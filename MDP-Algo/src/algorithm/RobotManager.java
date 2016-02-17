@@ -35,6 +35,10 @@ public class RobotManager {
 	private static final int TIMER_DELAY = 1;
 	private static long startTime;
 	private static long timeElapsed;
+	
+	private static long timeLimit = 0;
+	private static double percentageLimit = 100.0;
+	private static boolean conditionalStop = false;
 
 	public static void setRobot(int posX, int posY, Enum<ORIENTATION> ori) {
 		int x, y;
@@ -74,15 +78,19 @@ public class RobotManager {
 
 	public static void startExploration() {
 		reset();
+		timeLimit = MainControl.mainWindow.getTimeLimit();
+		System.out.println(timeLimit);
+		startTime = System.currentTimeMillis();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timeElapsed = System.currentTimeMillis() - startTime;
+				if(timeElapsed >= timeLimit || getPercentageExplored() >= percentageLimit)
+					conditionalStop = true;
 				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms",
 						timeElapsed / 1000 / 60, timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
-		startTime = System.currentTimeMillis();
 		moveStrategy = new FloodFillMove();
 		Thread thread = new Thread() {
 			@Override
@@ -100,6 +108,7 @@ public class RobotManager {
 					}else{
 						senseWest();
 					}
+					moveStrategy.setConditionalStop(conditionalStop);
 					nextMove = moveStrategy.nextMove();
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
@@ -327,8 +336,11 @@ public class RobotManager {
 	}
 
 	protected static void displayExplorationPercentage() {
-		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%",
-				100.0 * moveStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT)));
+		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", getPercentageExplored()));
+	}
+	
+	private static double getPercentageExplored(){
+		return 100.0 * moveStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT);
 	}
 
 	private static boolean isOutBoundary(int x, int y) {
@@ -339,6 +351,12 @@ public class RobotManager {
 		return y * MAP_WIDTH + x;
 	}
 	
+	public static void setTimeLimit(long tLimit){
+		timeLimit = tLimit;
+	}
+	public static void setPercentageLimit(double pLimit){
+		percentageLimit = pLimit;
+	}
 	
 	
 	

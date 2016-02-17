@@ -89,16 +89,16 @@ public class MainWindow extends JFrame {
 		
 		rightUpPanel.add(new JLabel("Automatic Termination After:"));
 		JPanel mapExplored = new JPanel(new GridLayout(1, 2, 5, 5));
-		percentageExplored = new JTextField();
+		percentageExplored = new JTextField("100");
 		percentageExplored.getDocument().addDocumentListener(new PercentageExploredDocumentListener());
 		mapExplored.add(percentageExplored);
 		mapExplored.add(new JLabel("% Map Explored", JLabel.CENTER));
 		rightUpPanel.add(mapExplored);
 		
 		JPanel timeLimitPanel = new JPanel(new GridLayout(1, 4, 5, 5));
-		timeLimitMin = new JTextField();
+		timeLimitMin = new JTextField("6");
 		timeLimitMin.getDocument().addDocumentListener(new TimeLimitMinDocumentListener());
-		timeLimitSec = new JTextField();
+		timeLimitSec = new JTextField("0");
 		timeLimitSec.getDocument().addDocumentListener(new TimeLimitSecDocumentListener());
 		timeLimitPanel.add(timeLimitMin);
 		timeLimitPanel.add(new JLabel("Min", JLabel.CENTER));
@@ -233,16 +233,16 @@ public class MainWindow extends JFrame {
 			Runnable detectPostiveInteger = new Runnable() {
 		        @Override
 		        public void run() {
-		        	int value = 0;
+		        	double value = -1.0;
 					try{
-						value = Integer.parseInt(percentageExplored.getText());
+						value = Double.parseDouble(percentageExplored.getText());
 					}catch(NumberFormatException exception){
 						percentageExplored.setText("");
 					}finally {
-						if(value <= 0 || value > 100){
+						if(value < 0.0 || value > 100.0){
 							percentageExplored.setText("");
 						}else{
-//							MapManager.setMovePerSecond(value);
+							RobotManager.setPercentageLimit(value);
 						}
 					}
 		        }
@@ -256,16 +256,14 @@ public class MainWindow extends JFrame {
 			Runnable detectPostiveInteger = new Runnable() {
 		        @Override
 		        public void run() {
-		        	int value = 0;
+		        	int value = -1;
 					try{
 						value = Integer.parseInt(timeLimitMin.getText());
 					}catch(NumberFormatException exception){
 						timeLimitMin.setText("");
 					}finally {
-						if(value <= 0 || value >= 60){
+						if(value < 0 || value >= 60){
 							timeLimitMin.setText("");
-						}else{
-//							MapManager.setMovePerSecond(value);
 						}
 					}
 		        }
@@ -280,16 +278,14 @@ public class MainWindow extends JFrame {
 			Runnable detectPostiveInteger = new Runnable() {
 		        @Override
 		        public void run() {
-		        	int value = 0;
+		        	int value = -1;
 					try{
 						value = Integer.parseInt(timeLimitSec.getText());
 					}catch(NumberFormatException exception){
 						timeLimitSec.setText("");
 					}finally {
-						if(value <= 0 || value >= 60){
+						if(value < 0 || value >= 60){
 							timeLimitSec.setText("");
-						}else{
-//							MapManager.setMovePerSecond(value);
 						}
 					}
 		        }
@@ -315,5 +311,9 @@ public class MainWindow extends JFrame {
 	}
 	public void clearFreeOutput(){
 		freeOutput.setText("");
+	}
+	public long getTimeLimit(){
+		return (Integer.parseInt(timeLimitMin.getText()) * 60 + Integer.parseInt(timeLimitSec.getText())) * 1000;
+		
 	}
 }

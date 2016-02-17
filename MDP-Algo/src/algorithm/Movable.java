@@ -14,10 +14,12 @@ public abstract class Movable {
 	public final int END_X = START_X + MAP_WIDTH - 1;
 	public final int END_Y = START_Y + MAP_HEIGHT - 1;
 	
+	private boolean conditionalStop;
 	private Hashtable<Integer, Enum<GRID_TYPE>> mapExplored;
 	
 	public Movable(){
 		mapExplored = new Hashtable<Integer, Enum<GRID_TYPE>>();
+		conditionalStop = false;
 	}
 	
 	public enum MOVE {
@@ -30,6 +32,7 @@ public abstract class Movable {
 	
 	
 	public abstract Enum<MOVE> nextMove();
+		
 
 	
 	public int idToX(int id) {
@@ -57,5 +60,10 @@ public abstract class Movable {
 	public int numOfExploredSpace(){
 		return mapExplored.size();
 	}
-	
+	public boolean isConditionalStop(){
+		return conditionalStop;
+	}
+	public void setConditionalStop(boolean cStop){
+		conditionalStop = cStop;
+	}
 }

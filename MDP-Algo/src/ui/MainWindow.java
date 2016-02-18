@@ -306,6 +306,7 @@ public class MainWindow extends JFrame {
 	        if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
 	            FileIOManager.setReadFilePath(file.getPath());
+	            MapManager.readMap();
 	        }
 			
 		}

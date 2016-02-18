@@ -79,7 +79,6 @@ public class RobotManager {
 	}
 
 	public static void startExploration() {
-		reset();
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		startTime = System.currentTimeMillis();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
@@ -330,28 +329,32 @@ public class RobotManager {
 	private static void writeMap() {
 		Hashtable<Integer, Enum<GRID_TYPE>> map = moveStrategy.getMapExplored();
 		int index;
-		String allMapToWrite = "";
+		String fullMapToWrite = "11";
 		String exploredMapToWrite = "";
 
 		for (index = 0; index < MAP_WIDTH * MAP_HEIGHT; ++index) {
 			if (map.containsKey(index)) {
-				allMapToWrite += "1";
+				fullMapToWrite += "1";
 				if (map.get(index) == Movable.GRID_TYPE.OBSTACLE) {
 					exploredMapToWrite += "1";
 				} else {
 					exploredMapToWrite += "0";
 				}
 			} else {
-				allMapToWrite += "0";
+				fullMapToWrite += "0";
 			}
 		}
+		fullMapToWrite += "11";
+		
+		while(exploredMapToWrite.length() % 8 != 0){
+			exploredMapToWrite += "0";
+		}
 		try {
-			FileIOManager.writeFile(allMapToWrite, "allMap");
+			FileIOManager.writeFile(fullMapToWrite, "fullMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	public static void reset() {

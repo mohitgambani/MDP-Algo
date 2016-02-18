@@ -13,7 +13,6 @@ public class FileIOManager {
 		FileWriter outputStream = null;
 		Date date = new Date();
 		try {
-			
             outputStream = new FileWriter(writeFilePath + fileName + "_" + date.toString() + ".txt");
 
             int index;
@@ -34,7 +33,7 @@ public class FileIOManager {
             inputStream = new FileReader(readFilePath);
             int c;
             while ((c = inputStream.read()) != -1) {
-                content += c;
+                content += (char) c;
             }
         } finally {
             if (inputStream != null) {

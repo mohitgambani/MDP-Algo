@@ -2,11 +2,14 @@ package algorithm;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.Timer;
 
+import algorithm.Movable.GRID_TYPE;
+import io.FileIOManager;
 import ui.MainControl;
 import ui.MapManager;
 
@@ -29,7 +32,7 @@ public class RobotManager {
 
 	private static int positionX, positionY;
 	private static Enum<ORIENTATION> orientation;
-	private static Movable moveStrategy = null;
+	private static Movable moveStrategy = new FloodFillMove();
 
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
@@ -79,7 +82,6 @@ public class RobotManager {
 	public static void startExploration() {
 		reset();
 		timeLimit = MainControl.mainWindow.getTimeLimit();
-		System.out.println(timeLimit);
 		startTime = System.currentTimeMillis();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
@@ -91,7 +93,7 @@ public class RobotManager {
 						timeElapsed / 1000 / 60, timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
-		moveStrategy = new FloodFillMove();
+		addRobotToMapExplored();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -101,12 +103,20 @@ public class RobotManager {
 				do {
 					if(orientation == ORIENTATION.EAST){
 						senseEast();
+						senseNorth();
+						senseSouth();
 					}else if(orientation == ORIENTATION.NORTH){
 						senseNorth();
+						senseEast();
+						senseWest();
 					}else if(orientation == ORIENTATION.SOUTH){
 						senseSouth();
+						senseEast();
+						senseWest();
 					}else{
 						senseWest();
+						senseNorth();
+						senseSouth();
 					}
 					moveStrategy.setConditionalStop(conditionalStop);
 					nextMove = moveStrategy.nextMove();
@@ -132,6 +142,7 @@ public class RobotManager {
 					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
+				writeMap();
 			}
 		};
 		thread.start();
@@ -254,7 +265,7 @@ public class RobotManager {
 		int sensingRange;
 		boolean stop = false;
 
-		if (orientation == ORIENTATION.NORTH || orientation == ORIENTATION.SOUTH) {
+		if (orientation == ORIENTATION.EAST || orientation == ORIENTATION.WEST) {
 			sensingRange = FRONT_SENSING_RANGE;
 		} else {
 			sensingRange = SIDE_SENSING_RANGE;
@@ -287,7 +298,7 @@ public class RobotManager {
 		int sensingRange;
 		boolean stop = false;
 
-		if (orientation == ORIENTATION.NORTH || orientation == ORIENTATION.SOUTH) {
+		if (orientation == ORIENTATION.EAST || orientation == ORIENTATION.WEST) {
 			sensingRange = FRONT_SENSING_RANGE;
 		} else {
 			sensingRange = SIDE_SENSING_RANGE;
@@ -312,6 +323,33 @@ public class RobotManager {
 			Integer key = keys.nextElement();
 			moveStrategy.getMapUpdate(key, results.get(key));
 		}
+	}
+	
+	private static void writeMap(){
+		Hashtable<Integer, Enum<GRID_TYPE>> map = moveStrategy.getMapExplored();
+		int index;
+		String allMapToWrite = "";
+		String exploredMapToWrite = "";
+		
+		for(index = 0; index < MAP_WIDTH * MAP_HEIGHT; ++index){
+			if(map.containsKey(index)){
+				allMapToWrite += "1";
+				if(map.get(index) == Movable.GRID_TYPE.OBSTACLE){
+					exploredMapToWrite += "1";
+				}else{
+					exploredMapToWrite += "0";
+				}
+			}else{
+				allMapToWrite += "0";
+			}
+		}
+		try{
+			FileIOManager.writeFile(allMapToWrite, "allMap");
+			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");
+		}catch(IOException ex){
+			ex.printStackTrace();
+		}
+	
 	}
 
 	public static void reset() {
@@ -357,7 +395,17 @@ public class RobotManager {
 	public static void setPercentageLimit(double pLimit){
 		percentageLimit = pLimit;
 	}
-	
+	private static void addRobotToMapExplored(){
+		
+		int x, y;
+		for(x = positionX; x < ROBOT_WIDTH; ++x){
+			for(y = positionY; y < ROBOT_HEIGHT; ++y){
+				MapManager.setRobotMapOpenSpace(x, y);
+				MapManager.setRobotMapExplored(x, y);
+				moveStrategy.getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+			}
+		}
+	}
 	
 	
 }

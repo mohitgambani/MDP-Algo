@@ -23,8 +23,8 @@ public class RobotManager {
 
 	private static final int FRONT_SENSING_RANGE = 1;
 	private static final int SIDE_SENSING_RANGE = 1;
-	
-	
+
+	private static int movesPerSecond = 10;
 
 	public static enum ORIENTATION {
 		NORTH, SOUTH, EAST, WEST
@@ -38,10 +38,9 @@ public class RobotManager {
 	private static final int TIMER_DELAY = 1;
 	private static long startTime;
 	private static long timeElapsed;
-	
+
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
-	private static boolean conditionalStop = false;
 
 	public static void setRobot(int posX, int posY, Enum<ORIENTATION> ori) {
 		int x, y;
@@ -87,10 +86,11 @@ public class RobotManager {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timeElapsed = System.currentTimeMillis() - startTime;
-				if(timeElapsed >= timeLimit || getPercentageExplored() >= percentageLimit)
-					conditionalStop = true;
-				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms",
-						timeElapsed / 1000 / 60, timeElapsed / 1000 % 60, timeElapsed % 1000));
+				if (timeElapsed + Math.ceil(1.0 * moveStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
+						|| getPercentageExplored() >= percentageLimit)
+					moveStrategy.setConditionalStop();
+				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
+						timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
 		addRobotToMapExplored();
@@ -101,24 +101,6 @@ public class RobotManager {
 				int counter = 0;
 				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
 				do {
-					if(orientation == ORIENTATION.EAST){
-						senseEast();
-						senseNorth();
-						senseSouth();
-					}else if(orientation == ORIENTATION.NORTH){
-						senseNorth();
-						senseEast();
-						senseWest();
-					}else if(orientation == ORIENTATION.SOUTH){
-						senseSouth();
-						senseEast();
-						senseWest();
-					}else{
-						senseWest();
-						senseNorth();
-						senseSouth();
-					}
-					moveStrategy.setConditionalStop(conditionalStop);
 					nextMove = moveStrategy.nextMove();
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
@@ -193,7 +175,27 @@ public class RobotManager {
 		headSouth();
 	}
 
-	private static void senseNorth() {
+	public static void sense() {
+		if (orientation == ORIENTATION.EAST) {
+			senseEast();
+			 senseNorth();
+			 senseSouth();
+		} else if (orientation == ORIENTATION.NORTH) {
+			senseNorth();
+			 senseEast();
+			 senseWest();
+		} else if (orientation == ORIENTATION.SOUTH) {
+			senseSouth();
+			 senseEast();
+			 senseWest();
+		} else {
+			senseWest();
+			 senseNorth();
+			 senseSouth();
+		}
+	}
+
+	public static void senseNorth() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -226,7 +228,7 @@ public class RobotManager {
 		}
 	}
 
-	private static void senseSouth() {
+	public static void senseSouth() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -259,7 +261,7 @@ public class RobotManager {
 		}
 	}
 
-	private static void senseWest() {
+	public static void senseWest() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -292,7 +294,7 @@ public class RobotManager {
 		}
 	}
 
-	private static void senseEast() {
+	public static void senseEast() {
 		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
 		int x, y;
 		int sensingRange;
@@ -324,44 +326,45 @@ public class RobotManager {
 			moveStrategy.getMapUpdate(key, results.get(key));
 		}
 	}
-	
-	private static void writeMap(){
+
+	private static void writeMap() {
 		Hashtable<Integer, Enum<GRID_TYPE>> map = moveStrategy.getMapExplored();
 		int index;
 		String allMapToWrite = "";
 		String exploredMapToWrite = "";
-		
-		for(index = 0; index < MAP_WIDTH * MAP_HEIGHT; ++index){
-			if(map.containsKey(index)){
+
+		for (index = 0; index < MAP_WIDTH * MAP_HEIGHT; ++index) {
+			if (map.containsKey(index)) {
 				allMapToWrite += "1";
-				if(map.get(index) == Movable.GRID_TYPE.OBSTACLE){
+				if (map.get(index) == Movable.GRID_TYPE.OBSTACLE) {
 					exploredMapToWrite += "1";
-				}else{
+				} else {
 					exploredMapToWrite += "0";
 				}
-			}else{
+			} else {
 				allMapToWrite += "0";
 			}
 		}
-		try{
+		try {
 			FileIOManager.writeFile(allMapToWrite, "allMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");
-		}catch(IOException ex){
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-	
+
 	}
 
 	public static void reset() {
 		setRobot(0, 0, RobotManager.ORIENTATION.EAST);
 		headEast();
+		moveStrategy = new FloodFillMove();
 		MainControl.mainWindow.setRobotPosition("unknown");
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", 0.0));
 		MainControl.mainWindow.clearFreeOutput();
 	}
-	
-	private static void displayMoves(Enum<Movable.MOVE> nextMove, int counter){
+
+	private static void displayMoves(Enum<Movable.MOVE> nextMove, int counter) {
 		MainControl.mainWindow.setFreeOutput(String.format("%d %s\n", counter, nextMove.toString()));
 	}
 
@@ -376,8 +379,8 @@ public class RobotManager {
 	protected static void displayExplorationPercentage() {
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", getPercentageExplored()));
 	}
-	
-	private static double getPercentageExplored(){
+
+	private static double getPercentageExplored() {
 		return 100.0 * moveStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT);
 	}
 
@@ -388,24 +391,33 @@ public class RobotManager {
 	protected static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
 	}
-	
-	public static void setTimeLimit(long tLimit){
+
+	public static void setTimeLimit(long tLimit) {
 		timeLimit = tLimit;
 	}
-	public static void setPercentageLimit(double pLimit){
+
+	public static void setPercentageLimit(double pLimit) {
 		percentageLimit = pLimit;
 	}
-	private static void addRobotToMapExplored(){
-		
+
+	private static void addRobotToMapExplored() {
+
 		int x, y;
-		for(x = positionX; x < ROBOT_WIDTH; ++x){
-			for(y = positionY; y < ROBOT_HEIGHT; ++y){
+		for (x = positionX; x < ROBOT_WIDTH; ++x) {
+			for (y = positionY; y < ROBOT_HEIGHT; ++y) {
 				MapManager.setRobotMapOpenSpace(x, y);
 				MapManager.setRobotMapExplored(x, y);
 				moveStrategy.getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 			}
 		}
 	}
-	
-	
+
+	public static int getMovePerSecond() {
+		return movesPerSecond;
+	}
+
+	public static void setMovePerSecond(int speed) {
+		movesPerSecond = speed;
+	}
+
 }

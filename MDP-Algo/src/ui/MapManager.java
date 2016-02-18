@@ -13,7 +13,7 @@ public class MapManager {
 	private static final int GOAL_ZONE_WIDTH = 3;
 	private static final int GOAL_ZONE_HEIGHT = 3;
 	
-	private static int movesPerSecond = 10;
+//	private static int movesPerSecond = 10;
 
 	protected static ArrayList<MapComponent> humanMap = new ArrayList<MapComponent>();
 	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
@@ -159,7 +159,7 @@ public class MapManager {
 	
 	private static void pause() {
 		try {
-			Thread.sleep(1000 / movesPerSecond);
+			Thread.sleep(1000 / RobotManager.getMovePerSecond());
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
@@ -177,12 +177,12 @@ public class MapManager {
 		return y * MAP_WIDTH + x;
 	}
 	
-	public static int getMovePerSecond(){
-		return movesPerSecond;
-	}
-	
-	public static void setMovePerSecond(int speed){
-		movesPerSecond = speed;
-	}
+//	public static int getMovePerSecond(){
+//		return movesPerSecond;
+//	}
+//	
+//	public static void setMovePerSecond(int speed){
+//		movesPerSecond = speed;
+//	}
 
 }

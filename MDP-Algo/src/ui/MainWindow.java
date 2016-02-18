@@ -3,6 +3,7 @@ package ui;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,13 +13,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
 
-import org.omg.CORBA.portable.ValueBase;
-
 import algorithm.RobotManager;
+import io.FileIOManager;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -81,7 +82,7 @@ public class MainWindow extends JFrame {
 		
 		JPanel movePerSecondPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		movePerSecondLabel = new JLabel("Move(s)/Second:");
-		movePerSecondText = new JTextField(MapManager.getMovePerSecond() + "");
+		movePerSecondText = new JTextField(RobotManager.getMovePerSecond() + "");
 		movePerSecondText.getDocument().addDocumentListener(new MovePerSecondDocumentListener());
 		movePerSecondPanel.add(movePerSecondLabel);
 		movePerSecondPanel.add(movePerSecondText);
@@ -115,6 +116,7 @@ public class MainWindow extends JFrame {
 		JPanel loadSaveMap = new JPanel(new GridLayout(1, 2, 5, 5));
 		
 		loadMap = new JButton("Load Map");
+		loadMap.addActionListener(new LoadMapActionListener());
 		loadSaveMap.add(loadMap);
 		
 		saveMap = new JButton("Save Map");
@@ -219,7 +221,7 @@ public class MainWindow extends JFrame {
 						if(value <= 0){
 							movePerSecondText.setText("");
 						}else{
-							MapManager.setMovePerSecond(value);
+							RobotManager.setMovePerSecond(value);
 						}
 					}
 		        }
@@ -292,6 +294,22 @@ public class MainWindow extends JFrame {
 		    };
 		    SwingUtilities.invokeLater(detectPostiveInteger);
 		}
+	}
+	
+	private class LoadMapActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileChooser = new JFileChooser();
+			int returnVal = fileChooser.showOpenDialog(MainWindow.this);
+			
+	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fileChooser.getSelectedFile();
+	            FileIOManager.setReadFilePath(file.getPath());
+	        }
+			
+		}
+		
 	}
 
 	public void setTimerDisplay(String display) {

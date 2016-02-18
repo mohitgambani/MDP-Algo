@@ -208,8 +208,8 @@ public class FloodFillAlternative extends Movable {
 		robotPosX = RobotManager.getRobotPositionX();
 		robotPosY = RobotManager.getRobotPositionY();
 		int x, y;
-		for(x = robotPosX; x < RobotManager.getRobotWidth(); ++x){
-			for(y = robotPosY; y < RobotManager.getRobotHeight(); ++y){
+		for(x = robotPosX; x < robotPosX + RobotManager.getRobotWidth(); ++x){
+			for(y = robotPosY; y < robotPosY + RobotManager.getRobotHeight(); ++y){
 				if(!mapTraversed.contains(XYToId(x, y))){
 					mapTraversed.add(XYToId(x, y));
 				}
@@ -249,6 +249,12 @@ public class FloodFillAlternative extends Movable {
 		}
 		System.out.println(callStack);
 		return nextMove;
+	}
+
+	@Override
+	public int movesToStartZone() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 //	private void initialiseUntraversed(){

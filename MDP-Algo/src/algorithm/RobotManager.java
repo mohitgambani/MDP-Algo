@@ -359,7 +359,6 @@ public class RobotManager {
 
 	public static void reset() {
 		setRobot(0, 0, RobotManager.ORIENTATION.EAST);
-		headEast();
 		moveStrategy = new FloodFillMove();
 		MainControl.mainWindow.setRobotPosition("unknown");
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));

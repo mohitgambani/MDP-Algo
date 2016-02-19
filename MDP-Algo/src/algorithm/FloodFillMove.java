@@ -9,8 +9,8 @@ public class FloodFillMove extends Movable {
 
 	private ArrayList<Integer> mapTraversed;
 
-	private int robotPosX;
-	private int robotPosY;
+	private int robotPosX = 0;
+	private int robotPosY = 0;
 	private Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored;
 
 	private Deque<MOVE> callStack;
@@ -24,12 +24,12 @@ public class FloodFillMove extends Movable {
 
 	private Enum<MOVE> backTrack() {
 		Enum<MOVE> nextMove = MOVE.STOP;
-		
+
 		if (callStack.isEmpty())
 			return nextMove;
 
 		Enum<MOVE> lastMove = callStack.removeLast();
-		
+
 		if (lastMove == MOVE.EAST) {
 			nextMove = MOVE.WEST;
 		} else if (lastMove == MOVE.NORTH) {
@@ -42,192 +42,104 @@ public class FloodFillMove extends Movable {
 		return nextMove;
 	}
 
-	private Enum<MOVE> attemptWest() {
-
-		robotPosX = RobotManager.getRobotPositionX();
-		robotPosY = RobotManager.getRobotPositionY();
-		int x, y;
-		boolean explored = true;
-		boolean traversed = true;
-		boolean noMove = false;
-		ArrayList<Integer> exploredIndex = new ArrayList<Integer>();
-
-		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.getRobotHeight() && explored
-				&& !noMove; ++y) {
-			if (!isOutBoundary(x, y)) {
-				int id = XYToId(x, y);
-				if (!mapExplored.containsKey(id)) {
-					explored = false;
-				} else if (mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
-					noMove = true;
-				} else {
-					exploredIndex.add(id);
-				}
-			} else {
-				noMove = true;
-			}
-		}
-		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_WEST;
-			} else {
-				for (int index : exploredIndex) {
-					if (!mapTraversed.contains(index)) {
-						mapTraversed.add(index);
-						traversed = false;
-					}
-				}
-				if (!traversed) {
-					callStack.add(MOVE.WEST);
-					return MOVE.WEST;
-				}
-			}
-		}
-		return MOVE.NO_MOVE;
-	}
-
 	private Enum<MOVE> attemptEast() {
-
-		robotPosX = RobotManager.getRobotPositionX();
-		robotPosY = RobotManager.getRobotPositionY();
 		int x, y;
-		boolean explored = true;
 		boolean traversed = true;
-
 		boolean noMove = false;
-		ArrayList<Integer> exploredIndex = new ArrayList<Integer>();
 
 		for (x = robotPosX + RobotManager.getRobotWidth(), y = robotPosY; y < robotPosY + RobotManager.getRobotHeight()
-				&& explored && !noMove; ++y) {
-			if (!isOutBoundary(x, y)) {
-				int id = XYToId(x, y);
-				if (!mapExplored.containsKey(id)) {
-					explored = false;
-				} else if (mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
-					noMove = true;
-				} else {
-					exploredIndex.add(id);
-				}
-			} else {
+				&& !noMove; ++y) {
+			int id = XYToId(x, y);
+			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
+					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
 				noMove = true;
+			} else if (!mapTraversed.contains(id)) {
+				traversed = false;
 			}
 		}
-		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_EAST;
-			} else {
-				for (int index : exploredIndex) {
-					if (!mapTraversed.contains(index)) {
-						mapTraversed.add(index);
-						traversed = false;
-					}
-				}
-				if (!traversed) {
-					callStack.add(MOVE.EAST);
-					return MOVE.EAST;
-				}
-			}
+		if (!noMove && !traversed) {
+			callStack.add(MOVE.EAST);
+			return MOVE.EAST;
 		}
 		return MOVE.NO_MOVE;
 	}
 
 	private Enum<MOVE> attemptNorth() {
-
-		robotPosX = RobotManager.getRobotPositionX();
-		robotPosY = RobotManager.getRobotPositionY();
 		int x, y;
-		boolean explored = true;
 		boolean traversed = true;
 		boolean noMove = false;
-		ArrayList<Integer> exploredIndex = new ArrayList<Integer>();
-		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.getRobotWidth() && explored
-				&& !noMove; ++x) {
-			if (!isOutBoundary(x, y)) {
-				int id = XYToId(x, y);
-				if (!mapExplored.containsKey(id)) {
-					explored = false;
-				} else if (mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
-					noMove = true;
-				} else {
-					exploredIndex.add(id);
-				}
-			} else {
+		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.getRobotWidth() && !noMove; ++x) {
+			int id = XYToId(x, y);
+			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
+					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
 				noMove = true;
+			} else if (!mapTraversed.contains(id)) {
+				traversed = false;
 			}
 		}
-		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_NORTH;
-			} else {
-				for (int index : exploredIndex) {
-					if (!mapTraversed.contains(index)) {
-						mapTraversed.add(index);
-						traversed = false;
-					}
-				}
-				if (!traversed) {
-					callStack.add(MOVE.NORTH);
-					return MOVE.NORTH;
-				}
-			}
+		if (!noMove && !traversed) {
+			callStack.add(MOVE.NORTH);
+			return MOVE.NORTH;
 		}
 		return MOVE.NO_MOVE;
 	}
 
 	private Enum<MOVE> attemptSouth() {
-
-		robotPosX = RobotManager.getRobotPositionX();
-		robotPosY = RobotManager.getRobotPositionY();
 		int x, y;
-		boolean explored = true;
 		boolean traversed = true;
 		boolean noMove = false;
-		ArrayList<Integer> exploredIndex = new ArrayList<Integer>();
 		for (y = robotPosY + RobotManager.getRobotHeight(), x = robotPosX; x < robotPosX + RobotManager.getRobotWidth()
-				&& explored && !noMove; ++x) {
-			if (!isOutBoundary(x, y)) {
-				int id = XYToId(x, y);
-				if (!mapExplored.containsKey(id)) {
-					explored = false;
-				} else if (mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
-					noMove = true;
-				} else {
-					exploredIndex.add(id);
-				}
-			} else {
+				&& !noMove; ++x) {
+			int id = XYToId(x, y);
+			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
+					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
 				noMove = true;
+			} else if (!mapTraversed.contains(id)) {
+				traversed = false;
 			}
 		}
-		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_SOUTH;
-			} else {
-				for (int index : exploredIndex) {
-					if (!mapTraversed.contains(index)) {
-						mapTraversed.add(index);
-						traversed = false;
-					}
-				}
-				if (!traversed) {
-					callStack.add(MOVE.SOUTH);
-					return MOVE.SOUTH;
-				}
+		if (!noMove && !traversed) {
+			callStack.add(MOVE.SOUTH);
+			return MOVE.SOUTH;
+		}
+		return MOVE.NO_MOVE;
+	}
+
+	private Enum<MOVE> attemptWest() {
+		int x, y;
+		boolean traversed = true;
+		boolean noMove = false;
+
+		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.getRobotHeight() && !noMove; ++y) {
+			int id = XYToId(x, y);
+			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
+					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
+				noMove = true;
+			} else if (!mapTraversed.contains(id)) {
+				traversed = false;
 			}
+		}
+		if (!noMove && !traversed) {
+			callStack.add(MOVE.WEST);
+			return MOVE.WEST;
 		}
 		return MOVE.NO_MOVE;
 	}
 
 	@Override
 	public Enum<MOVE> nextMove() {
-
 		Enum<MOVE> nextMove = MOVE.STOP;
+		robotPosX = RobotManager.getRobotPositionX();
+		robotPosY = RobotManager.getRobotPositionY();
 
-		if(isConditionalStop())
-			return backTrack();
-		
+		if (isConditionalStop())
+			return backToStartZone();
+
 		if (getMapExplored().size() == MAP_HEIGHT * MAP_WIDTH)
-			return backTrack();
+			return backToStartZone();
 
+		sense();
+		addRobotToTraversed();
 		nextMove = attemptEast();
 		if (nextMove == MOVE.NO_MOVE) {
 			nextMove = attemptNorth();
@@ -235,7 +147,7 @@ public class FloodFillMove extends Movable {
 				nextMove = attemptSouth();
 				if (nextMove == MOVE.NO_MOVE) {
 					nextMove = attemptWest();
-					if(nextMove == MOVE.NO_MOVE){
+					if (nextMove == MOVE.NO_MOVE) {
 						nextMove = backTrack();
 					}
 				}
@@ -243,5 +155,25 @@ public class FloodFillMove extends Movable {
 		}
 		System.out.println(callStack);
 		return nextMove;
+	}
+
+	private Enum<MOVE> backToStartZone() {
+		return backTrack();
+	}
+
+	@Override
+	public int movesToStartZone() {
+		return callStack.size();
+	}
+
+	private void addRobotToTraversed() {
+		int x, y;
+		for (x = robotPosX; x < robotPosX + RobotManager.getRobotWidth(); ++x) {
+			for (y = robotPosY; y < robotPosY + RobotManager.getRobotHeight(); ++y) {
+				if (!mapTraversed.contains(XYToId(x, y))) {
+					mapTraversed.add(XYToId(x, y));
+				}
+			}
+		}
 	}
 }

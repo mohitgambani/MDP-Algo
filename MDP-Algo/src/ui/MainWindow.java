@@ -3,6 +3,7 @@ package ui;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,13 +13,15 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
 
-import org.omg.CORBA.portable.ValueBase;
-
 import algorithm.RobotManager;
+import io.FileIOManager;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.File;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -36,7 +39,6 @@ public class MainWindow extends JFrame {
 	private JTextField timeLimitSec;
 	private JButton generateMap;
 	private JButton loadMap;
-	private JButton saveMap;
 	private JButton resetMap;
 	private JButton startExp;
 	private JButton startFastRun;
@@ -81,8 +83,9 @@ public class MainWindow extends JFrame {
 		
 		JPanel movePerSecondPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		movePerSecondLabel = new JLabel("Move(s)/Second:");
-		movePerSecondText = new JTextField(MapManager.getMovePerSecond() + "");
+		movePerSecondText = new JTextField(RobotManager.getMovePerSecond() + "");
 		movePerSecondText.getDocument().addDocumentListener(new MovePerSecondDocumentListener());
+		movePerSecondText.addFocusListener(new myFocusListener());
 		movePerSecondPanel.add(movePerSecondLabel);
 		movePerSecondPanel.add(movePerSecondText);
 		rightUpPanel.add(movePerSecondPanel);
@@ -90,6 +93,7 @@ public class MainWindow extends JFrame {
 		rightUpPanel.add(new JLabel("Automatic Termination After:"));
 		JPanel mapExplored = new JPanel(new GridLayout(1, 2, 5, 5));
 		percentageExplored = new JTextField("100");
+		percentageExplored.addFocusListener(new myFocusListener());
 		percentageExplored.getDocument().addDocumentListener(new PercentageExploredDocumentListener());
 		mapExplored.add(percentageExplored);
 		mapExplored.add(new JLabel("% Map Explored", JLabel.CENTER));
@@ -98,8 +102,10 @@ public class MainWindow extends JFrame {
 		JPanel timeLimitPanel = new JPanel(new GridLayout(1, 4, 5, 5));
 		timeLimitMin = new JTextField("6");
 		timeLimitMin.getDocument().addDocumentListener(new TimeLimitMinDocumentListener());
+		timeLimitMin.addFocusListener(new myFocusListener());
 		timeLimitSec = new JTextField("0");
 		timeLimitSec.getDocument().addDocumentListener(new TimeLimitSecDocumentListener());
+		timeLimitSec.addFocusListener(new myFocusListener());
 		timeLimitPanel.add(timeLimitMin);
 		timeLimitPanel.add(new JLabel("Min", JLabel.CENTER));
 		timeLimitPanel.add(timeLimitSec);
@@ -111,15 +117,9 @@ public class MainWindow extends JFrame {
 		generateMap.addActionListener(new GenerateMapListener());
 		rightUpPanel.add(generateMap);
 		
-		
-		JPanel loadSaveMap = new JPanel(new GridLayout(1, 2, 5, 5));
-		
 		loadMap = new JButton("Load Map");
-		loadSaveMap.add(loadMap);
-		
-		saveMap = new JButton("Save Map");
-		loadSaveMap.add(saveMap);
-		rightUpPanel.add(loadSaveMap);
+		loadMap.addActionListener(new LoadMapActionListener());
+		rightUpPanel.add(loadMap);
 
 		resetMap = new JButton("Reset Map");
 		resetMap.addActionListener(new ResetMapListener());
@@ -229,7 +229,7 @@ public class MainWindow extends JFrame {
 						if(value <= 0){
 							movePerSecondText.setText("");
 						}else{
-							MapManager.setMovePerSecond(value);
+							RobotManager.setMovePerSecond(value);
 						}
 					}
 		        }
@@ -302,6 +302,38 @@ public class MainWindow extends JFrame {
 		    };
 		    SwingUtilities.invokeLater(detectPostiveInteger);
 		}
+	}
+	
+	private class LoadMapActionListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileChooser = new JFileChooser();
+			int returnVal = fileChooser.showOpenDialog(MainWindow.this);
+			
+	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fileChooser.getSelectedFile();
+	            FileIOManager.setReadFilePath(file.getPath());
+	            MapManager.readMap();
+	        }
+			
+		}
+		
+	}
+	
+	private class myFocusListener implements FocusListener{
+
+		@Override
+		public void focusGained(FocusEvent e) {
+			if (e.getSource() instanceof JTextField) {
+				JTextField textField = (JTextField) e.getSource();
+				textField.selectAll();
+			}
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {}
+		
 	}
 
 	public void setTimerDisplay(String display) {

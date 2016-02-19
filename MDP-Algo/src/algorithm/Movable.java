@@ -1,6 +1,5 @@
 package algorithm;
 
-
 import java.util.Hashtable;
 
 
@@ -32,7 +31,15 @@ public abstract class Movable {
 	
 	
 	public abstract Enum<MOVE> nextMove();
-		
+	
+	public abstract int movesToStartZone();
+	
+	/***
+	 * Decide when to get sensing information
+	 */
+	public void sense(){
+		RobotManager.sense();
+	}
 
 	
 	public int idToX(int id) {
@@ -63,7 +70,8 @@ public abstract class Movable {
 	public boolean isConditionalStop(){
 		return conditionalStop;
 	}
-	public void setConditionalStop(boolean cStop){
-		conditionalStop = cStop;
+	public void setConditionalStop(){
+		conditionalStop = true;
 	}
+	
 }

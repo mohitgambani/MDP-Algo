@@ -32,4 +32,11 @@ public class SimpleMove extends Movable {
 		System.out.println(getMapExplored());
 	}
 
+
+	@Override
+	public int movesToStartZone() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

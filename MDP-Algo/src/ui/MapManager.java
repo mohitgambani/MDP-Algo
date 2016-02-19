@@ -1,8 +1,10 @@
 package ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import algorithm.RobotManager;
+import io.FileIOManager;
 
 public class MapManager {
 	public static final int MAP_WIDTH = 20;
@@ -12,8 +14,6 @@ public class MapManager {
 	private static final int START_ZONE_HEIGHT = 3;
 	private static final int GOAL_ZONE_WIDTH = 3;
 	private static final int GOAL_ZONE_HEIGHT = 3;
-	
-	private static int movesPerSecond = 10;
 
 	protected static ArrayList<MapComponent> humanMap = new ArrayList<MapComponent>();
 	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
@@ -59,10 +59,12 @@ public class MapManager {
 	}
 
 	public static void unSetRobot() {
-		int x,y;
+		int x, y;
 
-		for (x = RobotManager.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.getRobotWidth(); ++x) {
-			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.getRobotHeight(); ++y) {
+		for (x = RobotManager.getRobotPositionX(); x < RobotManager.getRobotPositionX()
+				+ RobotManager.getRobotWidth(); ++x) {
+			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
+					+ RobotManager.getRobotHeight(); ++y) {
 				humanMap.get(XYToId(x, y)).unSetIsRobot();
 			}
 		}
@@ -131,23 +133,45 @@ public class MapManager {
 	protected static void unsetObstacle(int id) {
 		humanMap.get(id).setOpenSpace();
 	}
-	
-	public static boolean isObstacle(int x, int y){
+
+	public static boolean isObstacle(int x, int y) {
 		return humanMap.get(XYToId(x, y)).isObstacle();
 	}
-	
-	public static void setRobotMapObstacle(int x, int y){
+
+	public static void setRobotMapObstacle(int x, int y) {
 		robotMap.get(XYToId(x, y)).setObstacle();
 	}
-	
-	public static void setRobotMapOpenSpace(int x, int y){
+
+	public static void setRobotMapOpenSpace(int x, int y) {
 		robotMap.get(XYToId(x, y)).setOpenSpace();
 	}
-	
-	public static void setRobotMapExplored(int x, int y){
+
+	public static void setRobotMapExplored(int x, int y) {
 		robotMap.get(XYToId(x, y)).setIsExplored();
 	}
-	
+
+	public static void readMap() {
+		String map = "";
+		try {
+			map = FileIOManager.readFile();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		int index;
+		for (index = 0; index < MAP_HEIGHT * MAP_WIDTH; ++index) {
+			if (index < map.length()) {
+				if (map.charAt(index) == '1') {
+					humanMap.get(index).setObstacle();
+				} else {
+					humanMap.get(index).setOpenSpace();
+				}
+			} else {
+				humanMap.get(index).setOpenSpace();
+			}
+		}
+		drawStartZone();
+		drawGoalZone();
+	}
 
 	protected static void generateMap() {
 		resetMap();
@@ -160,10 +184,10 @@ public class MapManager {
 		drawStartZone();
 		drawGoalZone();
 	}
-	
+
 	private static void pause() {
 		try {
-			Thread.sleep(1000 / movesPerSecond);
+			Thread.sleep(1000 / RobotManager.getMovePerSecond());
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
@@ -180,13 +204,4 @@ public class MapManager {
 	protected static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
 	}
-	
-	public static int getMovePerSecond(){
-		return movesPerSecond;
-	}
-	
-	public static void setMovePerSecond(int speed){
-		movesPerSecond = speed;
-	}
-
 }

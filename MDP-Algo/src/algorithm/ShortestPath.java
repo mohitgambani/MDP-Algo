@@ -208,4 +208,10 @@ public class ShortestPath extends Movable {
 		return listOfMoves.pop();
 	}
 
+	@Override
+	public int movesToStartZone() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

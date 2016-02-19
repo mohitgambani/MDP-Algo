@@ -47,8 +47,7 @@ public class FloodFillMove extends Movable {
 		boolean traversed = true;
 		boolean noMove = false;
 
-		for (x = robotPosX + RobotManager.getRobotWidth(), y = robotPosY; y < robotPosY + RobotManager.getRobotHeight()
-				&& !noMove; ++y) {
+		for (x = robotPosX + RobotManager.getRobotWidth(), y = robotPosY; y < robotPosY + RobotManager.getRobotHeight(); ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
 					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
@@ -68,7 +67,7 @@ public class FloodFillMove extends Movable {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
-		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.getRobotWidth() && !noMove; ++x) {
+		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.getRobotWidth() ; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
 					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
@@ -88,8 +87,7 @@ public class FloodFillMove extends Movable {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
-		for (y = robotPosY + RobotManager.getRobotHeight(), x = robotPosX; x < robotPosX + RobotManager.getRobotWidth()
-				&& !noMove; ++x) {
+		for (y = robotPosY + RobotManager.getRobotHeight(), x = robotPosX; x < robotPosX + RobotManager.getRobotWidth(); ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
 					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
@@ -110,7 +108,7 @@ public class FloodFillMove extends Movable {
 		boolean traversed = true;
 		boolean noMove = false;
 
-		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.getRobotHeight() && !noMove; ++y) {
+		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.getRobotHeight(); ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || !mapExplored.containsKey(id)
 					|| mapExplored.get(id) == Movable.GRID_TYPE.OBSTACLE) {
@@ -142,9 +140,9 @@ public class FloodFillMove extends Movable {
 		addRobotToTraversed();
 		nextMove = attemptEast();
 		if (nextMove == MOVE.NO_MOVE) {
-			nextMove = attemptNorth();
+			nextMove = attemptSouth();
 			if (nextMove == MOVE.NO_MOVE) {
-				nextMove = attemptSouth();
+				nextMove = attemptNorth();
 				if (nextMove == MOVE.NO_MOVE) {
 					nextMove = attemptWest();
 					if (nextMove == MOVE.NO_MOVE) {

@@ -16,15 +16,7 @@ public class ShortestPath extends Movable {
 	
 	public ShortestPath(){
 		super();
-		mapExplored = getMapExplored();
-		for(int i = 0; i <= 299; i++){
-			if(i >= 40 && i <= 50)
-				mapExplored.put(i, GRID_TYPE.OBSTACLE);
-			else if(i >= 150 && i <= 160)
-				mapExplored.put(i, GRID_TYPE.OBSTACLE);
-			else
-				mapExplored.put(i, GRID_TYPE.OPEN_SPACE);
-		}
+		mapExplored = RobotManager.getMapExplored();
 		start = new Node(0);
 		goal = new Node(278);
 		start.setGCost(0);

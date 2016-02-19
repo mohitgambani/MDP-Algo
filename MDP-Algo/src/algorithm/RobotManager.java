@@ -25,6 +25,8 @@ public class RobotManager {
 	private static final int SIDE_SENSING_RANGE = 1;
 
 	private static int movesPerSecond = 10;
+	
+	private static Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored;
 
 	public static enum ORIENTATION {
 		NORTH, SOUTH, EAST, WEST
@@ -123,6 +125,7 @@ public class RobotManager {
 					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
+				setMapExplored(moveStrategy.getMapExplored());
 				writeMap();
 			}
 		};
@@ -447,6 +450,14 @@ public class RobotManager {
 
 	public static void setMovePerSecond(int speed) {
 		movesPerSecond = speed;
+	}
+
+	public static Hashtable<Integer, Enum<Movable.GRID_TYPE>> getMapExplored() {
+		return mapExplored;
+	}
+
+	public static void setMapExplored(Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored) {
+		RobotManager.mapExplored = mapExplored;
 	}
 
 }

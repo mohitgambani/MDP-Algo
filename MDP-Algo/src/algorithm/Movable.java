@@ -61,6 +61,9 @@ public abstract class Movable {
 	public Hashtable<Integer, Enum<GRID_TYPE>> getMapExplored(){
 		return mapExplored;
 	}
+	public void setMapExplored(Hashtable<Integer, Enum<GRID_TYPE>> map){
+		mapExplored = map;
+	}
 	public boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}
@@ -73,5 +76,4 @@ public abstract class Movable {
 	public void setConditionalStop(){
 		conditionalStop = true;
 	}
-	
 }

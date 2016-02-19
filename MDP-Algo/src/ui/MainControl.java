@@ -31,8 +31,8 @@ public class MainControl {
 					mainWindow.setVisible(true);
 					MapManager.drawStartZone();
 					MapManager.drawGoalZone();
-					NetworkIOManager.openConnection();
-					NetworkIOManager.closeConnection();
+//					NetworkIOManager.openConnection();
+//					NetworkIOManager.closeConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -18,6 +18,7 @@ public class MapComponent extends JButton {
 	private boolean isStartZone;
 	private boolean isGoalZone;
 	private boolean isRobot;
+	private boolean isExplored;
 
 	public MapComponent(int id) {
 		super();
@@ -82,13 +83,13 @@ public class MapComponent extends JButton {
 		public void keyPressed(KeyEvent e) {
 			if (isRobot) {
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					MapManager.headEast();
+					MapManager.robotHeadRight();
 				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-					MapManager.headWest();
+					MapManager.robotHeadLeft();
 				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
-					MapManager.headNorth();
+					MapManager.robotHeadUp();
 				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					MapManager.headSouth();
+					MapManager.robotHeadDown();
 				}
 			}
 		}
@@ -138,10 +139,6 @@ public class MapComponent extends JButton {
 		isRobot = true;
 		setBackground(Color.GREEN);
 	}
-	
-	public void setIsExplored(){
-		setBackground(Color.YELLOW);
-	}
 
 	public void unSetIsRobot() {
 		isRobot = false;
@@ -153,12 +150,23 @@ public class MapComponent extends JButton {
 			setOpenSpace();
 		}
 	}
+	
+	public boolean isExplored(){
+		return isExplored;
+	}
+	
+	public void setIsExplored(boolean isExplored){
+		this.isExplored = isExplored;
+	}
 
 	public void setOpenSpace() {
-		isObstacle = isStartZone = isRobot = isGoalZone = false;
+		isObstacle = isStartZone = isRobot = isGoalZone = isExplored = false;
 		setBackground(Color.WHITE);
 	}
 	
+	public void setNotAnObstacleColour() {
+		setBackground(Color.YELLOW);
+	}
 
 	public void setRobotHead() {
 		isRobot = true;

@@ -7,7 +7,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class MainControl {
 	
-	protected static MainWindow mainWindow;
+	public static MainWindow mainWindow;
+	
 	
 	public static void main(String[] args) {
 		try {
@@ -33,7 +34,5 @@ public class MainControl {
 				}
 			}
 		});
-		
-		
 	}
 }

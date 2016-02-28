@@ -26,6 +26,19 @@ public class ShortestPath extends Movable {
 		coreAlgorithm();
 	}
 	
+	public ShortestPath(int startPos, int goalPos,
+			Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored){
+		super();
+		this.mapExplored = mapExplored;
+		start = new Node(startPos);
+		goal = new Node(goalPos);
+		start.setGCost(0);
+		start.setHCost(distanceToGoal(start.getId()));
+		start.setParent(null);
+		
+		coreAlgorithm();
+	}
+	
 	public void coreAlgorithm(){
 		open.add(start);
 		ArrayList<Node> neighbours;
@@ -204,6 +217,26 @@ public class ShortestPath extends Movable {
 	public int movesToStartZone() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public Node getStart() {
+		return start;
+	}
+
+	public void setStart(int id) {
+		this.start.setId(id);
+	}
+
+	public Node getGoal() {
+		return goal;
+	}
+
+	public void setGoal(int id) {
+		this.goal.setId(id);
+	}
+
+	public Stack<Enum<MOVE>> getListOfMoves() {
+		return listOfMoves;
 	}
 
 }

@@ -21,6 +21,10 @@ public class Node {
 		return id;
 	}
 	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public int getGCost() {
 		return g_cost;
 	}

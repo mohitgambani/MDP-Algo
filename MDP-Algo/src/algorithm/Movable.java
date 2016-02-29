@@ -8,10 +8,10 @@ public abstract class Movable {
 	public final int MAP_WIDTH = 20;
 	public final int MAP_HEIGHT = 15;
 	
-	public final int START_X = 0;
-	public final int START_Y = 0;
-	public final int END_X = START_X + MAP_WIDTH - 1;
-	public final int END_Y = START_Y + MAP_HEIGHT - 1;
+//	public final int START_X = 0;
+//	public final int START_Y = 0;
+//	public final int END_X = START_X + MAP_WIDTH - 1;
+//	public final int END_Y = START_Y + MAP_HEIGHT - 1;
 	
 	private boolean conditionalStop;
 	private Hashtable<Integer, Enum<GRID_TYPE>> mapExplored;

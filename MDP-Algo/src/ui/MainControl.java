@@ -31,6 +31,13 @@ public class MainControl {
 					mainWindow.setVisible(true);
 					MapManager.drawStartZone();
 					MapManager.drawGoalZone();
+//					Thread thread  = new Thread(){
+//						@Override
+//						public void run() {
+//							NetworkIOManager.continuouslyReading();
+//						}
+//					};
+//					thread.start();
 //					NetworkIOManager.openConnection();
 //					NetworkIOManager.closeConnection();
 				} catch (Exception e) {

@@ -18,8 +18,8 @@ public class RobotManager {
 	public static final int MAP_WIDTH = 20;
 	public static final int MAP_HEIGHT = 15;
 
-	private static final int ROBOT_WIDTH = 2;
-	private static final int ROBOT_HEIGHT = 2;
+	private static final int ROBOT_WIDTH = 3;
+	private static final int ROBOT_HEIGHT = 3;
 
 	private static final int FRONT_SENSING_RANGE = 1;
 	private static final int SIDE_SENSING_RANGE = 1;

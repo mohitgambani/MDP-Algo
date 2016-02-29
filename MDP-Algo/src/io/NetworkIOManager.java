@@ -1,6 +1,8 @@
 package io;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -31,6 +33,23 @@ public class NetworkIOManager {
 			return false;
 		}
 		return true;
+	}
+	
+	public static void continuouslyReading(){
+		openConnection();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String content = in.readLine();
+			while(content != "$"){
+				System.out.println(content);
+				content = in.readLine();
+			}
+			
+			closeConnection();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
 	}
 	
 }

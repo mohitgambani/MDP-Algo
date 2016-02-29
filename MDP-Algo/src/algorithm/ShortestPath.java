@@ -19,7 +19,7 @@ public class ShortestPath extends Movable {
 		mapExplored = RobotManager.getMapExplored();
 		start = new Node(XYToId(RobotManager.getRobotPositionX(), 
 				RobotManager.getRobotPositionY()));
-		goal = new Node(278);
+		goal = new Node(XYToId(MAP_WIDTH - 2, MAP_HEIGHT - 2));
 		start.setGCost(0);
 		start.setHCost(distanceToGoal(start.getId()));
 		start.setParent(null);
@@ -98,9 +98,10 @@ public class ShortestPath extends Movable {
 		
 		int topId = XYToId( idToX(currentNode.getId()),
 				idToY(currentNode.getId()) - 1 );
-		for(int x = idToX(currentNode.getId()); x < idToX(currentNode.getId()) + 2; x++){
+		for(int x = idToX(currentNode.getId()); 
+				x < idToX(currentNode.getId()) + ROBOT_WIDTH; x++){
 			for(int y = idToY(currentNode.getId()) - 1; 
-					y < idToY(currentNode.getId()) - 1 + 2; y++){
+					y < idToY(currentNode.getId()) - 1 + ROBOT_HEIGHT; y++){
 				if(isOutBoundary(x,y) || 
 						mapExplored.get(XYToId(x,y)) != Movable.GRID_TYPE.OPEN_SPACE)
 					traversable = false;
@@ -118,9 +119,10 @@ public class ShortestPath extends Movable {
 		traversable = true;
 		int bottomId = XYToId( idToX(currentNode.getId()),
 				idToY(currentNode.getId()) + 1 );
-		for(int x = idToX(currentNode.getId()); x < idToX(currentNode.getId()) + 2; x++){
+		for(int x = idToX(currentNode.getId()); 
+				x < idToX(currentNode.getId()) + ROBOT_WIDTH; x++){
 			for(int y = idToY(currentNode.getId()) + 1; 
-					y < idToY(currentNode.getId()) + 1 + 2; y++){
+					y < idToY(currentNode.getId()) + 1 + ROBOT_HEIGHT; y++){
 				if(isOutBoundary(x,y) || 
 						mapExplored.get(XYToId(x,y)) != Movable.GRID_TYPE.OPEN_SPACE)
 					traversable = false;
@@ -139,8 +141,9 @@ public class ShortestPath extends Movable {
 		int leftId = XYToId( idToX(currentNode.getId()) - 1,
 				idToY(currentNode.getId()) );
 		for(int x = idToX(currentNode.getId()) - 1;
-				x < idToX(currentNode.getId()) - 1 + 2; x++){
-			for(int y = idToY(currentNode.getId()); y < idToY(currentNode.getId()) + 2; y++){
+				x < idToX(currentNode.getId()) - 1 + ROBOT_WIDTH; x++){
+			for(int y = idToY(currentNode.getId()); 
+					y < idToY(currentNode.getId()) + ROBOT_HEIGHT; y++){
 				if(isOutBoundary(x,y) || 
 						mapExplored.get(XYToId(x,y)) != Movable.GRID_TYPE.OPEN_SPACE)
 					traversable = false;
@@ -159,8 +162,9 @@ public class ShortestPath extends Movable {
 		int rightId = XYToId( idToX(currentNode.getId()) + 1,
 				idToY(currentNode.getId()) );
 		for(int x = idToX(currentNode.getId()) + 1;
-				x < idToX(currentNode.getId()) + 1 + 2; x++){
-			for(int y = idToY(currentNode.getId());	y < idToY(currentNode.getId()) + 2; y++){
+				x < idToX(currentNode.getId()) + 1 + ROBOT_WIDTH; x++){
+			for(int y = idToY(currentNode.getId());	
+					y < idToY(currentNode.getId()) + ROBOT_HEIGHT; y++){
 				if(isOutBoundary(x,y) || 
 						mapExplored.get(XYToId(x,y)) != Movable.GRID_TYPE.OPEN_SPACE)
 					traversable = false;

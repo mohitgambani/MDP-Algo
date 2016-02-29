@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import io.NetworkIOManager;
+
 public class MainControl {
 	
 	public static MainWindow mainWindow;
@@ -29,6 +31,8 @@ public class MainControl {
 					mainWindow.setVisible(true);
 					MapManager.drawStartZone();
 					MapManager.drawGoalZone();
+//					NetworkIOManager.openConnection();
+//					NetworkIOManager.closeConnection();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

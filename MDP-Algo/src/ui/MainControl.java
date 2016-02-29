@@ -26,23 +26,13 @@ public class MainControl {
 		}
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					mainWindow = new MainWindow();
-					mainWindow.setVisible(true);
-					MapManager.drawStartZone();
-					MapManager.drawGoalZone();
-//					Thread thread  = new Thread(){
-//						@Override
-//						public void run() {
-//							NetworkIOManager.continuouslyReading();
-//						}
-//					};
-//					thread.start();
-//					NetworkIOManager.openConnection();
-//					NetworkIOManager.closeConnection();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				mainWindow = new MainWindow();
+				mainWindow.setVisible(true);
+				MapManager.drawStartZone();
+				MapManager.drawGoalZone();
+				
+				NetworkIOManager.openConnection();
+				NetworkIOManager.continuouslyReading();
 			}
 		});
 	}

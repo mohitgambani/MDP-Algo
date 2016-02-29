@@ -36,12 +36,6 @@ public abstract class Movable {
 	
 	public abstract int movesToStartZone();
 	
-	/***
-	 * Decide when to get sensing information
-	 */
-	public void sense(){
-		RobotManager.sense();
-	}
 
 	
 	public int idToX(int id) {
@@ -69,6 +63,7 @@ public abstract class Movable {
 	public boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}
+	
 	public int numOfExploredSpace(){
 		return mapExplored.size();
 	}

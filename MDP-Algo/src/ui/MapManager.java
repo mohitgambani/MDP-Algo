@@ -46,7 +46,7 @@ public class MapManager {
 		}
 	}
 
-	protected static void initialiseRobot(int robotPosition) {
+	public static void initialiseRobot(int robotPosition) {
 
 		if (idToX(robotPosition) <= MAP_WIDTH / 2 - RobotManager.getRobotWidth()) {
 			setRobot(robotPosition);

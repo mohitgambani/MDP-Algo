@@ -10,6 +10,7 @@ import javax.swing.Timer;
 
 import algorithm.Movable.GRID_TYPE;
 import io.FileIOManager;
+import io.NetworkIOManager;
 import ui.MainControl;
 import ui.MapManager;
 
@@ -34,7 +35,7 @@ public class RobotManager {
 
 	private static int positionX, positionY;
 	private static Enum<ORIENTATION> orientation;
-	private static Movable moveStrategy = new FloodFillMove();
+	private static Movable moveStrategy = null;
 
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
@@ -44,6 +45,12 @@ public class RobotManager {
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
 
+	/***
+	 * To set the robot's position, without drawing it
+	 * @param posX
+	 * @param posY
+	 * @param ori
+	 */
 	public static void setRobot(int posX, int posY, Enum<ORIENTATION> ori) {
 		int x, y;
 		boolean failed = false;
@@ -95,6 +102,7 @@ public class RobotManager {
 			}
 		});
 		addRobotToMapExplored();
+		moveStrategy = new FloodFillMove();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -102,7 +110,10 @@ public class RobotManager {
 				int counter = 0;
 				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
 				do {
+					sense();
 					nextMove = moveStrategy.nextMove();
+							NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+//							pause();
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
 					} else if (nextMove == Movable.MOVE.WEST) {
@@ -120,6 +131,7 @@ public class RobotManager {
 					} else if (nextMove == Movable.MOVE.TURN_SOUTH) {
 						headSouth();
 					}
+					
 					++counter;
 					displayExplorationPercentage();
 					displayMoves(nextMove, counter);
@@ -142,6 +154,7 @@ public class RobotManager {
 				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
 				do {
 					nextMove = moveStrategy.nextMove();
+					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
 					} else if (nextMove == Movable.MOVE.WEST) {
@@ -202,6 +215,76 @@ public class RobotManager {
 		unsetRobot();
 		setRobot(positionX, positionY + 1, ORIENTATION.SOUTH);
 		headSouth();
+	}
+	
+	private static String convertMove(Enum<Movable.MOVE> move){
+		String result = "STOP";
+		if(move == Movable.MOVE.EAST){
+			if(orientation == ORIENTATION.NORTH){
+				result = "E";
+			}else if(orientation == ORIENTATION.SOUTH){
+				result = "Q";
+			}else if(orientation == ORIENTATION.WEST){
+				result = "B";
+			}else{
+				result = "F";
+			}
+		}else if(move == Movable.MOVE.TURN_EAST){
+			if(orientation == ORIENTATION.NORTH){
+				result = "R";
+			}else if(orientation == ORIENTATION.SOUTH){
+				result = "L";
+			}
+		}else if(move == Movable.MOVE.NORTH){
+			if(orientation == ORIENTATION.EAST){
+				result = "Q";
+			}else if(orientation == ORIENTATION.SOUTH){
+				result = "B";
+			}else if(orientation == ORIENTATION.WEST){
+				result = "E";
+			}else{
+				result = "F";
+			}
+		}else if(move == Movable.MOVE.TURN_NORTH){
+			if(orientation == ORIENTATION.EAST){
+				result = "L";
+			}else if(orientation == ORIENTATION.WEST){
+				result = "R";
+			}
+		}else if(move == Movable.MOVE.SOUTH){
+			if(orientation == ORIENTATION.EAST){
+				result = "E";
+			}else if(orientation == ORIENTATION.NORTH){
+				result = "B";
+			}else if(orientation == ORIENTATION.WEST){
+				result = "Q";
+			}else{
+				result = "F";
+			}
+		}else if(move == Movable.MOVE.TURN_SOUTH){
+			if(orientation == ORIENTATION.EAST){
+				result = "R";
+			}else if(orientation == ORIENTATION.WEST){
+				result = "L";
+			}
+		}else if(move == Movable.MOVE.WEST){
+			if(orientation == ORIENTATION.EAST){
+				result = "B";
+			}else if(orientation == ORIENTATION.NORTH){
+				result = "Q";
+			}else if(orientation == ORIENTATION.SOUTH){
+				result = "E";
+			}else{
+				result = "F";
+			}
+		}else if(move == Movable.MOVE.TURN_WEST){
+			if(orientation == ORIENTATION.NORTH){
+				result = "L";
+			}else if(orientation == ORIENTATION.SOUTH){
+				result = "R";
+			}
+		}
+		return result;
 	}
 
 	public static void sense() {
@@ -434,13 +517,11 @@ public class RobotManager {
 	}
 
 	private static void addRobotToMapExplored() {
-
 		int x, y;
 		for (x = positionX; x < ROBOT_WIDTH; ++x) {
 			for (y = positionY; y < ROBOT_HEIGHT; ++y) {
 				MapManager.setRobotMapOpenSpace(x, y);
 				MapManager.setRobotMapExplored(x, y);
-				moveStrategy.getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 			}
 		}
 	}
@@ -459,6 +540,45 @@ public class RobotManager {
 
 	public static void setMapExplored(Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored) {
 		RobotManager.mapExplored = mapExplored;
+	}
+	
+	private static void pause() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
+	
+	private static int idToX(int id) {
+		return id % MAP_WIDTH;
+	}
+
+	private static int idToY(int id) {
+		return id / MAP_WIDTH;
+	}
+	
+	public static void initialiseRobot(String content){
+		int robotIndex = Integer.parseInt(content.substring(0, 3));
+		positionX = idToX(robotIndex) - 1;
+		positionY = idToY(robotIndex) - 1;
+		MapManager.initialiseRobot(XYToId(positionX, positionY));
+		
+		int robotOrientation = Integer.parseInt(content.substring(3, 4));
+		switch (robotOrientation) {
+		case 0:
+			headNorth();
+			break;
+		case 1:
+			headEast();
+			break;
+		case 2:
+			headSouth();
+			break;
+		case 3:
+			headWest();
+			break;
+		}
 	}
 
 }

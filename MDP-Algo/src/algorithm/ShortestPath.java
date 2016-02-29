@@ -17,7 +17,8 @@ public class ShortestPath extends Movable {
 	public ShortestPath(){
 		super();
 		mapExplored = RobotManager.getMapExplored();
-		start = new Node(0);
+		start = new Node(XYToId(RobotManager.getRobotPositionX(), 
+				RobotManager.getRobotPositionY()));
 		goal = new Node(278);
 		start.setGCost(0);
 		start.setHCost(distanceToGoal(start.getId()));

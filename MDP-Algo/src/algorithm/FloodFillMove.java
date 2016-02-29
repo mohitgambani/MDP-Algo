@@ -141,7 +141,10 @@ public class FloodFillMove extends Movable {
 				count++;
 			}
 			if(count == 1){
-				return listOfBackTrackingMoves.pop();
+				nextMove = listOfBackTrackingMoves.pop();
+				if(nextMove == Movable.MOVE.STOP)
+					count = 0;
+				return nextMove;
 			}
 		}
 
@@ -151,7 +154,10 @@ public class FloodFillMove extends Movable {
 				count++;
 			}
 			if(count == 1){
-				return listOfBackTrackingMoves.pop();
+				nextMove = listOfBackTrackingMoves.pop();
+				if(nextMove == Movable.MOVE.STOP)
+					count = 0;
+				return nextMove;
 			}
 		}
 			
@@ -196,4 +202,5 @@ public class FloodFillMove extends Movable {
 			}
 		}
 	}
+
 }

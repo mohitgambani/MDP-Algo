@@ -76,4 +76,5 @@ public abstract class Movable {
 	public void setConditionalStop(){
 		conditionalStop = true;
 	}
+	
 }

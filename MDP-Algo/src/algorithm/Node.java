@@ -9,7 +9,7 @@ public class Node {
 	private int h_cost;
 	private int f_cost;
 	Node parent;
-	Enum<MOVE> move;
+	MOVE move;
 
 	public Node(int id){
 		this.id = id;
@@ -55,11 +55,11 @@ public class Node {
 		this.parent = parent;
 	}
 	
-	public Enum<MOVE> getMove() {
+	public MOVE getMove() {
 		return move;
 	}
 
-	public void setMove(Enum<MOVE> move) {
+	public void setMove(MOVE move) {
 		this.move = move;
 	}
 }

@@ -11,12 +11,12 @@ public class ShortestPath extends Movable {
 	
 	private ArrayList<Node> open = new ArrayList<Node>();
 	private ArrayList<Node> closed = new ArrayList<Node>();
-	private Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored;
-	private Stack<Enum<MOVE>> listOfMoves = new Stack<Enum<MOVE>>();
+	private Hashtable<Integer, GRID_TYPE> mapExplored;
+	private Stack<MOVE> listOfMoves = new Stack<MOVE>();
 	
-	public ShortestPath(){
+	public ShortestPath(Hashtable<Integer, GRID_TYPE> mapExplored){
 		super();
-		mapExplored = RobotManager.getMapExplored();
+		this.mapExplored = mapExplored;
 		start = new Node(XYToId(RobotManager.getRobotPositionX(), 
 				RobotManager.getRobotPositionY()));
 		goal = new Node(XYToId(MAP_WIDTH - 2, MAP_HEIGHT - 2));
@@ -28,7 +28,7 @@ public class ShortestPath extends Movable {
 	}
 	
 	public ShortestPath(int startPos, int goalPos,
-			Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored){
+			Hashtable<Integer, GRID_TYPE> mapExplored){
 		super();
 		this.mapExplored = mapExplored;
 		start = new Node(startPos);
@@ -214,7 +214,7 @@ public class ShortestPath extends Movable {
 		}
 	}
 	
-	public Enum<MOVE> nextMove(){
+	public MOVE nextMove(){
 		return listOfMoves.pop();
 	}
 
@@ -240,7 +240,7 @@ public class ShortestPath extends Movable {
 		this.goal.setId(id);
 	}
 
-	public Stack<Enum<MOVE>> getListOfMoves() {
+	public Stack<MOVE> getListOfMoves() {
 		return listOfMoves;
 	}
 

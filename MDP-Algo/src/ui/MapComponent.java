@@ -22,7 +22,7 @@ public class MapComponent extends JButton {
 	public MapComponent(int id) {
 		super();
 		this.id = id;
-		setOpenSpace();
+		reset();
 		if (id >= 0) {
 			addActionListener(new MyActionListener());
 			addMouseListener(new MyMouseListener());
@@ -99,10 +99,6 @@ public class MapComponent extends JButton {
 
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	public boolean isObstacle() {
 		return isObstacle;
 	}
@@ -111,12 +107,17 @@ public class MapComponent extends JButton {
 		isObstacle = true;
 		setBackground(Color.BLACK);
 	}
+	
+	public void unsetObstacle() {
+		reset();
+	}
 
 	public boolean isStartZone() {
 		return isStartZone;
 	}
 
 	public void setStartZone() {
+		reset();
 		isStartZone = true;
 		setBackground(Color.BLUE);
 	}
@@ -126,6 +127,7 @@ public class MapComponent extends JButton {
 	}
 
 	public void setGoalZone() {
+		reset();
 		isGoalZone = true;
 		setBackground(Color.RED);
 	}
@@ -134,28 +136,29 @@ public class MapComponent extends JButton {
 		return isRobot;
 	}
 
-	public void setIsRobot() {
+	public void setRobot() {
 		isRobot = true;
 		setBackground(Color.GREEN);
 	}
 	
-	public void setIsExplored(){
+	public void setExplored(){
+		reset();
 		setBackground(Color.YELLOW);
 	}
 
-	public void unSetIsRobot() {
+	public void unsetRobot() {
 		isRobot = false;
 		if (isStartZone) {
 			setStartZone();
 		} else if (isGoalZone) {
 			setGoalZone();
 		} else {
-			setOpenSpace();
+			reset();
 		}
 	}
 
-	public void setOpenSpace() {
-		isObstacle = isStartZone = isRobot = isGoalZone = false;
+	public void reset() {
+		isObstacle = isRobot =  isStartZone = isGoalZone= false;
 		setBackground(Color.WHITE);
 	}
 	
@@ -163,11 +166,6 @@ public class MapComponent extends JButton {
 	public void setRobotHead() {
 		isRobot = true;
 		setBackground(Color.MAGENTA);
-	}
-
-	@Override
-	public String toString() {
-		return id + "";
 	}
 
 }

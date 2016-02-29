@@ -10,11 +10,9 @@ import java.util.Stack;
 public class FloodFillMove extends Movable {
 
 	private ArrayList<Integer> mapTraversed;
-
-
 	private Deque<MOVE> callStack;
 
-	private static Stack<Enum<MOVE>> listOfBackTrackingMoves = new Stack<Enum<MOVE>>();
+	private static Stack<MOVE> listOfBackTrackingMoves = new Stack<MOVE>();
 	private static int count = 0;
 
 	public FloodFillMove() {
@@ -24,8 +22,8 @@ public class FloodFillMove extends Movable {
 		addRobotToMapExplored();
 	}
 
-	private Enum<MOVE> backTrack() {
-		Enum<MOVE> nextMove = MOVE.STOP;
+	private MOVE backTrack() {
+		MOVE nextMove = MOVE.STOP;
 
 		if (callStack.isEmpty())
 			return nextMove;
@@ -44,14 +42,14 @@ public class FloodFillMove extends Movable {
 		return nextMove;
 	}
 
-	private Enum<MOVE> attemptEast() {
+	private MOVE attemptEast() {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (x = RobotManager.getRobotPositionX() + RobotManager.getRobotWidth(), y = RobotManager
-				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.getRobotHeight(); ++y) {
+		for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH, y = RobotManager
+				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -72,14 +70,14 @@ public class FloodFillMove extends Movable {
 		return MOVE.NO_MOVE;
 	}
 
-	private Enum<MOVE> attemptNorth() {
+	private MOVE attemptNorth() {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
 		boolean explored = true;
 
 		for (y = RobotManager.getRobotPositionY() - 1, x = RobotManager
-				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.getRobotWidth(); ++x) {
+				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -100,14 +98,14 @@ public class FloodFillMove extends Movable {
 		return MOVE.NO_MOVE;
 	}
 
-	private Enum<MOVE> attemptSouth() {
+	private MOVE attemptSouth() {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (y = RobotManager.getRobotPositionY() + RobotManager.getRobotHeight(), x = RobotManager
-				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.getRobotWidth(); ++x) {
+		for (y = RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT, x = RobotManager
+				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -128,14 +126,14 @@ public class FloodFillMove extends Movable {
 		return MOVE.NO_MOVE;
 	}
 
-	private Enum<MOVE> attemptWest() {
+	private MOVE attemptWest() {
 		int x, y;
 		boolean traversed = true;
 		boolean noMove = false;
 		boolean explored = true;
 
 		for (x = RobotManager.getRobotPositionX() - 1, y = RobotManager
-				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.getRobotHeight(); ++y) {
+				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -157,8 +155,8 @@ public class FloodFillMove extends Movable {
 	}
 
 	@Override
-	public Enum<MOVE> nextMove() {
-		Enum<MOVE> nextMove = MOVE.STOP;
+	public MOVE nextMove() {
+		MOVE nextMove = MOVE.STOP;
 
 		if (isConditionalStop()) {
 			if (count == 0) {
@@ -218,9 +216,9 @@ public class FloodFillMove extends Movable {
 	private void addRobotToTraversed() {
 		int x, y;
 		for (x = RobotManager.getRobotPositionX(); x < RobotManager.getRobotPositionX()
-				+ RobotManager.getRobotWidth(); ++x) {
+				+ RobotManager.ROBOT_WIDTH; ++x) {
 			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
-					+ RobotManager.getRobotHeight(); ++y) {
+					+ RobotManager.ROBOT_HEIGHT; ++y) {
 				if (!mapTraversed.contains(XYToId(x, y))) {
 					mapTraversed.add(XYToId(x, y));
 				}

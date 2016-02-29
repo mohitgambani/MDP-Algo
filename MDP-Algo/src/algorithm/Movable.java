@@ -2,24 +2,21 @@ package algorithm;
 
 import java.util.Hashtable;
 
+import ui.MapManager;
+
 
 public abstract class Movable {
 	
-	public final int MAP_WIDTH = 20;
-	public final int MAP_HEIGHT = 15;
-	public final int ROBOT_WIDTH = 2;
-	public final int ROBOT_HEIGHT = 2;
-	
-//	public final int START_X = 0;
-//	public final int START_Y = 0;
-//	public final int END_X = START_X + MAP_WIDTH - 1;
-//	public final int END_Y = START_Y + MAP_HEIGHT - 1;
+	public final int MAP_WIDTH = MapManager.MAP_WIDTH;
+	public final int MAP_HEIGHT = MapManager.MAP_HEIGHT;
+	public final int ROBOT_WIDTH = RobotManager.ROBOT_WIDTH;
+	public final int ROBOT_HEIGHT = RobotManager.ROBOT_HEIGHT;
 	
 	private boolean conditionalStop;
-	private Hashtable<Integer, Enum<GRID_TYPE>> mapExplored;
+	private Hashtable<Integer, GRID_TYPE> mapExplored;
 	
 	public Movable(){
-		mapExplored = new Hashtable<Integer, Enum<GRID_TYPE>>();
+		mapExplored = new Hashtable<Integer, GRID_TYPE>();
 		conditionalStop = false;
 	}
 	
@@ -32,7 +29,7 @@ public abstract class Movable {
 	}
 	
 	
-	public abstract Enum<MOVE> nextMove();
+	public abstract MOVE nextMove();
 	
 	public abstract int movesToStartZone();
 	
@@ -50,16 +47,17 @@ public abstract class Movable {
 		return y * MAP_WIDTH + x;
 	}
 
-	public void getMapUpdate(int id, Enum<GRID_TYPE> type){
+	public void getMapUpdate(int id, GRID_TYPE type){
 		mapExplored.put(id, type);
 	}
 
-	public Hashtable<Integer, Enum<GRID_TYPE>> getMapExplored(){
+	public Hashtable<Integer, GRID_TYPE> getMapExplored(){
 		return mapExplored;
 	}
-	public void setMapExplored(Hashtable<Integer, Enum<GRID_TYPE>> map){
+	public void setMapExplored(Hashtable<Integer, GRID_TYPE> map){
 		mapExplored = map;
 	}
+	
 	public boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}

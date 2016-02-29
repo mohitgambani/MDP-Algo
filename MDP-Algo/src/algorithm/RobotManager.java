@@ -9,33 +9,32 @@ import java.util.Hashtable;
 import javax.swing.Timer;
 
 import algorithm.Movable.GRID_TYPE;
+import algorithm.Movable.MOVE;
 import io.FileIOManager;
 import io.NetworkIOManager;
 import ui.MainControl;
 import ui.MapManager;
+import ui.SensorManager;
 
 public class RobotManager {
 
-	public static final int MAP_WIDTH = 20;
-	public static final int MAP_HEIGHT = 15;
+	public static final int MAP_WIDTH = MapManager.MAP_WIDTH;
+	public static final int MAP_HEIGHT = MapManager.MAP_HEIGHT;
 
-	private static final int ROBOT_WIDTH = 3;
-	private static final int ROBOT_HEIGHT = 3;
-
-	private static final int FRONT_SENSING_RANGE = 1;
-	private static final int SIDE_SENSING_RANGE = 1;
+	public static final int ROBOT_WIDTH = 3;
+	public static final int ROBOT_HEIGHT = 3;
 
 	private static int movesPerSecond = 10;
-	
-	private static Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored;
 
 	public static enum ORIENTATION {
 		NORTH, SOUTH, EAST, WEST
 	}
 
 	private static int positionX, positionY;
-	private static Enum<ORIENTATION> orientation;
-	private static Movable moveStrategy = null;
+	private static ORIENTATION orientation;
+	
+	private static Movable explorationStrategy = null;
+	private static Movable fastestRunStrategy = null;
 
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
@@ -47,14 +46,15 @@ public class RobotManager {
 
 	/***
 	 * To set the robot's position, without drawing it
+	 * 
 	 * @param posX
 	 * @param posY
 	 * @param ori
 	 */
-	public static void setRobot(int posX, int posY, Enum<ORIENTATION> ori) {
+	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		int x, y;
 		boolean failed = false;
-
+		
 		for (x = posX; x < posX + ROBOT_WIDTH && !failed; ++x) {
 			for (y = posY; y < posY + ROBOT_HEIGHT && !failed; ++y) {
 				if (isOutBoundary(x, y) || MapManager.isObstacle(x, y)) {
@@ -67,12 +67,26 @@ public class RobotManager {
 			positionX = posX;
 			positionY = posY;
 			orientation = ori;
+			switch (ori) {
+			case NORTH:
+				headNorth();
+				break;
+			case SOUTH:
+				headSouth();
+				break;
+			case EAST:
+				headEast();
+				break;
+			case WEST:
+				headWest();
+				break;
+			}
 			MainControl.mainWindow.setRobotPosition(posX + "," + posY);
 		}
 	}
 
 	private static void unsetRobot() {
-		MapManager.unSetRobot();
+		MapManager.unsetRobot();
 	}
 
 	public static int getRobotPositionX() {
@@ -83,78 +97,83 @@ public class RobotManager {
 		return positionY;
 	}
 
-	public static Enum<ORIENTATION> getRobotOrientation() {
+	public static ORIENTATION getRobotOrientation() {
 		return orientation;
 	}
 
 	public static void startExploration() {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		startTime = System.currentTimeMillis();
+		explorationStrategy = new FloodFillMove();
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timeElapsed = System.currentTimeMillis() - startTime;
-				if (timeElapsed + Math.ceil(1.0 * moveStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
+				if (timeElapsed + Math.ceil(1.0 * explorationStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
 						|| getPercentageExplored() >= percentageLimit)
-					moveStrategy.setConditionalStop();
+					explorationStrategy.setConditionalStop();
 				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
 						timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
-		addRobotToMapExplored();
-		moveStrategy = new FloodFillMove();
+		addInitialRobotToMapExplored();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
 				timer.start();
 				int counter = 0;
-				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
+				MOVE nextMove = MOVE.STOP;
 				do {
 					sense();
-					nextMove = moveStrategy.nextMove();
-							NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-//							pause();
-					if (nextMove == Movable.MOVE.EAST) {
+					nextMove = explorationStrategy.nextMove();
+					switch (nextMove) {
+					case EAST:
 						moveEast();
-					} else if (nextMove == Movable.MOVE.WEST) {
-						moveWest();
-					} else if (nextMove == Movable.MOVE.NORTH) {
-						moveNorth();
-					} else if (nextMove == Movable.MOVE.SOUTH) {
-						moveSouth();
-					} else if (nextMove == Movable.MOVE.TURN_EAST) {
+						break;
+					case TURN_EAST:
 						headEast();
-					} else if (nextMove == Movable.MOVE.TURN_WEST) {
-						headWest();
-					} else if (nextMove == Movable.MOVE.TURN_NORTH) {
-						headNorth();
-					} else if (nextMove == Movable.MOVE.TURN_SOUTH) {
+						break;
+					case SOUTH:
+						moveSouth();
+						break;
+					case TURN_SOUTH:
 						headSouth();
+						break;
+					case NORTH:
+						moveNorth();
+						break;
+					case TURN_NORTH:
+						headNorth();
+						break;
+					case WEST:
+						moveWest();
+						break;
+					case TURN_WEST:
+						headWest();
+					default:
+						break;
 					}
-					
 					++counter;
 					displayExplorationPercentage();
 					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
-				setMapExplored(moveStrategy.getMapExplored());
 				writeMap();
 			}
 		};
 		thread.start();
-
 	}
-	
+
 	public static void startFastestRun() {
-		moveStrategy = new ShortestPath();
+		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
 				int counter = 0;
-				Enum<Movable.MOVE> nextMove = Movable.MOVE.STOP;
+				MOVE nextMove = MOVE.STOP;
 				do {
-					nextMove = moveStrategy.nextMove();
-					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+					nextMove = fastestRunStrategy.nextMove();
+//					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
 					} else if (nextMove == Movable.MOVE.WEST) {
@@ -163,7 +182,7 @@ public class RobotManager {
 						moveNorth();
 					} else if (nextMove == Movable.MOVE.SOUTH) {
 						moveSouth();
-					} 
+					}
 					++counter;
 					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
@@ -171,7 +190,6 @@ public class RobotManager {
 		};
 		thread.start();
 	}
-
 
 	private static void headWest() {
 		orientation = ORIENTATION.WEST;
@@ -196,91 +214,87 @@ public class RobotManager {
 	private static void moveWest() {
 		unsetRobot();
 		setRobot(positionX - 1, positionY, ORIENTATION.WEST);
-		headWest();
 	}
 
 	private static void moveEast() {
 		unsetRobot();
 		setRobot(positionX + 1, positionY, ORIENTATION.EAST);
-		headEast();
 	}
 
 	private static void moveNorth() {
 		unsetRobot();
 		setRobot(positionX, positionY - 1, ORIENTATION.NORTH);
-		headNorth();
 	}
 
 	private static void moveSouth() {
 		unsetRobot();
 		setRobot(positionX, positionY + 1, ORIENTATION.SOUTH);
-		headSouth();
 	}
-	
-	private static String convertMove(Enum<Movable.MOVE> move){
+
+	private static String convertMove(Enum<Movable.MOVE> move) {
 		String result = "STOP";
-		if(move == Movable.MOVE.EAST){
-			if(orientation == ORIENTATION.NORTH){
+		if (move == Movable.MOVE.EAST) {
+			if (orientation == ORIENTATION.NORTH) {
 				result = "E";
-			}else if(orientation == ORIENTATION.SOUTH){
+			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "Q";
-			}else if(orientation == ORIENTATION.WEST){
+			} else if (orientation == ORIENTATION.WEST) {
 				result = "B";
-			}else{
+			} else {
 				result = "F";
 			}
-		}else if(move == Movable.MOVE.TURN_EAST){
-			if(orientation == ORIENTATION.NORTH){
+		} else if (move == Movable.MOVE.TURN_EAST) {
+			if (orientation == ORIENTATION.NORTH) {
 				result = "R";
-			}else if(orientation == ORIENTATION.SOUTH){
+			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "L";
 			}
-		}else if(move == Movable.MOVE.NORTH){
-			if(orientation == ORIENTATION.EAST){
+		} else if (move == Movable.MOVE.NORTH) {
+			if (orientation == ORIENTATION.EAST) {
 				result = "Q";
-			}else if(orientation == ORIENTATION.SOUTH){
+			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "B";
-			}else if(orientation == ORIENTATION.WEST){
+			} else if (orientation == ORIENTATION.WEST) {
 				result = "E";
-			}else{
+			} else {
 				result = "F";
 			}
-		}else if(move == Movable.MOVE.TURN_NORTH){
-			if(orientation == ORIENTATION.EAST){
+		} else if (move == Movable.MOVE.TURN_NORTH) {
+			if (orientation == ORIENTATION.EAST) {
 				result = "L";
-			}else if(orientation == ORIENTATION.WEST){
+			} else if (orientation == ORIENTATION.WEST) {
 				result = "R";
 			}
-		}else if(move == Movable.MOVE.SOUTH){
-			if(orientation == ORIENTATION.EAST){
+		} else if (move == Movable.MOVE.SOUTH) {
+			if (orientation == ORIENTATION.EAST) {
 				result = "E";
-			}else if(orientation == ORIENTATION.NORTH){
+			} else if (orientation == ORIENTATION.NORTH) {
 				result = "B";
-			}else if(orientation == ORIENTATION.WEST){
+			} else if (orientation == ORIENTATION.WEST) {
 				result = "Q";
-			}else{
+			} else {
 				result = "F";
 			}
-		}else if(move == Movable.MOVE.TURN_SOUTH){
-			if(orientation == ORIENTATION.EAST){
+		} else if (move == Movable.MOVE.TURN_SOUTH) {
+			if (orientation == ORIENTATION.EAST) {
 				result = "R";
-			}else if(orientation == ORIENTATION.WEST){
+			} else if (orientation == ORIENTATION.WEST) {
 				result = "L";
 			}
-		}else if(move == Movable.MOVE.WEST){
-			if(orientation == ORIENTATION.EAST){
+		} else if (move == Movable.MOVE.WEST) {
+			if (orientation == ORIENTATION.EAST) {
 				result = "B";
-			}else if(orientation == ORIENTATION.NORTH){
+			} else if (orientation == ORIENTATION.NORTH) {
 				result = "Q";
-			}else if(orientation == ORIENTATION.SOUTH){
+			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "E";
-			}else{
+			} else {
 				result = "F";
 			}
-		}else if(move == Movable.MOVE.TURN_WEST){
-			if(orientation == ORIENTATION.NORTH){
+		} else if (move == Movable.MOVE.TURN_WEST) {
+			if (orientation == ORIENTATION.NORTH) {
 				result = "L";
-			}else if(orientation == ORIENTATION.SOUTH){
+			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "R";
 			}
 		}
@@ -288,159 +302,38 @@ public class RobotManager {
 	}
 
 	public static void sense() {
-		if (orientation == ORIENTATION.EAST) {
-			senseEast();
-			 senseNorth();
-			 senseSouth();
-		} else if (orientation == ORIENTATION.NORTH) {
-			senseNorth();
-			 senseEast();
-			 senseWest();
-		} else if (orientation == ORIENTATION.SOUTH) {
-			senseSouth();
-			 senseEast();
-			 senseWest();
-		} else {
-			senseWest();
-			 senseNorth();
-			 senseSouth();
+		Hashtable<Integer, Movable.GRID_TYPE> updates = new Hashtable<Integer, Movable.GRID_TYPE>();
+		switch (orientation) {
+		case NORTH:
+			updates.putAll(SensorManager.senseNorth());
+			updates.putAll(SensorManager.senseEast());
+			updates.putAll(SensorManager.senseWest());
+			break;
+		case SOUTH:
+			updates.putAll(SensorManager.senseSouth());
+			updates.putAll(SensorManager.senseEast());
+			updates.putAll(SensorManager.senseWest());
+			break;
+		case EAST:
+			updates.putAll(SensorManager.senseEast());
+			updates.putAll(SensorManager.senseNorth());
+			updates.putAll(SensorManager.senseSouth());
+			break;
+		case WEST:
+			updates.putAll(SensorManager.senseWest());
+			updates.putAll(SensorManager.senseNorth());
+			updates.putAll(SensorManager.senseSouth());
+			break;
 		}
-	}
-
-	public static void senseNorth() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
-		int x, y;
-		int sensingRange;
-		boolean stop = false;
-
-		if (orientation == ORIENTATION.NORTH || orientation == ORIENTATION.SOUTH) {
-			sensingRange = FRONT_SENSING_RANGE;
-		} else {
-			sensingRange = SIDE_SENSING_RANGE;
-		}
-		for (x = positionX + ROBOT_WIDTH - 1; x >= positionX; --x) {
-			for (y = positionY - 1; y > positionY - 1 - sensingRange && !stop; --y) {
-				if (isOutBoundary(x, y)) {
-				} else if (MapManager.isObstacle(x, y)) {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
-					MapManager.setRobotMapObstacle(x, y);
-					stop = true;
-				} else {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OPEN_SPACE);
-					MapManager.setRobotMapOpenSpace(x, y);
-					MapManager.setRobotMapExplored(x, y);
-				}
-			}
-			stop = false;
-		}
-		Enumeration<Integer> keys = results.keys();
+		Enumeration<Integer> keys = updates.keys();
 		while (keys.hasMoreElements()) {
 			Integer key = keys.nextElement();
-			moveStrategy.getMapUpdate(key, results.get(key));
-		}
-	}
-
-	public static void senseSouth() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
-		int x, y;
-		int sensingRange;
-		boolean stop = false;
-
-		if (orientation == ORIENTATION.NORTH || orientation == ORIENTATION.SOUTH) {
-			sensingRange = FRONT_SENSING_RANGE;
-		} else {
-			sensingRange = SIDE_SENSING_RANGE;
-		}
-		for (x = positionX + ROBOT_WIDTH - 1; x >= positionX; --x) {
-			for (y = positionY + ROBOT_HEIGHT; y < positionY + ROBOT_HEIGHT + sensingRange && !stop; ++y) {
-				if (isOutBoundary(x, y)) {
-				} else if (MapManager.isObstacle(x, y)) {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
-					MapManager.setRobotMapObstacle(x, y);
-					stop = true;
-				} else {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OPEN_SPACE);
-					MapManager.setRobotMapOpenSpace(x, y);
-					MapManager.setRobotMapExplored(x, y);
-				}
-			}
-			stop = false;
-		}
-		Enumeration<Integer> keys = results.keys();
-		while (keys.hasMoreElements()) {
-			Integer key = keys.nextElement();
-			moveStrategy.getMapUpdate(key, results.get(key));
-		}
-	}
-
-	public static void senseWest() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
-		int x, y;
-		int sensingRange;
-		boolean stop = false;
-
-		if (orientation == ORIENTATION.EAST || orientation == ORIENTATION.WEST) {
-			sensingRange = FRONT_SENSING_RANGE;
-		} else {
-			sensingRange = SIDE_SENSING_RANGE;
-		}
-		for (y = positionY + ROBOT_HEIGHT - 1; y >= positionY; --y) {
-			for (x = positionX - 1; x > positionX - 1 - sensingRange && !stop; --x) {
-				if (isOutBoundary(x, y)) {
-				} else if (MapManager.isObstacle(x, y)) {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
-					MapManager.setRobotMapObstacle(x, y);
-					stop = true;
-				} else {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OPEN_SPACE);
-					MapManager.setRobotMapOpenSpace(x, y);
-					MapManager.setRobotMapExplored(x, y);
-				}
-			}
-			stop = false;
-		}
-		Enumeration<Integer> keys = results.keys();
-		while (keys.hasMoreElements()) {
-			Integer key = keys.nextElement();
-			moveStrategy.getMapUpdate(key, results.get(key));
-		}
-	}
-
-	public static void senseEast() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = new Hashtable<Integer, Movable.GRID_TYPE>();
-		int x, y;
-		int sensingRange;
-		boolean stop = false;
-
-		if (orientation == ORIENTATION.EAST || orientation == ORIENTATION.WEST) {
-			sensingRange = FRONT_SENSING_RANGE;
-		} else {
-			sensingRange = SIDE_SENSING_RANGE;
-		}
-		for (y = positionY + ROBOT_HEIGHT - 1; y >= positionY; --y) {
-			for (x = positionX + ROBOT_WIDTH; x < positionX + ROBOT_WIDTH + sensingRange && !stop; ++x) {
-				if (isOutBoundary(x, y)) {
-				} else if (MapManager.isObstacle(x, y)) {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OBSTACLE);
-					MapManager.setRobotMapObstacle(x, y);
-					stop = true;
-				} else {
-					results.put(XYToId(x, y), Movable.GRID_TYPE.OPEN_SPACE);
-					MapManager.setRobotMapOpenSpace(x, y);
-					MapManager.setRobotMapExplored(x, y);
-				}
-			}
-			stop = false;
-		}
-		Enumeration<Integer> keys = results.keys();
-		while (keys.hasMoreElements()) {
-			Integer key = keys.nextElement();
-			moveStrategy.getMapUpdate(key, results.get(key));
+			explorationStrategy.getMapUpdate(key, updates.get(key));
 		}
 	}
 
 	private static void writeMap() {
-		Hashtable<Integer, Enum<GRID_TYPE>> map = moveStrategy.getMapExplored();
+		Hashtable<Integer, GRID_TYPE> map = explorationStrategy.getMapExplored();
 		int index;
 		String fullMapToWrite = "11";
 		String exploredMapToWrite = "";
@@ -458,8 +351,8 @@ public class RobotManager {
 			}
 		}
 		fullMapToWrite += "11";
-		
-		while(exploredMapToWrite.length() % 8 != 0){
+
+		while (exploredMapToWrite.length() % 8 != 0) {
 			exploredMapToWrite += "0";
 		}
 		try {
@@ -471,9 +364,7 @@ public class RobotManager {
 	}
 
 	public static void reset() {
-		setRobot(0, 0, RobotManager.ORIENTATION.EAST);
-		setMapExplored(null);
-		moveStrategy = new FloodFillMove();
+		// setRobot(0, 0, RobotManager.ORIENTATION.EAST);
 		MainControl.mainWindow.setRobotPosition("unknown");
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", 0.0));
@@ -484,24 +375,12 @@ public class RobotManager {
 		MainControl.mainWindow.setFreeOutput(String.format("%d %s\n", counter, nextMove.toString()));
 	}
 
-	public static int getRobotWidth() {
-		return ROBOT_WIDTH;
-	}
-
-	public static int getRobotHeight() {
-		return ROBOT_HEIGHT;
-	}
-
 	protected static void displayExplorationPercentage() {
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", getPercentageExplored()));
 	}
 
 	private static double getPercentageExplored() {
-		return 100.0 * moveStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT);
-	}
-
-	private static boolean isOutBoundary(int x, int y) {
-		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
+		return 100.0 * explorationStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT);
 	}
 
 	protected static int XYToId(int x, int y) {
@@ -516,12 +395,12 @@ public class RobotManager {
 		percentageLimit = pLimit;
 	}
 
-	private static void addRobotToMapExplored() {
+	private static void addInitialRobotToMapExplored() {
 		int x, y;
-		for (x = positionX; x < ROBOT_WIDTH; ++x) {
-			for (y = positionY; y < ROBOT_HEIGHT; ++y) {
-				MapManager.setRobotMapOpenSpace(x, y);
-				MapManager.setRobotMapExplored(x, y);
+		for (x = positionX; x < positionX + ROBOT_WIDTH; ++x) {
+			for (y = positionY; y < positionY + ROBOT_HEIGHT; ++y) {
+				MapManager.setMapExplored(x, y);
+				explorationStrategy.getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 			}
 		}
 	}
@@ -534,22 +413,6 @@ public class RobotManager {
 		movesPerSecond = speed;
 	}
 
-	public static Hashtable<Integer, Enum<Movable.GRID_TYPE>> getMapExplored() {
-		return mapExplored;
-	}
-
-	public static void setMapExplored(Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored) {
-		RobotManager.mapExplored = mapExplored;
-	}
-	
-	private static void pause() {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-	}
-	
 	private static int idToX(int id) {
 		return id % MAP_WIDTH;
 	}
@@ -557,13 +420,17 @@ public class RobotManager {
 	private static int idToY(int id) {
 		return id / MAP_WIDTH;
 	}
-	
-	public static void initialiseRobot(String content){
+
+	public static void initialiseRobot(int posX, int posY) {
+		setRobot(posX, posY, ORIENTATION.EAST);
+	}
+
+	public static void initialiseRobot(String content) {
 		int robotIndex = Integer.parseInt(content.substring(0, 3));
 		positionX = idToX(robotIndex) - 1;
 		positionY = idToY(robotIndex) - 1;
 		MapManager.initialiseRobot(XYToId(positionX, positionY));
-		
+
 		int robotOrientation = Integer.parseInt(content.substring(3, 4));
 		switch (robotOrientation) {
 		case 0:
@@ -580,5 +447,7 @@ public class RobotManager {
 			break;
 		}
 	}
-
+	private static boolean isOutBoundary(int x, int y) {
+		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
+	}
 }

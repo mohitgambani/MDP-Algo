@@ -7,6 +7,8 @@ public abstract class Movable {
 	
 	public final int MAP_WIDTH = 20;
 	public final int MAP_HEIGHT = 15;
+	public final int ROBOT_WIDTH = 2;
+	public final int ROBOT_HEIGHT = 2;
 	
 //	public final int START_X = 0;
 //	public final int START_Y = 0;
@@ -76,4 +78,5 @@ public abstract class Movable {
 	public void setConditionalStop(){
 		conditionalStop = true;
 	}
+	
 }

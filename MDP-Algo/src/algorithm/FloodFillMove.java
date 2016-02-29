@@ -4,6 +4,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Hashtable;
+import java.util.Stack;
+
 
 public class FloodFillMove extends Movable {
 
@@ -14,6 +16,9 @@ public class FloodFillMove extends Movable {
 	private Hashtable<Integer, Enum<Movable.GRID_TYPE>> mapExplored;
 
 	private Deque<MOVE> callStack;
+	
+	private static Stack<Enum<MOVE>> listOfBackTrackingMoves = new Stack<Enum<MOVE>>();
+	private static int count = 0;
 
 	public FloodFillMove() {
 		super();
@@ -130,12 +135,32 @@ public class FloodFillMove extends Movable {
 		robotPosX = RobotManager.getRobotPositionX();
 		robotPosY = RobotManager.getRobotPositionY();
 
-		if (isConditionalStop())
-			return backToStartZone();
+		if (isConditionalStop()){
+			if(count == 0){
+				backToStartZone();
+				count++;
+			}
+			if(count == 1){
+				nextMove = listOfBackTrackingMoves.pop();
+				if(nextMove == Movable.MOVE.STOP)
+					count = 0;
+				return nextMove;
+			}
+		}
 
-		if (getMapExplored().size() == MAP_HEIGHT * MAP_WIDTH)
-			return backToStartZone();
-
+		if (getMapExplored().size() == MAP_HEIGHT * MAP_WIDTH){
+			if(count == 0){
+				backToStartZone();
+				count++;
+			}
+			if(count == 1){
+				nextMove = listOfBackTrackingMoves.pop();
+				if(nextMove == Movable.MOVE.STOP)
+					count = 0;
+				return nextMove;
+			}
+		}
+			
 		sense();
 		addRobotToTraversed();
 		nextMove = attemptEast();
@@ -155,8 +180,11 @@ public class FloodFillMove extends Movable {
 		return nextMove;
 	}
 
-	private Enum<MOVE> backToStartZone() {
-		return backTrack();
+	private void backToStartZone() {
+		ShortestPath moveBack = new ShortestPath(
+				XYToId(RobotManager.getRobotPositionX(), RobotManager.getRobotPositionY()),
+				0, getMapExplored());
+		listOfBackTrackingMoves = moveBack.getListOfMoves();
 	}
 
 	@Override
@@ -174,4 +202,5 @@ public class FloodFillMove extends Movable {
 			}
 		}
 	}
+
 }

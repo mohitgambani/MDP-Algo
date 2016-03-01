@@ -31,8 +31,14 @@ public class MainControl {
 				MapManager.drawStartZone();
 				MapManager.drawGoalZone();
 				
-				NetworkIOManager.openConnection();
-				NetworkIOManager.continuouslyReading();
+				Thread thread = new Thread(){
+					@Override
+					public void run(){
+						NetworkIOManager.openConnection();
+						NetworkIOManager.continuouslyReading();
+					}
+				};
+				thread.start();
 			}
 		});
 	}

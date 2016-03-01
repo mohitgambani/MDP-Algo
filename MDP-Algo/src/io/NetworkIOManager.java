@@ -7,20 +7,25 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import algorithm.RobotManager;
+import ui.MainControl;
 
 public class NetworkIOManager {
 	private static final String HOST = "192.168.5.21";
 	private static final int PORT = 3000;
 	private static Socket socket;
+	private static BufferedReader in;
+	private static PrintWriter out;
 
 	public static void openConnection() {
 		try {
 			socket = new Socket(HOST, PORT);
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream());
 			sendMessage("Hello");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		System.out.println("Connnected to " + HOST);
+		MainControl.mainWindow.setFreeOutput("Connnected to " + HOST + "\n");
 	}
 
 	public static boolean closeConnection() {
@@ -36,43 +41,44 @@ public class NetworkIOManager {
 	public static void sendMessage(String message) {
 		Thread thread = new Thread() {
 			public void run() {
-				try {
-					PrintWriter out = new PrintWriter(socket.getOutputStream());
-					out.print(message);
-					out.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				out.print(message);
+				out.flush();
 			}
 		};
 		thread.start();
 	}
 
 	public static void continuouslyReading() {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					String content = in.readLine();
-					while (content != "$") {
-						if(content.matches("([0-9]+,){5}")){
-							System.out.println("robot readings matched");
-						}else if(content.matches("([0-9]){5}")){
-							RobotManager.initialiseRobot(content);
-						}else if(content.matches("STARTEXP")){
-							RobotManager.startExploration();
-						}else if(content.matches("STARTFAS")){
-							RobotManager.startFastestRun();
-						}
-//						System.out.println(content);
-						content = in.readLine();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		String content = "";
+		do {
+			try {
+				content = in.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		};
-		thread.start();
+			System.out.println(content);
+			if (content.matches("^([0-9]+,){5}$")) {
+				System.out.println("robot readings matched");
+			} else if (content.matches("^([0-9]){5}$")) {
+				RobotManager.initialiseRobot(content);
+			} else if (content.matches("^STARTEXP$")) {
+				Thread thread = new Thread() {
+					@Override
+					public void run() {
+						RobotManager.startExploration();
+					}
+				};
+				thread.start();
+			} else if (content.matches("^STARTFAS$")) {
+				Thread thread = new Thread() {
+					@Override
+					public void run() {
+						RobotManager.startFastestRun();
+					}
+				};
+				thread.start();
+			}
+		} while (content != "$");
 	}
 
 }

@@ -52,7 +52,6 @@ public class RobotManager {
 	 * @param ori
 	 */
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
-
 		unsetRobot();
 		positionX = posX;
 		positionY = posY;
@@ -94,6 +93,7 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		startTime = System.currentTimeMillis();
 		explorationStrategy = new FloodFillMove();
+		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		timer = new Timer(TIMER_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -119,37 +119,37 @@ public class RobotManager {
 					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 					switch (nextMove) {
 					case EAST_R:
-						moveEastR();
+						moveEast(orientation);
 						break;
 					case EAST:
-						moveEast();
+						moveEast(ORIENTATION.EAST);
 						break;
 					case TURN_EAST:
 						headEast();
 						break;
 					case SOUTH_R:
-						moveSouthR();
+						moveSouth(orientation);
 						break;
 					case SOUTH:
-						moveSouth();
+						moveSouth(ORIENTATION.SOUTH);
 						break;
 					case TURN_SOUTH:
 						headSouth();
 						break;
 					case NORTH_R:
-						moveNorthR();
+						moveNorth(orientation);
 						break;
 					case NORTH:
-						moveNorth();
+						moveNorth(ORIENTATION.NORTH);
 						break;
 					case TURN_NORTH:
 						headNorth();
 						break;
 					case WEST_R:
-						moveWestR();
+						moveWest(orientation);
 						break;
 					case WEST:
-						moveWest();
+						moveWest(ORIENTATION.WEST);
 						break;
 					case TURN_WEST:
 						headWest();
@@ -161,6 +161,7 @@ public class RobotManager {
 					displayMoves(nextMove, counter);
 				} while (nextMove != Movable.MOVE.STOP);
 				timer.stop();
+				fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
 				writeMap();
 			}
 		};
@@ -168,7 +169,7 @@ public class RobotManager {
 	}
 
 	public static void startFastestRun() {
-		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
+		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -177,14 +178,21 @@ public class RobotManager {
 				do {
 					nextMove = fastestRunStrategy.nextMove();
 					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-					if (nextMove == Movable.MOVE.EAST) {
-						moveEast();
-					} else if (nextMove == Movable.MOVE.WEST) {
-						moveWest();
-					} else if (nextMove == Movable.MOVE.NORTH) {
-						moveNorth();
-					} else if (nextMove == Movable.MOVE.SOUTH) {
-						moveSouth();
+					switch (nextMove) {
+					case EAST:
+						moveEast(ORIENTATION.EAST);
+						break;
+					case WEST:
+						moveWest(ORIENTATION.WEST);
+						break;
+					case NORTH:
+						moveNorth(ORIENTATION.NORTH);
+						break;
+					case SOUTH:
+						moveSouth(ORIENTATION.SOUTH);
+						break;
+					default:
+						break;
 					}
 					++counter;
 					displayMoves(nextMove, counter);
@@ -214,47 +222,27 @@ public class RobotManager {
 		MapManager.headSouth();
 	}
 
-	private static void moveWest() {
-		unsetRobot();
-		setRobot(positionX - 1, positionY, ORIENTATION.WEST);
-	}
-
-	private static void moveEast() {
-		unsetRobot();
-		setRobot(positionX + 1, positionY, ORIENTATION.EAST);
-	}
-
-	private static void moveNorth() {
-		unsetRobot();
-		setRobot(positionX, positionY - 1, ORIENTATION.NORTH);
-	}
-
-	private static void moveSouth() {
-		unsetRobot();
-		setRobot(positionX, positionY + 1, ORIENTATION.SOUTH);
-	}
-
-	private static void moveEastR() {
-		unsetRobot();
-		setRobot(positionX + 1, positionY, orientation);
-	}
-
-	private static void moveWestR() {
+	private static void moveWest(ORIENTATION orientation) {
 		unsetRobot();
 		setRobot(positionX - 1, positionY, orientation);
 	}
 
-	private static void moveNorthR() {
+	private static void moveEast(ORIENTATION orientation) {
+		unsetRobot();
+		setRobot(positionX + 1, positionY, orientation);
+	}
+
+	private static void moveNorth(ORIENTATION orientation) {
 		unsetRobot();
 		setRobot(positionX, positionY - 1, orientation);
 	}
 
-	private static void moveSouthR() {
+	private static void moveSouth(ORIENTATION orientation) {
 		unsetRobot();
 		setRobot(positionX, positionY + 1, orientation);
 	}
 
-	private static String convertMove(Enum<Movable.MOVE> move) {
+	private static String convertMove(MOVE move) {
 		String result = "STOP";
 		if (move == Movable.MOVE.EAST) {
 			if (orientation == ORIENTATION.NORTH) {
@@ -403,7 +391,6 @@ public class RobotManager {
 	}
 
 	public static void reset() {
-		// setRobot(0, 0, RobotManager.ORIENTATION.EAST);
 		MainControl.mainWindow.setRobotPosition("unknown");
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", 0, 0, 0));
 		MainControl.mainWindow.setMapExplored(String.format("Map Explored: %.2f%%", 0.0));
@@ -485,9 +472,5 @@ public class RobotManager {
 			headWest();
 			break;
 		}
-	}
-
-	private static boolean isOutBoundary(int x, int y) {
-		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}
 }

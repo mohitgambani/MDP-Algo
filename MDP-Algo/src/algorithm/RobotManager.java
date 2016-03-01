@@ -107,99 +107,87 @@ public class RobotManager {
 			}
 		});
 		addInitialRobotToMapExplored();
-		Thread thread = new Thread() {
-			@Override
-			public void run() {
-				timer.start();
-				int counter = 0;
-				MOVE nextMove = MOVE.STOP;
-				do {
-					sense();
-					nextMove = explorationStrategy.nextMove();
-					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-					switch (nextMove) {
-					case EAST_R:
-						moveEast(orientation);
-						break;
-					case EAST:
-						moveEast(ORIENTATION.EAST);
-						break;
-					case TURN_EAST:
-						headEast();
-						break;
-					case SOUTH_R:
-						moveSouth(orientation);
-						break;
-					case SOUTH:
-						moveSouth(ORIENTATION.SOUTH);
-						break;
-					case TURN_SOUTH:
-						headSouth();
-						break;
-					case NORTH_R:
-						moveNorth(orientation);
-						break;
-					case NORTH:
-						moveNorth(ORIENTATION.NORTH);
-						break;
-					case TURN_NORTH:
-						headNorth();
-						break;
-					case WEST_R:
-						moveWest(orientation);
-						break;
-					case WEST:
-						moveWest(ORIENTATION.WEST);
-						break;
-					case TURN_WEST:
-						headWest();
-					default:
-						break;
-					}
-					++counter;
-					displayExplorationPercentage();
-					displayMoves(nextMove, counter);
-				} while (nextMove != Movable.MOVE.STOP);
-				timer.stop();
-				fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
-				writeMap();
+		timer.start();
+		int counter = 0;
+		MOVE nextMove = MOVE.STOP;
+		do {
+			sense();
+			nextMove = explorationStrategy.nextMove();
+			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			switch (nextMove) {
+			case EAST_R:
+				moveEast(orientation);
+				break;
+			case EAST:
+				moveEast(ORIENTATION.EAST);
+				break;
+			case TURN_EAST:
+				headEast();
+				break;
+			case SOUTH_R:
+				moveSouth(orientation);
+				break;
+			case SOUTH:
+				moveSouth(ORIENTATION.SOUTH);
+				break;
+			case TURN_SOUTH:
+				headSouth();
+				break;
+			case NORTH_R:
+				moveNorth(orientation);
+				break;
+			case NORTH:
+				moveNorth(ORIENTATION.NORTH);
+				break;
+			case TURN_NORTH:
+				headNorth();
+				break;
+			case WEST_R:
+				moveWest(orientation);
+				break;
+			case WEST:
+				moveWest(ORIENTATION.WEST);
+				break;
+			case TURN_WEST:
+				headWest();
+			default:
+				break;
 			}
-		};
-		thread.start();
+			++counter;
+			displayExplorationPercentage();
+			displayMoves(nextMove, counter);
+		} while (nextMove != Movable.MOVE.STOP);
+		timer.stop();
+		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
+		writeMap();
 	}
 
 	public static void startFastestRun() {
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
-		Thread thread = new Thread() {
-			@Override
-			public void run() {
-				int counter = 0;
-				MOVE nextMove = MOVE.STOP;
-				do {
-					nextMove = fastestRunStrategy.nextMove();
-					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-					switch (nextMove) {
-					case EAST:
-						moveEast(ORIENTATION.EAST);
-						break;
-					case WEST:
-						moveWest(ORIENTATION.WEST);
-						break;
-					case NORTH:
-						moveNorth(ORIENTATION.NORTH);
-						break;
-					case SOUTH:
-						moveSouth(ORIENTATION.SOUTH);
-						break;
-					default:
-						break;
-					}
-					++counter;
-					displayMoves(nextMove, counter);
-				} while (nextMove != Movable.MOVE.STOP);
+		int counter = 0;
+		MOVE nextMove = MOVE.STOP;
+		do {
+			nextMove = fastestRunStrategy.nextMove();
+			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			switch (nextMove) {
+			case EAST:
+				moveEast(ORIENTATION.EAST);
+				break;
+			case WEST:
+				moveWest(ORIENTATION.WEST);
+				break;
+			case NORTH:
+				moveNorth(ORIENTATION.NORTH);
+				break;
+			case SOUTH:
+				moveSouth(ORIENTATION.SOUTH);
+				break;
+			default:
+				break;
 			}
-		};
-		thread.start();
+			++counter;
+			displayMoves(nextMove, counter);
+		} while (nextMove != Movable.MOVE.STOP);
 	}
 
 	private static void headWest() {
@@ -361,33 +349,45 @@ public class RobotManager {
 
 	private static void writeMap() {
 		Hashtable<Integer, GRID_TYPE> map = explorationStrategy.getMapExplored();
-		int index;
+		int x, y;
 		String fullMapToWrite = "11";
 		String exploredMapToWrite = "";
 
-		for (index = 0; index < MAP_WIDTH * MAP_HEIGHT; ++index) {
-			if (map.containsKey(index)) {
-				fullMapToWrite += "1";
-				if (map.get(index) == Movable.GRID_TYPE.OBSTACLE) {
-					exploredMapToWrite += "1";
+		for (x = 0; x < MAP_WIDTH; ++x) {
+			for(y = x; y <= x + (MAP_HEIGHT - 1) * MAP_WIDTH; y += MAP_WIDTH){
+				if (map.containsKey(y)) {
+					fullMapToWrite += "1";
+					if (map.get(y) == Movable.GRID_TYPE.OBSTACLE) {
+						exploredMapToWrite += "1";
+					} else {
+						exploredMapToWrite += "0";
+					}
 				} else {
-					exploredMapToWrite += "0";
+					fullMapToWrite += "0";
 				}
-			} else {
-				fullMapToWrite += "0";
 			}
 		}
 		fullMapToWrite += "11";
-
 		while (exploredMapToWrite.length() % 8 != 0) {
 			exploredMapToWrite += "0";
 		}
+		System.out.println(binaryToHexa(fullMapToWrite));
+		System.out.println(binaryToHexa(exploredMapToWrite));
 		try {
 			FileIOManager.writeFile(fullMapToWrite, "fullMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private static String binaryToHexa(String binary){
+		int index;
+		String result = "";
+		for(index = 0; index < binary.length(); index += 4){
+			result += Integer.toString(Integer.parseInt(binary.substring(index, index + 4), 2), 16);
+		}
+		return result;
 	}
 
 	public static void reset() {

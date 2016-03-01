@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Stack;
 
-import algorithm.Movable.MOVE;
 
 public class ShortestPath extends Movable {
 	

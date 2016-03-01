@@ -92,11 +92,23 @@ public class MapManager {
 	}
 
 	protected static void startExploration() {
-		RobotManager.startExploration();
+		Thread thread = new Thread(){
+			@Override
+			public void run(){
+				RobotManager.startExploration();
+			}
+		};
+		thread.start();
 	}
 	
 	protected static void startFastestRun() {
-		RobotManager.startFastestRun();
+		Thread thread = new Thread(){
+			@Override
+			public void run(){
+				RobotManager.startFastestRun();
+			}
+		};
+		thread.start();
 	}
 
 	/**

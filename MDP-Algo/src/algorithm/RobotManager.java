@@ -32,7 +32,7 @@ public class RobotManager {
 
 	private static int positionX, positionY;
 	private static ORIENTATION orientation;
-	
+
 	private static Movable explorationStrategy = null;
 	private static Movable fastestRunStrategy = null;
 
@@ -52,37 +52,26 @@ public class RobotManager {
 	 * @param ori
 	 */
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
-		int x, y;
-		boolean failed = false;
-		
-		for (x = posX; x < posX + ROBOT_WIDTH && !failed; ++x) {
-			for (y = posY; y < posY + ROBOT_HEIGHT && !failed; ++y) {
-				if (isOutBoundary(x, y) || MapManager.isObstacle(x, y)) {
-					failed = true;
-				}
-			}
+
+		unsetRobot();
+		positionX = posX;
+		positionY = posY;
+		orientation = ori;
+		switch (ori) {
+		case NORTH:
+			headNorth();
+			break;
+		case SOUTH:
+			headSouth();
+			break;
+		case EAST:
+			headEast();
+			break;
+		case WEST:
+			headWest();
+			break;
 		}
-		if (!failed) {
-			unsetRobot();
-			positionX = posX;
-			positionY = posY;
-			orientation = ori;
-			switch (ori) {
-			case NORTH:
-				headNorth();
-				break;
-			case SOUTH:
-				headSouth();
-				break;
-			case EAST:
-				headEast();
-				break;
-			case WEST:
-				headWest();
-				break;
-			}
-			MainControl.mainWindow.setRobotPosition(posX + "," + posY);
-		}
+		MainControl.mainWindow.setRobotPosition(posX + "," + posY);
 	}
 
 	private static void unsetRobot() {
@@ -109,7 +98,8 @@ public class RobotManager {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				timeElapsed = System.currentTimeMillis() - startTime;
-				if (timeElapsed + Math.ceil(1.0 * explorationStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
+				if (timeElapsed
+						+ Math.ceil(1.0 * explorationStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
 						|| getPercentageExplored() >= percentageLimit)
 					explorationStrategy.setConditionalStop();
 				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
@@ -126,12 +116,19 @@ public class RobotManager {
 				do {
 					sense();
 					nextMove = explorationStrategy.nextMove();
+					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 					switch (nextMove) {
+					case EAST_R:
+						moveEastR();
+						break;
 					case EAST:
 						moveEast();
 						break;
 					case TURN_EAST:
 						headEast();
+						break;
+					case SOUTH_R:
+						moveSouthR();
 						break;
 					case SOUTH:
 						moveSouth();
@@ -139,11 +136,17 @@ public class RobotManager {
 					case TURN_SOUTH:
 						headSouth();
 						break;
+					case NORTH_R:
+						moveNorthR();
+						break;
 					case NORTH:
 						moveNorth();
 						break;
 					case TURN_NORTH:
 						headNorth();
+						break;
+					case WEST_R:
+						moveWestR();
 						break;
 					case WEST:
 						moveWest();
@@ -173,7 +176,7 @@ public class RobotManager {
 				MOVE nextMove = MOVE.STOP;
 				do {
 					nextMove = fastestRunStrategy.nextMove();
-//					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+					NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 					if (nextMove == Movable.MOVE.EAST) {
 						moveEast();
 					} else if (nextMove == Movable.MOVE.WEST) {
@@ -231,71 +234,107 @@ public class RobotManager {
 		setRobot(positionX, positionY + 1, ORIENTATION.SOUTH);
 	}
 
+	private static void moveEastR() {
+		unsetRobot();
+		setRobot(positionX + 1, positionY, orientation);
+	}
+
+	private static void moveWestR() {
+		unsetRobot();
+		setRobot(positionX - 1, positionY, orientation);
+	}
+
+	private static void moveNorthR() {
+		unsetRobot();
+		setRobot(positionX, positionY - 1, orientation);
+	}
+
+	private static void moveSouthR() {
+		unsetRobot();
+		setRobot(positionX, positionY + 1, orientation);
+	}
+
 	private static String convertMove(Enum<Movable.MOVE> move) {
 		String result = "STOP";
 		if (move == Movable.MOVE.EAST) {
 			if (orientation == ORIENTATION.NORTH) {
-				result = "E";
+				result = "RF"; // right forward
 			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "Q";
+				result = "LF"; // left forward
 			} else if (orientation == ORIENTATION.WEST) {
-				result = "B";
+				result = "RRF"; // right right forward
 			} else {
-				result = "F";
+				result = "F"; // forward
 			}
+		} else if (move == Movable.MOVE.EAST_R) {
+			result = "B"; // back
 		} else if (move == Movable.MOVE.TURN_EAST) {
 			if (orientation == ORIENTATION.NORTH) {
-				result = "R";
+				result = "R"; // right
 			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "L";
+				result = "L"; // left
+			} else if (orientation == ORIENTATION.WEST) {
+				result = "RR"; // right right
 			}
 		} else if (move == Movable.MOVE.NORTH) {
 			if (orientation == ORIENTATION.EAST) {
-				result = "Q";
+				result = "LF";
 			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "B";
+				result = "RRF";
 			} else if (orientation == ORIENTATION.WEST) {
-				result = "E";
+				result = "RF";
 			} else {
 				result = "F";
 			}
+		} else if (move == Movable.MOVE.NORTH_R) {
+			result = "B";
 		} else if (move == Movable.MOVE.TURN_NORTH) {
 			if (orientation == ORIENTATION.EAST) {
 				result = "L";
 			} else if (orientation == ORIENTATION.WEST) {
 				result = "R";
+			} else if (orientation == ORIENTATION.SOUTH) {
+				result = "RR";
 			}
 		} else if (move == Movable.MOVE.SOUTH) {
 			if (orientation == ORIENTATION.EAST) {
-				result = "E";
+				result = "RF";
 			} else if (orientation == ORIENTATION.NORTH) {
-				result = "B";
+				result = "RRF";
 			} else if (orientation == ORIENTATION.WEST) {
-				result = "Q";
+				result = "LF";
 			} else {
 				result = "F";
 			}
+		} else if (move == Movable.MOVE.SOUTH_R) {
+			result = "B";
 		} else if (move == Movable.MOVE.TURN_SOUTH) {
 			if (orientation == ORIENTATION.EAST) {
 				result = "R";
 			} else if (orientation == ORIENTATION.WEST) {
 				result = "L";
+			} else if (orientation == ORIENTATION.NORTH) {
+				result = "RR";
 			}
 		} else if (move == Movable.MOVE.WEST) {
 			if (orientation == ORIENTATION.EAST) {
-				result = "B";
+				result = "RRF";
 			} else if (orientation == ORIENTATION.NORTH) {
-				result = "Q";
+				result = "LF";
 			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "E";
+				result = "RF";
 			} else {
 				result = "F";
 			}
+		} else if (move == Movable.MOVE.WEST_R) {
+			result = "B";
 		} else if (move == Movable.MOVE.TURN_WEST) {
 			if (orientation == ORIENTATION.NORTH) {
 				result = "L";
 			} else if (orientation == ORIENTATION.SOUTH) {
 				result = "R";
+			} else if (orientation == ORIENTATION.EAST) {
+				result = "RR";
 			}
 		}
 		return result;
@@ -447,6 +486,7 @@ public class RobotManager {
 			break;
 		}
 	}
+
 	private static boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}

@@ -64,7 +64,7 @@ public class NetworkIOManager {
 						}else if(content.matches("STARTFAS")){
 							RobotManager.startFastestRun();
 						}
-						System.out.println(content);
+//						System.out.println(content);
 						content = in.readLine();
 					}
 				} catch (IOException e) {

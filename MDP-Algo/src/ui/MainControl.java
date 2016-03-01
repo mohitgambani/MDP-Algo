@@ -31,8 +31,8 @@ public class MainControl {
 				MapManager.drawStartZone();
 				MapManager.drawGoalZone();
 				
-//				NetworkIOManager.openConnection();
-//				NetworkIOManager.continuouslyReading();
+				NetworkIOManager.openConnection();
+				NetworkIOManager.continuouslyReading();
 			}
 		});
 	}

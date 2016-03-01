@@ -19,7 +19,7 @@ public class ShortestPath extends Movable {
 		this.mapExplored = mapExplored;
 		start = new Node(XYToId(RobotManager.getRobotPositionX(), 
 				RobotManager.getRobotPositionY()));
-		goal = new Node(XYToId(MAP_WIDTH - 2, MAP_HEIGHT - 2));
+		goal = new Node(XYToId(MAP_WIDTH - ROBOT_WIDTH, MAP_HEIGHT - ROBOT_HEIGHT));
 		start.setGCost(0);
 		start.setHCost(distanceToGoal(start.getId()));
 		start.setParent(null);

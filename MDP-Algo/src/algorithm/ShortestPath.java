@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Stack;
 
+import algorithm.Movable.MOVE;
+
 public class ShortestPath extends Movable {
 	
 	private Node start;
@@ -208,7 +210,7 @@ public class ShortestPath extends Movable {
 	}
 	
 	public void getAllMovesFromLastNode(Node node){
-		while(node != null){
+		while(node.getMove() != MOVE.NO_MOVE){
 			listOfMoves.push(node.getMove());
 			node = node.getParent();
 		}

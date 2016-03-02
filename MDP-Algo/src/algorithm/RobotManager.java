@@ -44,6 +44,8 @@ public class RobotManager {
 
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
+	
+	private static int moveCounter = 0;
 
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
@@ -71,19 +73,7 @@ public class RobotManager {
 		MapManager.unsetRobot();
 	}
 
-	public static int getRobotPositionX() {
-		return positionX;
-	}
-
-	public static int getRobotPositionY() {
-		return positionY;
-	}
-
-	public static ORIENTATION getRobotOrientation() {
-		return orientation;
-	}
-
-	public static void startExploration() {
+	public static void startSimulatedExploration() {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
@@ -96,45 +86,7 @@ public class RobotManager {
 			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
 			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-			switch (nextMove) {
-			case EAST_R:
-				moveEast(orientation);
-				break;
-			case EAST:
-				moveEast();
-				break;
-			case TURN_EAST:
-				headEast();
-				break;
-			case SOUTH_R:
-				moveSouth(orientation);
-				break;
-			case SOUTH:
-				moveSouth();
-				break;
-			case TURN_SOUTH:
-				headSouth();
-				break;
-			case NORTH_R:
-				moveNorth(orientation);
-				break;
-			case NORTH:
-				moveNorth();
-				break;
-			case TURN_NORTH:
-				headNorth();
-				break;
-			case WEST_R:
-				moveWest(orientation);
-				break;
-			case WEST:
-				moveWest();
-				break;
-			case TURN_WEST:
-				headWest();
-			default:
-				break;
-			}
+			mapMove(nextMove);
 			++counter;
 			displayExplorationPercentage();
 			displayMoves(nextMove, counter);
@@ -144,7 +96,67 @@ public class RobotManager {
 		writeMap();
 	}
 
+	public static void startRealExploration() {
+//		timeLimit = MainControl.mainWindow.getTimeLimit();
+//		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
+//		initialiseTimer(timeLimit);
+		addInitialRobotToMapExplored();
+//		timer.start();
+		MOVE nextMove = explorationStrategy.nextMove();
+		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+		mapMove(nextMove);
+		++moveCounter;
+		displayExplorationPercentage();
+		displayMoves(nextMove, moveCounter);
+//		timer.stop();
+//		writeMap();
+	}
+
+	private static void mapMove(MOVE move) {
+		switch (move) {
+		case EAST_R:
+			moveEast(orientation);
+			break;
+		case EAST:
+			moveEast();
+			break;
+		case TURN_EAST:
+			headEast();
+			break;
+		case SOUTH_R:
+			moveSouth(orientation);
+			break;
+		case SOUTH:
+			moveSouth();
+			break;
+		case TURN_SOUTH:
+			headSouth();
+			break;
+		case NORTH_R:
+			moveNorth(orientation);
+			break;
+		case NORTH:
+			moveNorth();
+			break;
+		case TURN_NORTH:
+			headNorth();
+			break;
+		case WEST_R:
+			moveWest(orientation);
+			break;
+		case WEST:
+			moveWest();
+			break;
+		case TURN_WEST:
+			headWest();
+		default:
+			break;
+		}
+	}
+
 	public static void startFastestRun() {
+		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
+		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
 		initialiseTimer();
 		timer.start();
@@ -173,6 +185,26 @@ public class RobotManager {
 			displayMoves(nextMove, counter);
 		} while (nextMove != Movable.MOVE.STOP);
 		timer.stop();
+	}
+
+	public static void getSensoryInfo() {
+		Hashtable<Integer, Movable.GRID_TYPE> results = sensor.getSensoryInfo();
+		Enumeration<Integer> keys = results.keys();
+		while (keys.hasMoreElements()) {
+			Integer key = keys.nextElement();
+			GRID_TYPE type = results.get(key);
+			if (type == GRID_TYPE.OPEN_SPACE) {
+				MapManager.setMapExplored(idToX(key), idToY(key));
+			} else {
+				MapManager.setObstacle(idToX(key), idToY(key));
+			}
+			explorationStrategy.getMapUpdate(key, type);
+		}
+	}
+
+	public static void extDataReady() {
+		getSensoryInfo();
+		startRealExploration();
 	}
 
 	private static void headWest() {
@@ -317,21 +349,6 @@ public class RobotManager {
 		return result;
 	}
 
-	public static void getSensoryInfo() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = sensor.getSensoryInfo();
-		Enumeration<Integer> keys = results.keys();
-		while (keys.hasMoreElements()) {
-			Integer key = keys.nextElement();
-			GRID_TYPE type = results.get(key);
-			if (type == GRID_TYPE.OPEN_SPACE) {
-				MapManager.setMapExplored(idToX(key), idToY(key));
-			} else {
-				MapManager.setObstacle(idToX(key), idToY(key));
-			}
-			explorationStrategy.getMapUpdate(key, type);
-		}
-	}
-
 	private static void writeMap() {
 		Hashtable<Integer, GRID_TYPE> map = explorationStrategy.getMapExplored();
 		int x, y;
@@ -460,16 +477,16 @@ public class RobotManager {
 	public static void setSensor(Sensor newSensor) {
 		sensor = newSensor;
 	}
-	
-	public static Sensor getSensor(){
+
+	public static Sensor getSensor() {
 		return sensor;
 	}
 
 	public static boolean isOutBoundary(int x, int y) {
 		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
 	}
-	
-	private static void initialiseTimer(long timeLimit){
+
+	private static void initialiseTimer(long timeLimit) {
 		timeElapsed = 0;
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
 				timeElapsed / 1000 % 60, timeElapsed % 1000));
@@ -487,8 +504,8 @@ public class RobotManager {
 			}
 		});
 	}
-	
-	private static void initialiseTimer(){
+
+	private static void initialiseTimer() {
 		timeElapsed = 0;
 		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
 				timeElapsed / 1000 % 60, timeElapsed % 1000));
@@ -501,5 +518,21 @@ public class RobotManager {
 						timeElapsed / 1000 % 60, timeElapsed % 1000));
 			}
 		});
+	}
+
+	public static int getRobotPositionX() {
+		return positionX;
+	}
+
+	public static int getRobotPositionY() {
+		return positionY;
+	}
+
+	public static ORIENTATION getRobotOrientation() {
+		return orientation;
+	}
+	
+	public static void setExplorationStrategy(Movable strategy){
+		explorationStrategy = strategy;
 	}
 }

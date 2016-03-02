@@ -95,7 +95,7 @@ public class MapManager {
 			@Override
 			public void run(){
 				RobotManager.setSensor(new SimulatedSensor());
-				RobotManager.startExploration();
+				RobotManager.startSimulatedExploration();
 			}
 		};
 		thread.start();

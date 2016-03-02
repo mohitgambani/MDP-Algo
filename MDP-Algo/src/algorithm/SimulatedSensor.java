@@ -147,14 +147,6 @@ public class SimulatedSensor extends Sensor{
 		return results;
 	}
 
-	public static boolean isOutBoundary(int x, int y) {
-		return (x >= MapManager.MAP_WIDTH) || (x < 0) || (y >= MapManager.MAP_HEIGHT) || (y < 0);
-	}
-
-	protected static int XYToId(int x, int y) {
-		return y * MapManager.MAP_WIDTH + x;
-	}
-
 	@Override
 	public Hashtable<Integer, GRID_TYPE> getSensoryInfo() {
 		ArrayList<Hashtable<Integer, Movable.GRID_TYPE>> north = senseNorth();

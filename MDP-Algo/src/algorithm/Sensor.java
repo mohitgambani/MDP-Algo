@@ -37,4 +37,19 @@ public abstract class Sensor {
 	
 	public abstract void getReadingsFromExt(String readingStr);
 	
+	protected boolean isOutBoundary(int x, int y) {
+		return (x >= RobotManager.MAP_WIDTH) || (x < 0) || (y >= RobotManager.MAP_HEIGHT) || (y < 0);
+	}
+	
+	protected int idToX(int id) {
+		return id % RobotManager.MAP_WIDTH;
+	}
+
+	protected int idToY(int id) {
+		return id / RobotManager.MAP_WIDTH;
+	}
+	protected int XYToId(int x, int y) {
+		return y * RobotManager.MAP_WIDTH + x;
+	}
+	
 }

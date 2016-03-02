@@ -1,11 +1,13 @@
 package io;
 
+import java.awt.Robot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import algorithm.FloodFillMove;
 import algorithm.RealSensor;
 import algorithm.RobotManager;
 import ui.MainControl;
@@ -67,7 +69,8 @@ public class NetworkIOManager {
 					@Override
 					public void run() {
 						RobotManager.setSensor(new RealSensor());
-						RobotManager.startExploration();
+//						RobotManager.startExploration();
+						RobotManager.setExplorationStrategy(new FloodFillMove());
 					}
 				};
 				thread.start();

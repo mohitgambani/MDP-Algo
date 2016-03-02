@@ -14,7 +14,6 @@ import io.FileIOManager;
 import io.NetworkIOManager;
 import ui.MainControl;
 import ui.MapManager;
-import ui.SensorManager;
 
 public class RobotManager {
 
@@ -36,6 +35,8 @@ public class RobotManager {
 	private static Movable explorationStrategy = null;
 	private static Movable fastestRunStrategy = null;
 
+	private static Sensor sensor = null;
+
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
 	private static long startTime;
@@ -44,13 +45,6 @@ public class RobotManager {
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
 
-	/***
-	 * To set the robot's position, without drawing it
-	 * 
-	 * @param posX
-	 * @param posY
-	 * @param ori
-	 */
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
 		positionX = posX;
@@ -91,27 +85,15 @@ public class RobotManager {
 
 	public static void startExploration() {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
-		startTime = System.currentTimeMillis();
-		explorationStrategy = new FloodFillMove();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
-		timer = new Timer(TIMER_DELAY, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timeElapsed = System.currentTimeMillis() - startTime;
-				if (timeElapsed
-						+ Math.ceil(1.0 * explorationStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
-						|| getPercentageExplored() >= percentageLimit)
-					explorationStrategy.setConditionalStop();
-				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
-						timeElapsed / 1000 % 60, timeElapsed % 1000));
-			}
-		});
+		initialiseTimer(timeLimit);
+		explorationStrategy = new FloodFillMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		int counter = 0;
 		MOVE nextMove = MOVE.STOP;
 		do {
-			sense();
+			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
 			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 			switch (nextMove) {
@@ -119,7 +101,7 @@ public class RobotManager {
 				moveEast(orientation);
 				break;
 			case EAST:
-				moveEast(ORIENTATION.EAST);
+				moveEast();
 				break;
 			case TURN_EAST:
 				headEast();
@@ -128,7 +110,7 @@ public class RobotManager {
 				moveSouth(orientation);
 				break;
 			case SOUTH:
-				moveSouth(ORIENTATION.SOUTH);
+				moveSouth();
 				break;
 			case TURN_SOUTH:
 				headSouth();
@@ -137,7 +119,7 @@ public class RobotManager {
 				moveNorth(orientation);
 				break;
 			case NORTH:
-				moveNorth(ORIENTATION.NORTH);
+				moveNorth();
 				break;
 			case TURN_NORTH:
 				headNorth();
@@ -146,7 +128,7 @@ public class RobotManager {
 				moveWest(orientation);
 				break;
 			case WEST:
-				moveWest(ORIENTATION.WEST);
+				moveWest();
 				break;
 			case TURN_WEST:
 				headWest();
@@ -164,6 +146,8 @@ public class RobotManager {
 
 	public static void startFastestRun() {
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
+		initialiseTimer();
+		timer.start();
 		int counter = 0;
 		MOVE nextMove = MOVE.STOP;
 		do {
@@ -171,16 +155,16 @@ public class RobotManager {
 			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 			switch (nextMove) {
 			case EAST:
-				moveEast(ORIENTATION.EAST);
+				moveEast();
 				break;
 			case WEST:
-				moveWest(ORIENTATION.WEST);
+				moveWest();
 				break;
 			case NORTH:
-				moveNorth(ORIENTATION.NORTH);
+				moveNorth();
 				break;
 			case SOUTH:
-				moveSouth(ORIENTATION.SOUTH);
+				moveSouth();
 				break;
 			default:
 				break;
@@ -188,6 +172,7 @@ public class RobotManager {
 			++counter;
 			displayMoves(nextMove, counter);
 		} while (nextMove != Movable.MOVE.STOP);
+		timer.stop();
 	}
 
 	private static void headWest() {
@@ -228,6 +213,22 @@ public class RobotManager {
 	private static void moveSouth(ORIENTATION orientation) {
 		unsetRobot();
 		setRobot(positionX, positionY + 1, orientation);
+	}
+
+	private static void moveWest() {
+		moveWest(ORIENTATION.WEST);
+	}
+
+	private static void moveEast() {
+		moveEast(ORIENTATION.EAST);
+	}
+
+	private static void moveNorth() {
+		moveNorth(ORIENTATION.NORTH);
+	}
+
+	private static void moveSouth() {
+		moveSouth(ORIENTATION.SOUTH);
 	}
 
 	private static String convertMove(MOVE move) {
@@ -316,34 +317,18 @@ public class RobotManager {
 		return result;
 	}
 
-	public static void sense() {
-		Hashtable<Integer, Movable.GRID_TYPE> updates = new Hashtable<Integer, Movable.GRID_TYPE>();
-		switch (orientation) {
-		case NORTH:
-			updates.putAll(SensorManager.senseNorth());
-			updates.putAll(SensorManager.senseEast());
-			updates.putAll(SensorManager.senseWest());
-			break;
-		case SOUTH:
-			updates.putAll(SensorManager.senseSouth());
-			updates.putAll(SensorManager.senseEast());
-			updates.putAll(SensorManager.senseWest());
-			break;
-		case EAST:
-			updates.putAll(SensorManager.senseEast());
-			updates.putAll(SensorManager.senseNorth());
-			updates.putAll(SensorManager.senseSouth());
-			break;
-		case WEST:
-			updates.putAll(SensorManager.senseWest());
-			updates.putAll(SensorManager.senseNorth());
-			updates.putAll(SensorManager.senseSouth());
-			break;
-		}
-		Enumeration<Integer> keys = updates.keys();
+	public static void getSensoryInfo() {
+		Hashtable<Integer, Movable.GRID_TYPE> results = sensor.getSensoryInfo();
+		Enumeration<Integer> keys = results.keys();
 		while (keys.hasMoreElements()) {
 			Integer key = keys.nextElement();
-			explorationStrategy.getMapUpdate(key, updates.get(key));
+			GRID_TYPE type = results.get(key);
+			if (type == GRID_TYPE.OPEN_SPACE) {
+				MapManager.setMapExplored(idToX(key), idToY(key));
+			} else {
+				MapManager.setObstacle(idToX(key), idToY(key));
+			}
+			explorationStrategy.getMapUpdate(key, type);
 		}
 	}
 
@@ -354,7 +339,7 @@ public class RobotManager {
 		String exploredMapToWrite = "";
 
 		for (x = 0; x < MAP_WIDTH; ++x) {
-			for(y = x; y <= x + (MAP_HEIGHT - 1) * MAP_WIDTH; y += MAP_WIDTH){
+			for (y = x; y <= x + (MAP_HEIGHT - 1) * MAP_WIDTH; y += MAP_WIDTH) {
 				if (map.containsKey(y)) {
 					fullMapToWrite += "1";
 					if (map.get(y) == Movable.GRID_TYPE.OBSTACLE) {
@@ -380,11 +365,11 @@ public class RobotManager {
 			ex.printStackTrace();
 		}
 	}
-	
-	private static String binaryToHexa(String binary){
+
+	private static String binaryToHexa(String binary) {
 		int index;
 		String result = "";
-		for(index = 0; index < binary.length(); index += 4){
+		for (index = 0; index < binary.length(); index += 4) {
 			result += Integer.toString(Integer.parseInt(binary.substring(index, index + 4), 2), 16);
 		}
 		return result;
@@ -425,8 +410,8 @@ public class RobotManager {
 		int x, y;
 		for (x = positionX; x < positionX + ROBOT_WIDTH; ++x) {
 			for (y = positionY; y < positionY + ROBOT_HEIGHT; ++y) {
-				MapManager.setMapExplored(x, y);
 				explorationStrategy.getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+				MapManager.setMapExplored(x, y);
 			}
 		}
 	}
@@ -453,24 +438,68 @@ public class RobotManager {
 
 	public static void initialiseRobot(String content) {
 		int robotIndex = Integer.parseInt(content.substring(0, 3));
-		positionX = idToX(robotIndex) - 1;
-		positionY = idToY(robotIndex) - 1;
-		MapManager.initialiseRobot(XYToId(positionX, positionY));
-
 		int robotOrientation = Integer.parseInt(content.substring(3, 4));
+		ORIENTATION ori = ORIENTATION.EAST;
 		switch (robotOrientation) {
 		case 0:
-			headNorth();
+			ori = ORIENTATION.NORTH;
 			break;
 		case 1:
-			headEast();
+			ori = ORIENTATION.EAST;
 			break;
 		case 2:
-			headSouth();
+			ori = ORIENTATION.SOUTH;
 			break;
 		case 3:
-			headWest();
+			ori = ORIENTATION.WEST;
 			break;
 		}
+		setRobot(idToX(robotIndex) - 1, idToY(robotIndex) - 1, ori);
+	}
+
+	public static void setSensor(Sensor newSensor) {
+		sensor = newSensor;
+	}
+	
+	public static Sensor getSensor(){
+		return sensor;
+	}
+
+	public static boolean isOutBoundary(int x, int y) {
+		return (x >= MAP_WIDTH) || (x < 0) || (y >= MAP_HEIGHT) || (y < 0);
+	}
+	
+	private static void initialiseTimer(long timeLimit){
+		timeElapsed = 0;
+		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
+				timeElapsed / 1000 % 60, timeElapsed % 1000));
+		startTime = System.currentTimeMillis();
+		timer = new Timer(TIMER_DELAY, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timeElapsed = System.currentTimeMillis() - startTime;
+				if (timeElapsed
+						+ Math.ceil(1.0 * explorationStrategy.movesToStartZone() / movesPerSecond) * 1000 >= timeLimit
+						|| getPercentageExplored() >= percentageLimit)
+					explorationStrategy.setConditionalStop();
+				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
+						timeElapsed / 1000 % 60, timeElapsed % 1000));
+			}
+		});
+	}
+	
+	private static void initialiseTimer(){
+		timeElapsed = 0;
+		MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
+				timeElapsed / 1000 % 60, timeElapsed % 1000));
+		startTime = System.currentTimeMillis();
+		timer = new Timer(TIMER_DELAY, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timeElapsed = System.currentTimeMillis() - startTime;
+				MainControl.mainWindow.setTimerDisplay(String.format("%d min %d s %d ms", timeElapsed / 1000 / 60,
+						timeElapsed / 1000 % 60, timeElapsed % 1000));
+			}
+		});
 	}
 }

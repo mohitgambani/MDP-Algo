@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import algorithm.RealSensor;
 import algorithm.RobotManager;
 import ui.MainControl;
 
@@ -58,13 +59,14 @@ public class NetworkIOManager {
 			}
 			System.out.println(content);
 			if (content.matches("^([0-9]+,){5}$")) {
-				System.out.println("robot readings matched");
+				RobotManager.getSensor().getReadingsFromExt(content);
 			} else if (content.matches("^([0-9]){5}$")) {
 				RobotManager.initialiseRobot(content);
 			} else if (content.matches("^STARTEXP$")) {
 				Thread thread = new Thread() {
 					@Override
 					public void run() {
+						RobotManager.setSensor(new RealSensor());
 						RobotManager.startExploration();
 					}
 				};

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import algorithm.RobotManager;
+import algorithm.SimulatedSensor;
 import io.FileIOManager;
 
 public class MapManager {
@@ -53,9 +54,7 @@ public class MapManager {
 			}
 		}
 		if (!failed) {
-			unsetRobot();
 			RobotManager.initialiseRobot(posX, posY);
-			headEast();
 		}
 	}
 
@@ -95,6 +94,7 @@ public class MapManager {
 		Thread thread = new Thread(){
 			@Override
 			public void run(){
+				RobotManager.setSensor(new SimulatedSensor());
 				RobotManager.startExploration();
 			}
 		};

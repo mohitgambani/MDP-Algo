@@ -39,9 +39,15 @@ public class TCPServerManager {
 	public static void closeConnection() {
 		try {
 			serverSocket.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void resetConnection(){
+		closeConnection();
+		listen();
 	}
 
 	public static void sendToClient(String content) {
@@ -55,6 +61,10 @@ public class TCPServerManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static void startFastestRun(){
+		sendToClient("STARTFAS");
 	}
 
 }

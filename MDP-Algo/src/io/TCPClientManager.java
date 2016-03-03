@@ -11,12 +11,12 @@ import ui.MainControl;
 public class TCPClientManager {
 	private static final String HOST = "192.168.5.21";
 	private static final int PORT = 3000;
-	
+
 	private static Socket clientSocket;
 	private static BufferedReader in;
 	private static PrintWriter out;
-//	private static String host = HOST;
-//	private static int port = PORT;
+	// private static String host = HOST;
+	// private static int port = PORT;
 
 	public static void openConnection(String host, int port) {
 		try {
@@ -25,13 +25,15 @@ public class TCPClientManager {
 			out = new PrintWriter(clientSocket.getOutputStream());
 			sendMessage("Hello");
 		} catch (IOException ex) {
-			MainControl.mainWindow.setConnectionStatus("Not Connnected to " + host);
+			MainControl.mainWindow.setConnectionStatus("Not Connnected" + host);
 			ex.printStackTrace();
-		} finally {
-			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
 		}
+
+		if (clientSocket != null)
+			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
+
 	}
-	
+
 	public static void openConnection() {
 		openConnection(HOST, PORT);
 	}
@@ -58,14 +60,8 @@ public class TCPClientManager {
 
 	public static void continuouslyReading() {
 		String content = "";
-		while (content != null && !clientSocket.isClosed()){
-			try {
-				content = in.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-				break;
-			}
-			System.out.println(content);
+		while (content != null && !clientSocket.isClosed()) {
+
 			if (content.matches("^([0-9]+,){5}$")) {
 				RobotManager.startExploration(content);
 			} else if (content.matches("^([0-9]){5}$")) {
@@ -87,7 +83,13 @@ public class TCPClientManager {
 				};
 				thread.start();
 			}
-//			content = "";
+			try {
+				content = in.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+			System.out.println(content);
 		}
 	}
 }

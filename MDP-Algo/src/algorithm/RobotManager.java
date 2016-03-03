@@ -11,7 +11,7 @@ import javax.swing.Timer;
 import algorithm.Movable.GRID_TYPE;
 import algorithm.Movable.MOVE;
 import io.FileIOManager;
-import io.NetworkIOManager;
+import io.TCPClientManager;
 import ui.MainControl;
 import ui.MapManager;
 
@@ -100,7 +100,7 @@ public class RobotManager {
 		sensor.getReadingsFromExt(sensorData);
 		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
-		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+		TCPClientManager.sendMessage("A" + convertMove(nextMove));
 		decodeMove(nextMove);
 		++moveCounter;
 		displayExplorationPercentage();
@@ -168,7 +168,7 @@ public class RobotManager {
 		MOVE nextMove = MOVE.STOP;
 		do {
 			nextMove = fastestRunStrategy.nextMove();
-			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			TCPClientManager.sendMessage("A" + convertMove(nextMove));
 			decodeMove(nextMove);
 			++moveCounter;
 			displayMoves(nextMove, moveCounter);

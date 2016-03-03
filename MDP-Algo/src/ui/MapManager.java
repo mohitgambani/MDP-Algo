@@ -212,6 +212,18 @@ public class MapManager {
 			Thread.currentThread().interrupt();
 		}
 	}
+	
+	public static void blockSetObstacle(){
+		for(MapComponent mapComponent : arena){
+			mapComponent.setEnabled(false);
+		}
+	}
+	
+	public static void AllowSetObstacle(){
+		for(MapComponent mapComponent : arena){
+			mapComponent.setEnabled(true);
+		}
+	}
 
 	protected static int idToX(int id) {
 		return id % MAP_WIDTH;

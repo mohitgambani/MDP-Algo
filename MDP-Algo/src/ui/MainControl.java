@@ -5,7 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import io.NetworkIOManager;
+import io.TCPClientManager;
+import io.TCPServerManager;
 
 public class MainControl {
 	
@@ -31,11 +32,13 @@ public class MainControl {
 				MapManager.drawStartZone();
 				MapManager.drawGoalZone();
 				
+				TCPServerManager.listen();
+				
 				Thread thread = new Thread(){
 					@Override
 					public void run(){
-						NetworkIOManager.openConnection();
-						NetworkIOManager.continuouslyReading();
+						TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
+						TCPClientManager.continuouslyReading();
 					}
 				};
 				thread.start();

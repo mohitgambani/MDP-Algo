@@ -18,12 +18,16 @@ import javax.swing.text.DefaultCaret;
 
 import algorithm.RobotManager;
 import io.FileIOManager;
+import io.TCPClientManager;
+import io.TCPServerManager;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 
 import javax.swing.JSplitPane;
@@ -31,7 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements WindowListener{
 
 	private JPanel contentPane;
 	private JLabel robot_position;
@@ -53,6 +57,8 @@ public class MainWindow extends JFrame {
 	private JRadioButton simulationRadio;
 	private JRadioButton realRadio;
 	
+	private JLabel connectionStatus;
+	
 
 	public MainWindow() {
 		setResizable(false);
@@ -68,7 +74,7 @@ public class MainWindow extends JFrame {
 		JPanel controlPanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		controlPanel.setMinimumSize(new Dimension(250, 800));
 		
-		JPanel statusPanel = new JPanel(new GridLayout(1, 3));
+		JPanel statusPanel = new JPanel(new GridLayout(1, 4));
 		
 		JPanel mapPanel = new JPanel(new GridLayout(MapManager.MAP_HEIGHT, MapManager.MAP_HEIGHT));
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mapPanel, controlPanel);
@@ -86,6 +92,9 @@ public class MainWindow extends JFrame {
 
 		mapExplored = new JLabel("Map Explored: 0.00%", JLabel.CENTER);
 		statusPanel.add(mapExplored);
+		
+		connectionStatus = new JLabel("Not Connnected", JLabel.CENTER);
+		statusPanel.add(connectionStatus);
 		
 		JPanel movePerSecondPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		movePerSecondLabel = new JLabel("Move(s)/Second:");
@@ -140,8 +149,10 @@ public class MainWindow extends JFrame {
 		topRightPanel.add(startFastRun);
 		
 		simulationRadio = new JRadioButton("Simulation");
+		simulationRadio.addActionListener(new SimulationRadioListener());
 		realRadio = new JRadioButton("Real Run");
-		realRadio.setSelected(true);
+		realRadio.addActionListener(new RealRadioListener());
+		simulationRadio.setSelected(true);
 		ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(simulationRadio);
 		radioGroup.add(realRadio);
@@ -180,6 +191,42 @@ public class MainWindow extends JFrame {
 //		subSplitPane.setTopComponent(topPanel);
 //		subSplitPane.setBottomComponent(bottomPanel);
 		
+	}
+	
+	private class SimulationRadioListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Thread thread = new Thread(){
+				@Override
+				public void run(){
+					MapManager.AllowSetObstacle();
+					MapManager.resetMap();
+					TCPClientManager.closeConnection();
+					TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
+					TCPClientManager.continuouslyReading();
+				}
+			};
+			thread.start();
+		}	
+	}
+	
+	private class RealRadioListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Thread thread = new Thread(){
+				@Override
+				public void run(){
+					MapManager.blockSetObstacle();
+					MapManager.resetMap();
+					TCPClientManager.closeConnection();
+					TCPClientManager.openConnection();
+					TCPClientManager.continuouslyReading();
+				}
+			};
+			thread.start();
+		}	
 	}
 
 	private class ResetMapListener implements ActionListener {
@@ -375,6 +422,50 @@ public class MainWindow extends JFrame {
 	}
 	public long getTimeLimit(){
 		return (Integer.parseInt(timeLimitMin.getText()) * 60 + Integer.parseInt(timeLimitSec.getText())) * 1000;
+	}
+	public void setConnectionStatus(String status){
+		connectionStatus.setText(status);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		TCPClientManager.closeConnection();
+		TCPServerManager.closeConnection();
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

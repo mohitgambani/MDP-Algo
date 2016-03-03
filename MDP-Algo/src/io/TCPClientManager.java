@@ -8,34 +8,42 @@ import java.net.Socket;
 import algorithm.RobotManager;
 import ui.MainControl;
 
-public class NetworkIOManager {
+public class TCPClientManager {
 	private static final String HOST = "192.168.5.21";
-//	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 3000;
-	private static Socket socket;
+	
+	private static Socket clientSocket;
 	private static BufferedReader in;
 	private static PrintWriter out;
+//	private static String host = HOST;
+//	private static int port = PORT;
 
-	public static void openConnection() {
+	public static void openConnection(String host, int port) {
 		try {
-			socket = new Socket(HOST, PORT);
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new PrintWriter(socket.getOutputStream());
+			clientSocket = new Socket(host, port);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new PrintWriter(clientSocket.getOutputStream());
 			sendMessage("Hello");
 		} catch (IOException ex) {
+			MainControl.mainWindow.setConnectionStatus("Not Connnected to " + host);
 			ex.printStackTrace();
+		} finally {
+			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
 		}
-		MainControl.mainWindow.setFreeOutput("Connnected to " + HOST + "\n");
+	}
+	
+	public static void openConnection() {
+		openConnection(HOST, PORT);
 	}
 
-	public static boolean closeConnection() {
+	public static void closeConnection() {
 		try {
-			socket.close();
+			clientSocket.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			return false;
+		} finally {
+			MainControl.mainWindow.setConnectionStatus("Not Connnected");
 		}
-		return true;
 	}
 
 	public static void sendMessage(String message) {
@@ -50,11 +58,12 @@ public class NetworkIOManager {
 
 	public static void continuouslyReading() {
 		String content = "";
-		do {
+		while (content != null && !clientSocket.isClosed()){
 			try {
 				content = in.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
+				break;
 			}
 			System.out.println(content);
 			if (content.matches("^([0-9]+,){5}$")) {
@@ -66,7 +75,6 @@ public class NetworkIOManager {
 					@Override
 					public void run() {
 						RobotManager.initialiseRealExploration();
-//						RobotManager.startExploration();
 					}
 				};
 				thread.start();
@@ -79,7 +87,7 @@ public class NetworkIOManager {
 				};
 				thread.start();
 			}
-		} while (content != "$");
+//			content = "";
+		}
 	}
-
 }

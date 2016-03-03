@@ -9,8 +9,8 @@ import algorithm.RobotManager;
 import ui.MainControl;
 
 public class NetworkIOManager {
-//	private static final String HOST = "192.168.5.21";
-	private static final String HOST = "127.0.0.1";
+	private static final String HOST = "192.168.5.21";
+//	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 3000;
 	private static Socket socket;
 	private static BufferedReader in;
@@ -42,6 +42,7 @@ public class NetworkIOManager {
 		Thread thread = new Thread() {
 			public void run() {
 				out.print(message);
+//				out.println(message);
 				out.flush();
 			}
 		};
@@ -66,6 +67,7 @@ public class NetworkIOManager {
 					@Override
 					public void run() {
 						RobotManager.initialiseRealExploration();
+//						RobotManager.startExploration();
 					}
 				};
 				thread.start();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import algorithm.RobotManager;
-import algorithm.SimulatedSensor;
 import io.FileIOManager;
 
 public class MapManager {
@@ -66,29 +65,47 @@ public class MapManager {
 			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
 				humanMap.get(XYToId(x, y)).unsetRobot();
+				robotMap.get(XYToId(x, y)).unsetRobot();
 			}
 		}
 	}
 
+//	public static void headWest() {
+//		headWest(true);
+//	}
+//
+//	public static void headEast() {
+//		headEast(true);
+//	}
+//
+//	public static void headNorth() {
+//		headNorth(true);
+//	}
+//
+//	public static void headSouth() {
+//		headSouth(true);
+//	}
+	
 	public static void headWest() {
 		robotTurn(RobotManager.getRobotPositionX(), -1);
-		pause();
+			pause();
 	}
 
 	public static void headEast() {
 		robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
-		pause();
+			pause();
 	}
 
 	public static void headNorth() {
 		robotTurn(-1, RobotManager.getRobotPositionY());
-		pause();
+			pause();
 	}
 
 	public static void headSouth() {
 		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
-		pause();
+			pause();
 	}
+	
 
 	protected static void startExploration() {
 		Thread thread = new Thread(){
@@ -124,8 +141,10 @@ public class MapManager {
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
 				if (y == robotHeadY || x == robotHeadX) {
 					humanMap.get(XYToId(x, y)).setRobotHead();
+					robotMap.get(XYToId(x, y)).setRobotHead();
 				} else {
 					humanMap.get(XYToId(x, y)).setRobot();
+					robotMap.get(XYToId(x, y)).setRobot();
 				}
 			}
 		}

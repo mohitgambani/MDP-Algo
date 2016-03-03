@@ -46,7 +46,7 @@ public class RobotManager {
 	private static double percentageLimit = 100.0;
 	
 	private static int moveCounter = 0;
-
+	
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
 		positionX = posX;
@@ -86,7 +86,7 @@ public class RobotManager {
 		do {
 			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
-			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+//			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 			decodeMove(nextMove);
 			++moveCounter;
 			displayExplorationPercentage();
@@ -101,7 +101,13 @@ public class RobotManager {
 		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
 		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-		decodeMove(nextMove);
+		Thread thread = new Thread(){
+			@Override
+			public void run(){
+				decodeMove(nextMove);
+			}
+		};
+		thread.start();
 		++moveCounter;
 		displayExplorationPercentage();
 		displayMoves(nextMove, moveCounter);
@@ -111,6 +117,7 @@ public class RobotManager {
 		sensor = new RealSensor();
 		explorationStrategy = new FloodFillMove();
 		moveCounter = 0;
+		movesPerSecond = 10;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
 		addInitialRobotToMapExplored();
@@ -160,33 +167,17 @@ public class RobotManager {
 
 	public static void startFastestRun() {
 		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
-		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
 		initialiseTimer();
 		timer.start();
-		int counter = 0;
+		moveCounter = 0;
 		MOVE nextMove = MOVE.STOP;
 		do {
 			nextMove = fastestRunStrategy.nextMove();
 			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-			switch (nextMove) {
-			case EAST:
-				moveEast();
-				break;
-			case WEST:
-				moveWest();
-				break;
-			case NORTH:
-				moveNorth();
-				break;
-			case SOUTH:
-				moveSouth();
-				break;
-			default:
-				break;
-			}
-			++counter;
-			displayMoves(nextMove, counter);
+			decodeMove(nextMove);
+			++moveCounter;
+			displayMoves(nextMove, moveCounter);
 		} while (nextMove != Movable.MOVE.STOP);
 		timer.stop();
 	}
@@ -205,7 +196,7 @@ public class RobotManager {
 			explorationStrategy.getMapUpdate(key, type);
 		}
 	}
-
+	
 	private static void headWest() {
 		orientation = ORIENTATION.WEST;
 		MapManager.headWest();
@@ -225,6 +216,7 @@ public class RobotManager {
 		orientation = ORIENTATION.SOUTH;
 		MapManager.headSouth();
 	}
+	
 
 	private static void moveWest(ORIENTATION orientation) {
 		unsetRobot();
@@ -530,6 +522,4 @@ public class RobotManager {
 	public static ORIENTATION getRobotOrientation() {
 		return orientation;
 	}
-	
-	
 }

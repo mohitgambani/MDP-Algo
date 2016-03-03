@@ -18,6 +18,8 @@ public class MapComponent extends JButton {
 	private boolean isStartZone;
 	private boolean isGoalZone;
 	private boolean isRobot;
+	
+	private boolean isExplored;
 
 	public MapComponent(int id) {
 		super();
@@ -142,8 +144,11 @@ public class MapComponent extends JButton {
 	}
 	
 	public void setExplored(){
-		reset();
-		setBackground(Color.YELLOW);
+		if(!isRobot){
+			reset();
+			setBackground(Color.YELLOW);
+		}
+		isExplored = true;
 	}
 
 	public void unsetRobot() {
@@ -152,13 +157,15 @@ public class MapComponent extends JButton {
 			setStartZone();
 		} else if (isGoalZone) {
 			setGoalZone();
-		} else {
+		} else if(isExplored){
+			setExplored();
+		} else{
 			reset();
 		}
 	}
 
 	public void reset() {
-		isObstacle = isRobot =  isStartZone = isGoalZone= false;
+		isObstacle = isRobot =  isStartZone = isGoalZone = isExplored = false;
 		setBackground(Color.WHITE);
 	}
 	

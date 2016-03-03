@@ -7,7 +7,7 @@ import algorithm.Movable.GRID_TYPE;
 
 public class RealSensor extends Sensor {
 
-	private static final int RANGE_LIMIT = 4;
+	private static final int RANGE_LIMIT = 3;
 	private ArrayList<Integer> leftReadings, rightReadings, frontReadings;
 
 	public RealSensor() {

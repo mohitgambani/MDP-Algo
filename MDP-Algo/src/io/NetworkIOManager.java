@@ -1,19 +1,16 @@
 package io;
 
-import java.awt.Robot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
-import algorithm.FloodFillMove;
-import algorithm.RealSensor;
 import algorithm.RobotManager;
 import ui.MainControl;
 
 public class NetworkIOManager {
-	private static final String HOST = "192.168.5.21";
+//	private static final String HOST = "192.168.5.21";
+	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 3000;
 	private static Socket socket;
 	private static BufferedReader in;
@@ -61,16 +58,14 @@ public class NetworkIOManager {
 			}
 			System.out.println(content);
 			if (content.matches("^([0-9]+,){5}$")) {
-				RobotManager.getSensor().getReadingsFromExt(content);
+				RobotManager.startExploration(content);
 			} else if (content.matches("^([0-9]){5}$")) {
 				RobotManager.initialiseRobot(content);
 			} else if (content.matches("^STARTEXP$")) {
 				Thread thread = new Thread() {
 					@Override
 					public void run() {
-						RobotManager.setSensor(new RealSensor());
-//						RobotManager.startExploration();
-						RobotManager.setExplorationStrategy(new FloodFillMove());
+						RobotManager.initialiseRealExploration();
 					}
 				};
 				thread.start();

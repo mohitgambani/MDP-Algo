@@ -73,46 +73,50 @@ public class RobotManager {
 		MapManager.unsetRobot();
 	}
 
-	public static void startSimulatedExploration() {
+	public static void startExploration() {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
+		sensor = new SimulatedSensor();
 		explorationStrategy = new FloodFillMove();
 		addInitialRobotToMapExplored();
 		timer.start();
-		int counter = 0;
+		moveCounter = 0;
 		MOVE nextMove = MOVE.STOP;
 		do {
 			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
 			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-			mapMove(nextMove);
-			++counter;
+			decodeMove(nextMove);
+			++moveCounter;
 			displayExplorationPercentage();
-			displayMoves(nextMove, counter);
+			displayMoves(nextMove, moveCounter);
 		} while (nextMove != Movable.MOVE.STOP);
 		timer.stop();
-		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
 		writeMap();
 	}
 
-	public static void startRealExploration() {
-//		timeLimit = MainControl.mainWindow.getTimeLimit();
-//		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
-//		initialiseTimer(timeLimit);
-		addInitialRobotToMapExplored();
-//		timer.start();
+	public static void startExploration(String sensorData) {
+		sensor.getReadingsFromExt(sensorData);
+		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
 		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-		mapMove(nextMove);
+		decodeMove(nextMove);
 		++moveCounter;
 		displayExplorationPercentage();
 		displayMoves(nextMove, moveCounter);
-//		timer.stop();
-//		writeMap();
+	}
+	
+	public static void initialiseRealExploration(){
+		sensor = new RealSensor();
+		explorationStrategy = new FloodFillMove();
+		moveCounter = 0;
+		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
+		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
+		addInitialRobotToMapExplored();
 	}
 
-	private static void mapMove(MOVE move) {
+	private static void decodeMove(MOVE move) {
 		switch (move) {
 		case EAST_R:
 			moveEast(orientation);
@@ -200,11 +204,6 @@ public class RobotManager {
 			}
 			explorationStrategy.getMapUpdate(key, type);
 		}
-	}
-
-	public static void extDataReady() {
-		getSensoryInfo();
-		startRealExploration();
 	}
 
 	private static void headWest() {
@@ -532,7 +531,5 @@ public class RobotManager {
 		return orientation;
 	}
 	
-	public static void setExplorationStrategy(Movable strategy){
-		explorationStrategy = strategy;
-	}
+	
 }

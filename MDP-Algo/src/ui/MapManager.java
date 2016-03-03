@@ -94,8 +94,8 @@ public class MapManager {
 		Thread thread = new Thread(){
 			@Override
 			public void run(){
-				RobotManager.setSensor(new SimulatedSensor());
-				RobotManager.startSimulatedExploration();
+//				RobotManager.setSensor(new SimulatedSensor());
+				RobotManager.startExploration();
 			}
 		};
 		thread.start();

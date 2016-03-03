@@ -7,8 +7,6 @@ import java.util.Stack;
 
 import algorithm.RobotManager.ORIENTATION;
 
-
-
 public class FloodFillMove extends Movable {
 
 	private ArrayList<Integer> mapTraversed;
@@ -28,33 +26,33 @@ public class FloodFillMove extends Movable {
 		MOVE nextMove = MOVE.STOP;
 
 		if (callStack.isEmpty())
-			return nextMove; 
+			return nextMove;
 
 		Enum<MOVE> lastMove = callStack.removeLast();
 
 		if (lastMove == MOVE.EAST) {
-			if(RobotManager.getRobotOrientation() == ORIENTATION.EAST){
+			if (RobotManager.getRobotOrientation() == ORIENTATION.EAST) {
 				nextMove = MOVE.WEST_R;
-			}else{
+			} else {
 				nextMove = MOVE.WEST;
 			}
 		} else if (lastMove == MOVE.NORTH) {
-			if(RobotManager.getRobotOrientation() == ORIENTATION.NORTH){
+			if (RobotManager.getRobotOrientation() == ORIENTATION.NORTH) {
 				nextMove = MOVE.SOUTH_R;
-			}else{
+			} else {
 				nextMove = MOVE.SOUTH;
 			}
-			
+
 		} else if (lastMove == MOVE.SOUTH) {
-			if(RobotManager.getRobotOrientation() == ORIENTATION.SOUTH){
+			if (RobotManager.getRobotOrientation() == ORIENTATION.SOUTH) {
 				nextMove = MOVE.NORTH_R;
-			}else{
+			} else {
 				nextMove = MOVE.NORTH;
 			}
 		} else if (lastMove == MOVE.WEST) {
-			if(RobotManager.getRobotOrientation() == ORIENTATION.WEST){
+			if (RobotManager.getRobotOrientation() == ORIENTATION.WEST) {
 				nextMove = MOVE.EAST_R;
-			}else{
+			} else {
 				nextMove = MOVE.EAST;
 			}
 		}
@@ -70,6 +68,7 @@ public class FloodFillMove extends Movable {
 		for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH, y = RobotManager
 				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
+			System.out.println(id);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
 			} else if (!getMapExplored().containsKey(id)) {
@@ -78,16 +77,13 @@ public class FloodFillMove extends Movable {
 				traversed = false;
 			}
 		}
+		if (!explored) {
+			return MOVE.TURN_EAST;
+		}
 		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_EAST;
-			} else if (!traversed) {
-//				if(RobotManager.getRobotOrientation() == ORIENTATION.EAST){
-					callStack.add(MOVE.EAST);
-					return MOVE.EAST;
-//				}else{
-//					return MOVE.TURN_EAST;
-//				}
+			if (!traversed) {
+				callStack.add(MOVE.EAST);
+				return MOVE.EAST;
 			}
 		}
 		return MOVE.NO_MOVE;
@@ -110,16 +106,13 @@ public class FloodFillMove extends Movable {
 				traversed = false;
 			}
 		}
+		if (!explored) {
+			return MOVE.TURN_NORTH;
+		}
 		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_NORTH;
-			} else if (!traversed) {
-//				if(RobotManager.getRobotOrientation() == ORIENTATION.NORTH){
-					callStack.add(MOVE.NORTH);
-					return MOVE.NORTH;
-//				}else{
-//					return MOVE.TURN_NORTH;
-//				}
+			if (!traversed) {
+				callStack.add(MOVE.NORTH);
+				return MOVE.NORTH;
 			}
 		}
 		return MOVE.NO_MOVE;
@@ -142,16 +135,13 @@ public class FloodFillMove extends Movable {
 				traversed = false;
 			}
 		}
+		if (!explored) {
+			return MOVE.TURN_SOUTH;
+		}
 		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_SOUTH;
-			} else if (!traversed) {
-//				if(RobotManager.getRobotOrientation() == ORIENTATION.SOUTH){
-					callStack.add(MOVE.SOUTH);
-					return MOVE.SOUTH;
-//				}else{
-//					return MOVE.TURN_SOUTH;
-//				}
+			if (!traversed) {
+				callStack.add(MOVE.SOUTH);
+				return MOVE.SOUTH;
 			}
 		}
 		return MOVE.NO_MOVE;
@@ -174,16 +164,13 @@ public class FloodFillMove extends Movable {
 				traversed = false;
 			}
 		}
+		if (!explored) {
+			return MOVE.TURN_WEST;
+		}
 		if (!noMove) {
-			if (!explored) {
-				return MOVE.TURN_WEST;
-			} else if (!traversed) {
-//				if(RobotManager.getRobotOrientation() == ORIENTATION.WEST){
-					callStack.add(MOVE.WEST);
-					return MOVE.WEST;
-//				}else{
-//					return MOVE.TURN_WEST;
-//				}
+			if (!traversed) {
+				callStack.add(MOVE.WEST);
+				return MOVE.WEST;
 			}
 		}
 		return MOVE.NO_MOVE;
@@ -233,7 +220,6 @@ public class FloodFillMove extends Movable {
 				}
 			}
 		}
-//		System.out.println(callStack);
 		return nextMove;
 	}
 
@@ -257,12 +243,12 @@ public class FloodFillMove extends Movable {
 				if (!mapTraversed.contains(XYToId(x, y))) {
 					mapTraversed.add(XYToId(x, y));
 				}
-				
+
 			}
 		}
 	}
 
-	private void addRobotToMapExplored(){
+	private void addRobotToMapExplored() {
 		int x, y;
 		for (x = RobotManager.getRobotPositionX(); x < ROBOT_WIDTH; ++x) {
 			for (y = RobotManager.getRobotPositionY(); y < ROBOT_HEIGHT; ++y) {
@@ -270,6 +256,7 @@ public class FloodFillMove extends Movable {
 			}
 		}
 	}
+
 	private boolean isObstacle(int index) {
 		return getMapExplored().get(index) == Movable.GRID_TYPE.OBSTACLE ? true : false;
 	}

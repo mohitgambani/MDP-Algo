@@ -42,7 +42,6 @@ public class NetworkIOManager {
 		Thread thread = new Thread() {
 			public void run() {
 				out.print(message);
-//				out.println(message);
 				out.flush();
 			}
 		};

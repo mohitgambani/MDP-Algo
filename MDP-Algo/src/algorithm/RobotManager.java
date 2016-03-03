@@ -44,9 +44,9 @@ public class RobotManager {
 
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
-	
+
 	private static int moveCounter = 0;
-	
+
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
 		positionX = posX;
@@ -86,7 +86,7 @@ public class RobotManager {
 		do {
 			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
-//			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			// NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 			decodeMove(nextMove);
 			++moveCounter;
 			displayExplorationPercentage();
@@ -101,19 +101,13 @@ public class RobotManager {
 		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
 		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-		Thread thread = new Thread(){
-			@Override
-			public void run(){
-				decodeMove(nextMove);
-			}
-		};
-		thread.start();
+		decodeMove(nextMove);
 		++moveCounter;
 		displayExplorationPercentage();
 		displayMoves(nextMove, moveCounter);
 	}
-	
-	public static void initialiseRealExploration(){
+
+	public static void initialiseRealExploration() {
 		sensor = new RealSensor();
 		explorationStrategy = new FloodFillMove();
 		moveCounter = 0;
@@ -196,7 +190,7 @@ public class RobotManager {
 			explorationStrategy.getMapUpdate(key, type);
 		}
 	}
-	
+
 	private static void headWest() {
 		orientation = ORIENTATION.WEST;
 		MapManager.headWest();
@@ -216,7 +210,6 @@ public class RobotManager {
 		orientation = ORIENTATION.SOUTH;
 		MapManager.headSouth();
 	}
-	
 
 	private static void moveWest(ORIENTATION orientation) {
 		unsetRobot();

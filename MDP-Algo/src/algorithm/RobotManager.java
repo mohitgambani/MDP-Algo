@@ -11,7 +11,7 @@ import javax.swing.Timer;
 import algorithm.Movable.GRID_TYPE;
 import algorithm.Movable.MOVE;
 import io.FileIOManager;
-import io.NetworkIOManager;
+import io.TCPClientManager;
 import ui.MainControl;
 import ui.MapManager;
 
@@ -44,9 +44,9 @@ public class RobotManager {
 
 	private static long timeLimit = 0;
 	private static double percentageLimit = 100.0;
-	
+
 	private static int moveCounter = 0;
-	
+
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
 		positionX = posX;
@@ -77,7 +77,7 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		sensor = new SimulatedSensor();
+//		sensor = new SimulatedSensor();
 		explorationStrategy = new FloodFillMove();
 		addInitialRobotToMapExplored();
 		timer.start();
@@ -86,7 +86,7 @@ public class RobotManager {
 		do {
 			getSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
-//			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			// NetworkIOManager.sendMessage("A" + convertMove(nextMove));
 			decodeMove(nextMove);
 			++moveCounter;
 			displayExplorationPercentage();
@@ -100,27 +100,28 @@ public class RobotManager {
 		sensor.getReadingsFromExt(sensorData);
 		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
-		NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-		Thread thread = new Thread(){
-			@Override
-			public void run(){
-				decodeMove(nextMove);
-			}
-		};
-		thread.start();
+		TCPClientManager.sendMessage("A" + convertMove(nextMove));
+		decodeMove(nextMove);
 		++moveCounter;
 		displayExplorationPercentage();
 		displayMoves(nextMove, moveCounter);
+		if(nextMove == MOVE.STOP){
+			timer.stop();
+			writeMap();
+		}
 	}
-	
-	public static void initialiseRealExploration(){
-		sensor = new RealSensor();
+
+	public static void initialiseRealExploration() {
+		sensor = new SensorDecoder();
 		explorationStrategy = new FloodFillMove();
 		moveCounter = 0;
-		movesPerSecond = 10;
+//		movesPerSecond = 10;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
 		addInitialRobotToMapExplored();
+//		timeLimit = MainControl.mainWindow.getTimeLimit();
+		initialiseTimer();
+		timer.start();
 	}
 
 	private static void decodeMove(MOVE move) {
@@ -174,7 +175,7 @@ public class RobotManager {
 		MOVE nextMove = MOVE.STOP;
 		do {
 			nextMove = fastestRunStrategy.nextMove();
-			NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+			TCPClientManager.sendMessage("A" + convertMove(nextMove));
 			decodeMove(nextMove);
 			++moveCounter;
 			displayMoves(nextMove, moveCounter);
@@ -196,7 +197,7 @@ public class RobotManager {
 			explorationStrategy.getMapUpdate(key, type);
 		}
 	}
-	
+
 	private static void headWest() {
 		orientation = ORIENTATION.WEST;
 		MapManager.headWest();
@@ -216,7 +217,6 @@ public class RobotManager {
 		orientation = ORIENTATION.SOUTH;
 		MapManager.headSouth();
 	}
-	
 
 	private static void moveWest(ORIENTATION orientation) {
 		unsetRobot();
@@ -364,8 +364,10 @@ public class RobotManager {
 		while (exploredMapToWrite.length() % 8 != 0) {
 			exploredMapToWrite += "0";
 		}
-		System.out.println(binaryToHexa(fullMapToWrite));
-		System.out.println(binaryToHexa(exploredMapToWrite));
+		fullMapToWrite = binaryToHexa(fullMapToWrite);
+		exploredMapToWrite = binaryToHexa(exploredMapToWrite);
+		System.out.println(fullMapToWrite);
+		System.out.println(exploredMapToWrite);
 		try {
 			FileIOManager.writeFile(fullMapToWrite, "fullMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");

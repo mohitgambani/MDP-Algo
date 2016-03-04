@@ -8,41 +8,45 @@ import java.net.Socket;
 import algorithm.RobotManager;
 import ui.MainControl;
 
-public class NetworkIOManager {
+public class TCPClientManager {
 	private static final String HOST = "192.168.5.21";
-//	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 3000;
-	private static Socket socket;
+
+	private static Socket clientSocket;
 	private static BufferedReader in;
 	private static PrintWriter out;
 
-	public static void openConnection() {
+	public static void openConnection(String host, int port) {
 		try {
-			socket = new Socket(HOST, PORT);
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new PrintWriter(socket.getOutputStream());
+			clientSocket = new Socket(host, port);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new PrintWriter(clientSocket.getOutputStream());
+			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
 			sendMessage("Hello");
 		} catch (IOException ex) {
+			MainControl.mainWindow.setConnectionStatus("Not Connnected");
 			ex.printStackTrace();
 		}
-		MainControl.mainWindow.setFreeOutput("Connnected to " + HOST + "\n");
 	}
 
-	public static boolean closeConnection() {
+	public static void openConnection() {
+		openConnection(HOST, PORT);
+	}
+
+	public static void closeConnection() {
 		try {
-			socket.close();
+			clientSocket.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			return false;
+		} finally {
+			MainControl.mainWindow.setConnectionStatus("Not Connnected");
 		}
-		return true;
 	}
 
 	public static void sendMessage(String message) {
 		Thread thread = new Thread() {
 			public void run() {
-				out.print(message);
-//				out.println(message);
+				out.println(message);
 				out.flush();
 			}
 		};
@@ -51,26 +55,14 @@ public class NetworkIOManager {
 
 	public static void continuouslyReading() {
 		String content = "";
-		do {
-			try {
-				content = in.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			System.out.println(content);
+		while (content != null && !clientSocket.isClosed()) {
+
 			if (content.matches("^([0-9]+,){5}$")) {
 				RobotManager.startExploration(content);
 			} else if (content.matches("^([0-9]){5}$")) {
 				RobotManager.initialiseRobot(content);
 			} else if (content.matches("^STARTEXP$")) {
-				Thread thread = new Thread() {
-					@Override
-					public void run() {
-						RobotManager.initialiseRealExploration();
-//						RobotManager.startExploration();
-					}
-				};
-				thread.start();
+				RobotManager.initialiseRealExploration();
 			} else if (content.matches("^STARTFAS$")) {
 				Thread thread = new Thread() {
 					@Override
@@ -80,7 +72,14 @@ public class NetworkIOManager {
 				};
 				thread.start();
 			}
-		} while (content != "$");
+			try {
+				content = in.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+			System.out.println(content);
+			MainControl.mainWindow.setFreeOutput("-Received from Server: " + content + "\n");
+		}
 	}
-
 }

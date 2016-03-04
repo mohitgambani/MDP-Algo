@@ -42,16 +42,23 @@ public class ShortestPath extends Movable {
 	}
 	
 	public void coreAlgorithm(){
+		
+		if(start.getId() == goal.getId()){
+			listOfMoves.push(MOVE.STOP);
+			listOfMoves.push(MOVE.NO_MOVE);
+			return;
+		}
 		open.add(start);
 		ArrayList<Node> neighbours;
 		while(!open.isEmpty()){
 			Node current = getNodeWithLowestFCost(open);
 			
 			if(current.getId() == goal.getId()){
-				current.setMove(MOVE.STOP);
 				getAllMovesFromLastNode(current);
 				return;
 			}
+			
+			
 			
 			neighbours = getNeighbouringNodes(current);
 			
@@ -209,7 +216,9 @@ public class ShortestPath extends Movable {
 	}
 	
 	public void getAllMovesFromLastNode(Node node){
+		listOfMoves.push(MOVE.STOP);
 		while(node.getMove() != MOVE.NO_MOVE){
+			System.out.println(node.getMove());
 			listOfMoves.push(node.getMove());
 			node = node.getParent();
 		}

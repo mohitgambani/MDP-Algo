@@ -15,23 +15,18 @@ public class TCPClientManager {
 	private static Socket clientSocket;
 	private static BufferedReader in;
 	private static PrintWriter out;
-	// private static String host = HOST;
-	// private static int port = PORT;
 
 	public static void openConnection(String host, int port) {
 		try {
 			clientSocket = new Socket(host, port);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			out = new PrintWriter(clientSocket.getOutputStream());
+			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
 			sendMessage("Hello");
 		} catch (IOException ex) {
-			MainControl.mainWindow.setConnectionStatus("Not Connnected" + host);
+			MainControl.mainWindow.setConnectionStatus("Not Connnected");
 			ex.printStackTrace();
 		}
-
-		if (clientSocket != null)
-			MainControl.mainWindow.setConnectionStatus("Connnected to " + host + ":" + port);
-
 	}
 
 	public static void openConnection() {
@@ -51,7 +46,7 @@ public class TCPClientManager {
 	public static void sendMessage(String message) {
 		Thread thread = new Thread() {
 			public void run() {
-				out.print(message);
+				out.println(message);
 				out.flush();
 			}
 		};
@@ -67,13 +62,7 @@ public class TCPClientManager {
 			} else if (content.matches("^([0-9]){5}$")) {
 				RobotManager.initialiseRobot(content);
 			} else if (content.matches("^STARTEXP$")) {
-				Thread thread = new Thread() {
-					@Override
-					public void run() {
-						RobotManager.initialiseRealExploration();
-					}
-				};
-				thread.start();
+				RobotManager.initialiseRealExploration();
 			} else if (content.matches("^STARTFAS$")) {
 				Thread thread = new Thread() {
 					@Override
@@ -90,6 +79,7 @@ public class TCPClientManager {
 				break;
 			}
 			System.out.println(content);
+			MainControl.mainWindow.setFreeOutput("-Received from Server: " + content + "\n");
 		}
 	}
 }

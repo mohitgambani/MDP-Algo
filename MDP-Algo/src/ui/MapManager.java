@@ -64,6 +64,7 @@ public class MapManager {
 				+ RobotManager.ROBOT_WIDTH; ++x) {
 			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
+//				System.out.println(XYToId(x, y));
 				arena.get(XYToId(x, y)).unsetRobot();
 //				robotMap.get(XYToId(x, y)).unsetRobot();
 			}

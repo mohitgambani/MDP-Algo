@@ -154,7 +154,8 @@ public class MapComponent extends JButton {
 	}
 
 	public void setExplored() {
-		if (!isStartZone && !isGoalZone && !isRobot && !isObstacle) {
+		if (!isStartZone && !isGoalZone && !isRobot) {
+			setOpenSpace();
 			setBackground(Color.YELLOW);
 		}
 		isExplored = true;
@@ -167,6 +168,7 @@ public class MapComponent extends JButton {
 		} else if (isGoalZone) {
 			setGoalZone();
 		} else if (isExplored) {
+//			System.out.println(id);
 			setExplored();
 		} else {
 			setOpenSpace();

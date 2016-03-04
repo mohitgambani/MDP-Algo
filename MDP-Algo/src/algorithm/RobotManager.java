@@ -77,7 +77,7 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		sensor = new SimulatedSensor();
+//		sensor = new SimulatedSensor();
 		explorationStrategy = new FloodFillMove();
 		addInitialRobotToMapExplored();
 		timer.start();
@@ -105,16 +105,23 @@ public class RobotManager {
 		++moveCounter;
 		displayExplorationPercentage();
 		displayMoves(nextMove, moveCounter);
+		if(nextMove == MOVE.STOP){
+			timer.stop();
+			writeMap();
+		}
 	}
 
 	public static void initialiseRealExploration() {
-		sensor = new RealSensor();
+		sensor = new SensorDecoder();
 		explorationStrategy = new FloodFillMove();
 		moveCounter = 0;
-		movesPerSecond = 10;
+//		movesPerSecond = 10;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
 		addInitialRobotToMapExplored();
+//		timeLimit = MainControl.mainWindow.getTimeLimit();
+		initialiseTimer();
+		timer.start();
 	}
 
 	private static void decodeMove(MOVE move) {
@@ -357,8 +364,10 @@ public class RobotManager {
 		while (exploredMapToWrite.length() % 8 != 0) {
 			exploredMapToWrite += "0";
 		}
-		System.out.println(binaryToHexa(fullMapToWrite));
-		System.out.println(binaryToHexa(exploredMapToWrite));
+		fullMapToWrite = binaryToHexa(fullMapToWrite);
+		exploredMapToWrite = binaryToHexa(exploredMapToWrite);
+		System.out.println(fullMapToWrite);
+		System.out.println(exploredMapToWrite);
 		try {
 			FileIOManager.writeFile(fullMapToWrite, "fullMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");

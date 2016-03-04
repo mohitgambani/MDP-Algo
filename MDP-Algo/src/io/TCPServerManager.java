@@ -7,6 +7,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import algorithm.Movable.MOVE;
+import algorithm.SimulatedSensor;
+
 public class TCPServerManager {
 	public static final int PORT = 8000;
 	private static ServerSocket serverSocket;
@@ -24,6 +27,7 @@ public class TCPServerManager {
 					out = new PrintWriter(clientSocket.getOutputStream(), true);
 					in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 					sendToClient("Hi");
+					receiveFromClient();
 					// String content;
 					// while((content = in.readLine()) != null){
 					// System.out.println(content);
@@ -54,17 +58,34 @@ public class TCPServerManager {
 		out.println(content);
 	}
 
-	public static void receiveFromClient() {
+	public static String receiveFromClient() {
+		String content = "";
 		try {
-			System.out.println(in.readLine());
+			content = in.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		System.out.println(content);
+		return content;
 	}
 	
 	public static void startFastestRun(){
 		sendToClient("STARTFAS");
+	}
+	
+	public static void startExploration(){
+		sendToClient("STARTEXP");
+		String nextMove = "";
+//		MOVE nextMove = MOVE.STOP;
+		do{
+			String sensingResult = SimulatedSensor.getSensoryInfo();
+			System.out.println("#" + sensingResult);
+			sendToClient(sensingResult);
+			String fromClient = receiveFromClient();
+			nextMove = fromClient.substring(1, fromClient.length());
+//			System.out.println(nextMove);
+		}while(!nextMove.equals("STOP"));
+		
 	}
 
 }

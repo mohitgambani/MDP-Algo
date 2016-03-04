@@ -5,12 +5,12 @@ import java.util.Hashtable;
 
 import algorithm.Movable.GRID_TYPE;
 
-public class RealSensor extends Sensor {
+public class SensorDecoder extends Sensor {
 
-	private static final int RANGE_LIMIT = 3;
+	public static final int RANGE_LIMIT = 3;
 	private ArrayList<Integer> leftReadings, rightReadings, frontReadings;
 
-	public RealSensor() {
+	public SensorDecoder() {
 		super();
 		leftReadings = new ArrayList<Integer>();
 		rightReadings = new ArrayList<Integer>();

@@ -10,6 +10,7 @@ import ui.MainControl;
 
 public class TCPClientManager {
 	private static final String HOST = "192.168.5.21";
+//	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 3000;
 
 	private static Socket clientSocket;

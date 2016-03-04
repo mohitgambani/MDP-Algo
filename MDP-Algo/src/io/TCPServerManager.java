@@ -28,10 +28,6 @@ public class TCPServerManager {
 					in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 					sendToClient("Hi");
 					receiveFromClient();
-					// String content;
-					// while((content = in.readLine()) != null){
-					// System.out.println(content);
-					// }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -76,7 +72,6 @@ public class TCPServerManager {
 	public static void startExploration(){
 		sendToClient("STARTEXP");
 		String nextMove = "";
-//		MOVE nextMove = MOVE.STOP;
 		do{
 			String sensingResult = SimulatedSensor.getSensoryInfo();
 			System.out.println("#" + sensingResult);

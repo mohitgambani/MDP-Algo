@@ -5,7 +5,7 @@ import java.util.Hashtable;
 
 import algorithm.Movable.GRID_TYPE;
 
-public class SensorDecoder extends Sensor {
+public class SensorDecoder {
 
 	public static final int RANGE_LIMIT = 3;
 	private ArrayList<Integer> leftReadings, rightReadings, frontReadings;
@@ -17,7 +17,6 @@ public class SensorDecoder extends Sensor {
 		frontReadings = new ArrayList<Integer>();
 	}
 
-	@Override
 	public Hashtable<Integer, GRID_TYPE> getSensoryInfo() {
 		Hashtable<Integer, GRID_TYPE> results = new Hashtable<Integer, GRID_TYPE>();
 		switch (RobotManager.getRobotOrientation()) {
@@ -54,12 +53,12 @@ public class SensorDecoder extends Sensor {
 			int reading = readings.get(counter);
 			for (y = RobotManager.getRobotPositionY() - Math.min(reading, RANGE_LIMIT); y < RobotManager
 					.getRobotPositionY(); ++y) {
-				if (!isOutBoundary(x, y)) {
+				if (!RobotManager.isOutBoundary(x, y)) {
 					if (y == RobotManager.getRobotPositionY() - Math.min(reading, RANGE_LIMIT)
 							&& reading <= RANGE_LIMIT) {
-						results.put(XYToId(x, y), GRID_TYPE.OBSTACLE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OBSTACLE);
 					} else {
-						results.put(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 					}
 				}
 			}
@@ -77,12 +76,12 @@ public class SensorDecoder extends Sensor {
 			int reading = readings.get(counter);
 			for (y = RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT + Math.min(reading, RANGE_LIMIT)
 					- 1; y > RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1; --y) {
-				if (!isOutBoundary(x, y)) {
+				if (!RobotManager.isOutBoundary(x, y)) {
 					if (y == RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT
 							+ Math.min(reading, RANGE_LIMIT) - 1 && reading <= RANGE_LIMIT) {
-						results.put(XYToId(x, y), GRID_TYPE.OBSTACLE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OBSTACLE);
 					} else {
-						results.put(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 					}
 				}
 			}
@@ -101,12 +100,12 @@ public class SensorDecoder extends Sensor {
 			int reading = readings.get(counter);
 			for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH + Math.min(reading, RANGE_LIMIT)
 					- 1; x > RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1; --x) {
-				if (!isOutBoundary(x, y)) {
+				if (!RobotManager.isOutBoundary(x, y)) {
 					if (x == RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH
 							+ Math.min(reading, RANGE_LIMIT) - 1 && reading <= RANGE_LIMIT) {
-						results.put(XYToId(x, y), GRID_TYPE.OBSTACLE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OBSTACLE);
 					} else {
-						results.put(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 					}
 				}
 			}
@@ -124,12 +123,12 @@ public class SensorDecoder extends Sensor {
 			int reading = readings.get(counter);
 			for (x = RobotManager.getRobotPositionX() - Math.min(reading, RANGE_LIMIT); x < RobotManager
 					.getRobotPositionX(); ++x) {
-				if (!isOutBoundary(x, y)) {
+				if (!RobotManager.isOutBoundary(x, y)) {
 					if (x == RobotManager.getRobotPositionX() - Math.min(reading, RANGE_LIMIT)
 							&& reading <= RANGE_LIMIT) {
-						results.put(XYToId(x, y), GRID_TYPE.OBSTACLE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OBSTACLE);
 					} else {
-						results.put(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+						results.put(RobotManager.XYToId(x, y), GRID_TYPE.OPEN_SPACE);
 					}
 				}
 			}
@@ -138,7 +137,6 @@ public class SensorDecoder extends Sensor {
 		return results;
 	}
 
-	@Override
 	public void getReadingsFromExt(String readingStr) {
 		readingStr = readingStr.substring(0, readingStr.length() - 1);
 		String[] readings = readingStr.split(",");

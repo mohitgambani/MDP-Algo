@@ -199,7 +199,6 @@ public class FloodFillMove extends Movable {
 		for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH, y = RobotManager
 				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
-//			System.out.println(id);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
 			} else if (!getMapExplored().containsKey(id)) {

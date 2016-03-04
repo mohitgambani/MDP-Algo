@@ -35,7 +35,7 @@ public class RobotManager {
 	private static Movable explorationStrategy = null;
 	private static Movable fastestRunStrategy = null;
 
-	private static Sensor sensor = null;
+	private static SensorDecoder sensorDecoder = null;
 
 	private static Timer timer;
 	private static final int TIMER_DELAY = 1;
@@ -73,31 +73,31 @@ public class RobotManager {
 		MapManager.unsetRobot();
 	}
 
-	public static void startExploration() {
-		timeLimit = MainControl.mainWindow.getTimeLimit();
-		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
-		initialiseTimer(timeLimit);
-//		sensor = new SimulatedSensor();
-		explorationStrategy = new FloodFillMove();
-		addInitialRobotToMapExplored();
-		timer.start();
-		moveCounter = 0;
-		MOVE nextMove = MOVE.STOP;
-		do {
-			getSensoryInfo();
-			nextMove = explorationStrategy.nextMove();
-			// NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-			decodeMove(nextMove);
-			++moveCounter;
-			displayExplorationPercentage();
-			displayMoves(nextMove, moveCounter);
-		} while (nextMove != Movable.MOVE.STOP);
-		timer.stop();
-		writeMap();
-	}
+//	public static void startExploration() {
+//		timeLimit = MainControl.mainWindow.getTimeLimit();
+//		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
+//		initialiseTimer(timeLimit);
+////		sensor = new SimulatedSensor();
+//		explorationStrategy = new FloodFillMove();
+//		addInitialRobotToMapExplored();
+//		timer.start();
+//		moveCounter = 0;
+//		MOVE nextMove = MOVE.STOP;
+//		do {
+//			getSensoryInfo();
+//			nextMove = explorationStrategy.nextMove();
+//			// NetworkIOManager.sendMessage("A" + convertMove(nextMove));
+//			decodeMove(nextMove);
+//			++moveCounter;
+//			displayExplorationPercentage();
+//			displayMoves(nextMove, moveCounter);
+//		} while (nextMove != Movable.MOVE.STOP);
+//		timer.stop();
+//		writeMap();
+//	}
 
 	public static void startExploration(String sensorData) {
-		sensor.getReadingsFromExt(sensorData);
+		sensorDecoder.getReadingsFromExt(sensorData);
 		getSensoryInfo();
 		MOVE nextMove = explorationStrategy.nextMove();
 		TCPClientManager.sendMessage("A" + convertMove(nextMove));
@@ -112,7 +112,7 @@ public class RobotManager {
 	}
 
 	public static void initialiseRealExploration() {
-		sensor = new SensorDecoder();
+		sensorDecoder = new SensorDecoder();
 		explorationStrategy = new FloodFillMove();
 		moveCounter = 0;
 //		movesPerSecond = 10;
@@ -184,7 +184,7 @@ public class RobotManager {
 	}
 
 	public static void getSensoryInfo() {
-		Hashtable<Integer, Movable.GRID_TYPE> results = sensor.getSensoryInfo();
+		Hashtable<Integer, Movable.GRID_TYPE> results = sensorDecoder.getSensoryInfo();
 		Enumeration<Integer> keys = results.keys();
 		while (keys.hasMoreElements()) {
 			Integer key = keys.nextElement();
@@ -404,7 +404,7 @@ public class RobotManager {
 		return 100.0 * explorationStrategy.numOfExploredSpace() / (MAP_WIDTH * MAP_HEIGHT);
 	}
 
-	protected static int XYToId(int x, int y) {
+	public static int XYToId(int x, int y) {
 		return y * MAP_WIDTH + x;
 	}
 
@@ -434,11 +434,11 @@ public class RobotManager {
 		movesPerSecond = speed;
 	}
 
-	private static int idToX(int id) {
+	public static int idToX(int id) {
 		return id % MAP_WIDTH;
 	}
 
-	private static int idToY(int id) {
+	public static int idToY(int id) {
 		return id / MAP_WIDTH;
 	}
 
@@ -465,14 +465,6 @@ public class RobotManager {
 			break;
 		}
 		setRobot(idToX(robotIndex) - 1, idToY(robotIndex) - 1, ori);
-	}
-
-	public static void setSensor(Sensor newSensor) {
-		sensor = newSensor;
-	}
-
-	public static Sensor getSensor() {
-		return sensor;
 	}
 
 	public static boolean isOutBoundary(int x, int y) {

@@ -18,7 +18,7 @@ public class SimulatedSensor {
 			int reading = 1;
 			for (y = RobotManager.getRobotPositionY() - 1; y > RobotManager.getRobotPositionY() - 1 - sensingRange
 					&& !stop; --y) {
-				if (isOutBoundary(x, y)) {
+				if (RobotManager.isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					stop = true;
 				} else {
@@ -43,7 +43,7 @@ public class SimulatedSensor {
 			int reading = 1;
 			for (y = RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; y < RobotManager.getRobotPositionY()
 					+ RobotManager.ROBOT_HEIGHT + sensingRange && !stop; ++y) {
-				if (isOutBoundary(x, y)) {
+				if (RobotManager.isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					stop = true;
 				} else {
@@ -67,7 +67,7 @@ public class SimulatedSensor {
 			int reading = 1;
 			for (x = RobotManager.getRobotPositionX() - 1; x > RobotManager.getRobotPositionX() - 1 - sensingRange
 					&& !stop; --x) {
-				if (isOutBoundary(x, y)) {
+				if (RobotManager.isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					stop = true;
 				} else {
@@ -91,7 +91,7 @@ public class SimulatedSensor {
 			int reading = 1;
 			for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH; x < RobotManager.getRobotPositionX()
 					+ RobotManager.ROBOT_WIDTH + sensingRange && !stop; ++x) {
-				if (isOutBoundary(x, y)) {
+				if (RobotManager.isOutBoundary(x, y)) {
 				} else if (MapManager.isObstacle(x, y)) {
 					stop = true;
 				} else {
@@ -138,9 +138,5 @@ public class SimulatedSensor {
 			break;
 		}
 		return result;
-	}
-
-	private static boolean isOutBoundary(int x, int y) {
-		return (x >= RobotManager.MAP_WIDTH) || (x < 0) || (y >= RobotManager.MAP_HEIGHT) || (y < 0);
 	}
 }

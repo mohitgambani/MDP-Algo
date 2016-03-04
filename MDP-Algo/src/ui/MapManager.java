@@ -92,26 +92,26 @@ public class MapManager {
 	}
 	
 
-	protected static void startExploration() {
-		Thread thread = new Thread(){
-			@Override
-			public void run(){
-//				RobotManager.setSensor(new SimulatedSensor());
-				RobotManager.startExploration();
-			}
-		};
-		thread.start();
-	}
+//	protected static void startExploration() {
+//		Thread thread = new Thread(){
+//			@Override
+//			public void run(){
+////				RobotManager.setSensor(new SimulatedSensor());
+//				RobotManager.startExploration();
+//			}
+//		};
+//		thread.start();
+//	}
 	
-	protected static void startFastestRun() {
-		Thread thread = new Thread(){
-			@Override
-			public void run(){
-				RobotManager.startFastestRun();
-			}
-		};
-		thread.start();
-	}
+//	protected static void startFastestRun() {
+//		Thread thread = new Thread(){
+//			@Override
+//			public void run(){
+//				RobotManager.startFastestRun();
+//			}
+//		};
+//		thread.start();
+//	}
 
 	/**
 	 * The real function that draws the robot

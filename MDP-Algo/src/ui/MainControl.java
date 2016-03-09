@@ -32,16 +32,16 @@ public class MainControl {
 				MapManager.drawStartZone();
 				MapManager.drawGoalZone();
 				
-				TCPServerManager.listen();
-				
-				Thread thread = new Thread(){
-					@Override
-					public void run(){
-						TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
-						TCPClientManager.continuouslyReading();
-					}
-				};
-				thread.start();
+//				TCPServerManager.listen();
+//				
+//				Thread thread = new Thread(){
+//					@Override
+//					public void run(){
+//						TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
+//						TCPClientManager.continuouslyReading();
+//					}
+//				};
+//				thread.start();
 			}
 		});
 	}

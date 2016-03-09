@@ -202,9 +202,10 @@ public class MainWindow extends JFrame implements WindowListener{
 				public void run(){
 					MapManager.AllowSetObstacle();
 					MapManager.resetMap();
+//					TCPServerManager.resetConnection();
 					TCPClientManager.closeConnection();
-					TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
-					TCPClientManager.continuouslyReading();
+//					TCPClientManager.openConnection("127.0.0.1", TCPServerManager.PORT);
+//					TCPClientManager.continuouslyReading();
 				}
 			};
 			thread.start();
@@ -220,8 +221,9 @@ public class MainWindow extends JFrame implements WindowListener{
 				public void run(){
 					MapManager.blockSetObstacle();
 					MapManager.resetMap();
-					TCPServerManager.resetConnection();
-					TCPClientManager.closeConnection();
+//					TCPServerManager.resetConnection();
+//					TCPServerManager.closeConnection();
+//					TCPClientManager.closeConnection();
 					TCPClientManager.openConnection();
 					TCPClientManager.continuouslyReading();
 				}
@@ -247,7 +249,8 @@ public class MainWindow extends JFrame implements WindowListener{
 			Thread thread = new Thread(){
 				@Override
 				public void run(){
-					TCPServerManager.startExploration();
+//					TCPServerManager.startExploration();
+					RobotManager.startExploration();
 				}
 			};
 			thread.start();

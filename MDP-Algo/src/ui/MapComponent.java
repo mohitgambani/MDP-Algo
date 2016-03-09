@@ -84,13 +84,13 @@ public class MapComponent extends JButton {
 		public void keyPressed(KeyEvent e) {
 			if (isRobot) {
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					MapManager.headEast();
+					MapManager.headEast(true);
 				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-					MapManager.headWest();
+					MapManager.headWest(true);
 				} else if (e.getKeyCode() == KeyEvent.VK_UP) {
-					MapManager.headNorth();
+					MapManager.headNorth(true);
 				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					MapManager.headSouth();
+					MapManager.headSouth(true);
 				}
 			}
 		}

@@ -37,6 +37,7 @@ public class TCPServerManager {
 	public static void closeConnection() {
 		try {
 			serverSocket.close();
+			clientSocket.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -46,6 +47,7 @@ public class TCPServerManager {
 	public static void resetConnection(){
 		closeConnection();
 		listen();
+		
 	}
 
 	public static void sendToClient(String content) {

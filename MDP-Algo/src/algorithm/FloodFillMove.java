@@ -16,6 +16,8 @@ public class FloodFillMove extends Movable {
 	private Deque<Integer> robotPositionStack;
 
 	private Hashtable<Integer, GRID_TYPE> mapExplored;
+	
+//	private int counter = 0;
 
 	private static Stack<MOVE> listOfBackTrackingMoves = new Stack<MOVE>();
 	private static int count = 0;
@@ -25,7 +27,7 @@ public class FloodFillMove extends Movable {
 		mapTraversed = new ArrayList<Integer>();
 		callStack = new ArrayDeque<MOVE>();
 		robotPositionStack = new ArrayDeque<Integer>();
-		addRobotToMapExplored();
+//		addRobotToMapExplored();
 	}
 
 	
@@ -309,6 +311,11 @@ public class FloodFillMove extends Movable {
 	@Override
 	public MOVE nextMove() {
 		MOVE nextMove = MOVE.STOP;
+		
+//		++counter;
+//		if(counter == 3){
+//			return MOVE.STOP;
+//		}
 
 		if (isConditionalStop()) {
 			if (count == 0) {

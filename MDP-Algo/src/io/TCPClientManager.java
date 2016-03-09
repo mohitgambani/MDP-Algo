@@ -57,12 +57,17 @@ public class TCPClientManager {
 	public static void continuouslyReading() {
 		String content = "";
 		while (content != null && !clientSocket.isClosed()) {
-
+			
 			if (content.matches("^([0-9]+,){5}$")) {
 				RobotManager.startExploration(content);
 			} else if (content.matches("^([0-9]){5}$")) {
 				RobotManager.initialiseRobot(content);
 			} else if (content.matches("^STARTEXP$")) {
+				if(clientSocket.getPort() == PORT){
+					RobotManager.setIsDelay(false);
+				}else{
+					RobotManager.setIsDelay(true);
+				}
 				RobotManager.initialiseRealExploration();
 			} else if (content.matches("^STARTFAS$")) {
 				Thread thread = new Thread() {

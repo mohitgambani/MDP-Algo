@@ -7,7 +7,7 @@ import algorithm.Movable.GRID_TYPE;
 
 public class SensorDecoder {
 
-	public static final int RANGE_LIMIT = 3;
+	public static final int RANGE_LIMIT = 2;
 	private ArrayList<Integer> leftReadings, rightReadings, frontReadings;
 
 	public SensorDecoder() {

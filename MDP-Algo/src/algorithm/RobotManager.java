@@ -46,6 +46,8 @@ public class RobotManager {
 	private static double percentageLimit = 100.0;
 
 	private static int moveCounter = 0;
+	
+	private static boolean isDelay = true;
 
 	public static void setRobot(int posX, int posY, ORIENTATION ori) {
 		unsetRobot();
@@ -54,16 +56,16 @@ public class RobotManager {
 		orientation = ori;
 		switch (ori) {
 		case NORTH:
-			headNorth();
+			headNorth(isDelay);
 			break;
 		case SOUTH:
-			headSouth();
+			headSouth(isDelay);
 			break;
 		case EAST:
-			headEast();
+			headEast(isDelay);
 			break;
 		case WEST:
-			headWest();
+			headWest(isDelay);
 			break;
 		}
 		MainControl.mainWindow.setRobotPosition(posX + "," + posY);
@@ -73,28 +75,28 @@ public class RobotManager {
 		MapManager.unsetRobot();
 	}
 
-//	public static void startExploration() {
-//		timeLimit = MainControl.mainWindow.getTimeLimit();
-//		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
-//		initialiseTimer(timeLimit);
-////		sensor = new SimulatedSensor();
-//		explorationStrategy = new FloodFillMove();
-//		addInitialRobotToMapExplored();
-//		timer.start();
-//		moveCounter = 0;
-//		MOVE nextMove = MOVE.STOP;
-//		do {
-//			getSensoryInfo();
-//			nextMove = explorationStrategy.nextMove();
-//			// NetworkIOManager.sendMessage("A" + convertMove(nextMove));
-//			decodeMove(nextMove);
-//			++moveCounter;
-//			displayExplorationPercentage();
-//			displayMoves(nextMove, moveCounter);
-//		} while (nextMove != Movable.MOVE.STOP);
-//		timer.stop();
-//		writeMap();
-//	}
+	public static void startExploration() {
+		timeLimit = MainControl.mainWindow.getTimeLimit();
+		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
+		initialiseTimer(timeLimit);
+		explorationStrategy = new FloodFillMove();
+		addInitialRobotToMapExplored();
+		timer.start();
+		moveCounter = 0;
+		MOVE nextMove = MOVE.STOP;
+		sensorDecoder = new SensorDecoder();
+		do {
+			sensorDecoder.getReadingsFromExt(SimulatedSensor.getSensoryInfo());
+			getSensoryInfo();
+			nextMove = explorationStrategy.nextMove();
+			decodeMove(nextMove);
+			++moveCounter;
+			displayExplorationPercentage();
+			displayMoves(nextMove, moveCounter);
+		} while (nextMove != Movable.MOVE.STOP);
+		timer.stop();
+		writeMap();
+	}
 
 	public static void startExploration(String sensorData) {
 		sensorDecoder.getReadingsFromExt(sensorData);
@@ -128,12 +130,13 @@ public class RobotManager {
 		switch (move) {
 		case EAST_R:
 			moveEast(orientation);
+			
 			break;
 		case EAST:
 			moveEast();
 			break;
 		case TURN_EAST:
-			headEast();
+			headEast(isDelay);
 			break;
 		case SOUTH_R:
 			moveSouth(orientation);
@@ -142,7 +145,7 @@ public class RobotManager {
 			moveSouth();
 			break;
 		case TURN_SOUTH:
-			headSouth();
+			headSouth(isDelay);
 			break;
 		case NORTH_R:
 			moveNorth(orientation);
@@ -151,7 +154,7 @@ public class RobotManager {
 			moveNorth();
 			break;
 		case TURN_NORTH:
-			headNorth();
+			headNorth(isDelay);
 			break;
 		case WEST_R:
 			moveWest(orientation);
@@ -160,7 +163,7 @@ public class RobotManager {
 			moveWest();
 			break;
 		case TURN_WEST:
-			headWest();
+			headWest(isDelay);
 		default:
 			break;
 		}
@@ -198,24 +201,24 @@ public class RobotManager {
 		}
 	}
 
-	private static void headWest() {
+	private static void headWest(boolean delay) {
 		orientation = ORIENTATION.WEST;
-		MapManager.headWest();
+		MapManager.headWest(delay);
 	}
 
-	private static void headEast() {
+	private static void headEast(boolean delay) {
 		orientation = ORIENTATION.EAST;
-		MapManager.headEast();
+		MapManager.headEast(delay);
 	}
 
-	private static void headNorth() {
+	private static void headNorth(boolean delay) {
 		orientation = ORIENTATION.NORTH;
-		MapManager.headNorth();
+		MapManager.headNorth(delay);
 	}
 
-	private static void headSouth() {
+	private static void headSouth(boolean delay) {
 		orientation = ORIENTATION.SOUTH;
-		MapManager.headSouth();
+		MapManager.headSouth(delay);
 	}
 
 	private static void moveWest(ORIENTATION orientation) {
@@ -368,7 +371,9 @@ public class RobotManager {
 		exploredMapToWrite = binaryToHexa(exploredMapToWrite);
 		System.out.println(fullMapToWrite);
 		System.out.println(exploredMapToWrite);
+		TCPClientManager.sendMessage("B" + fullMapToWrite + "\n\n" + exploredMapToWrite);
 		try {
+			
 			FileIOManager.writeFile(fullMapToWrite, "fullMap");
 			FileIOManager.writeFile(exploredMapToWrite, "exploredMap");
 		} catch (IOException ex) {
@@ -382,7 +387,7 @@ public class RobotManager {
 		for (index = 0; index < binary.length(); index += 4) {
 			result += Integer.toString(Integer.parseInt(binary.substring(index, index + 4), 2), 16);
 		}
-		return result;
+		return result.toUpperCase();
 	}
 
 	public static void reset() {
@@ -515,5 +520,9 @@ public class RobotManager {
 
 	public static ORIENTATION getRobotOrientation() {
 		return orientation;
+	}
+	
+	public static void setIsDelay(boolean delay){
+		isDelay = delay;
 	}
 }

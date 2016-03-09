@@ -71,23 +71,27 @@ public class MapManager {
 		}
 	}
 	
-	public static void headWest() {
+	public static void headWest(boolean delay) {
 		robotTurn(RobotManager.getRobotPositionX(), -1);
+		if(delay)
 			pause();
 	}
 
-	public static void headEast() {
+	public static void headEast(boolean delay) {
 		robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
+		if(delay)
 			pause();
 	}
 
-	public static void headNorth() {
+	public static void headNorth(boolean delay) {
 		robotTurn(-1, RobotManager.getRobotPositionY());
+		if(delay)
 			pause();
 	}
 
-	public static void headSouth() {
+	public static void headSouth(boolean delay) {
 		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
+		if(delay)
 			pause();
 	}
 	

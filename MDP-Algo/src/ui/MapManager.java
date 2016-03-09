@@ -20,7 +20,8 @@ public class MapManager {
 	private static final int GOAL_Y = MAP_HEIGHT - 1;
 
 	protected static ArrayList<MapComponent> arena = new ArrayList<MapComponent>();
-//	protected static ArrayList<MapComponent> robotMap = new ArrayList<MapComponent>();
+	// protected static ArrayList<MapComponent> robotMap = new
+	// ArrayList<MapComponent>();
 
 	protected static void drawStartZone() {
 		int x, y;
@@ -44,7 +45,7 @@ public class MapManager {
 		int posX = idToX(id), posY = idToY(id);
 		int x, y;
 		boolean failed = false;
-		
+
 		for (x = posX; x < posX + RobotManager.ROBOT_WIDTH && !failed; ++x) {
 			for (y = posY; y < posY + RobotManager.ROBOT_HEIGHT && !failed; ++y) {
 				if (x >= MAP_WIDTH / 2 || MapManager.isObstacle(x, y)) {
@@ -64,61 +65,89 @@ public class MapManager {
 				+ RobotManager.ROBOT_WIDTH; ++x) {
 			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
-//				System.out.println(XYToId(x, y));
+				// System.out.println(XYToId(x, y));
 				arena.get(XYToId(x, y)).unsetRobot();
-//				robotMap.get(XYToId(x, y)).unsetRobot();
+				// robotMap.get(XYToId(x, y)).unsetRobot();
 			}
 		}
 	}
-	
+
 	public static void headWest(boolean delay) {
-		robotTurn(RobotManager.getRobotPositionX(), -1);
-		if(delay)
+//		Thread thread = new Thread() {
+//			@Override
+//			public void run(){
+				robotTurn(RobotManager.getRobotPositionX(), -1);
+//				
+//			}
+//
+//		};
+//		thread.start();
+		if (delay)
 			pause();
 	}
 
 	public static void headEast(boolean delay) {
-		robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
-		if(delay)
+//		Thread thread = new Thread() {
+//			@Override
+//			public void run(){
+				robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
+//				
+//			}
+//		};
+//		thread.start();
+		if (delay)
 			pause();
 	}
 
 	public static void headNorth(boolean delay) {
-		robotTurn(-1, RobotManager.getRobotPositionY());
-		if(delay)
+//		Thread thread = new Thread() {
+//			@Override
+//			public void run(){
+				robotTurn(-1, RobotManager.getRobotPositionY());
+//				
+//			}
+//		};
+//		thread.start();
+		if (delay)
 			pause();
 	}
 
 	public static void headSouth(boolean delay) {
-		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
-		if(delay)
+//		Thread thread = new Thread() {
+//			@Override
+//			public void run(){
+				robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
+//			}
+//		};
+//		thread.start();
+		if (delay)
 			pause();
 	}
-	
 
-//	protected static void startExploration() {
-//		Thread thread = new Thread(){
-//			@Override
-//			public void run(){
-////				RobotManager.setSensor(new SimulatedSensor());
-//				RobotManager.startExploration();
-//			}
-//		};
-//		thread.start();
-//	}
-	
-//	protected static void startFastestRun() {
-//		Thread thread = new Thread(){
-//			@Override
-//			public void run(){
-//				RobotManager.startFastestRun();
-//			}
-//		};
-//		thread.start();
-//	}
+	// protected static void startExploration() {
+	// Thread thread = new Thread(){
+	// @Override
+	// public void run(){
+	//// RobotManager.setSensor(new SimulatedSensor());
+	// RobotManager.startExploration();
+	// }
+	// };
+	// thread.start();
+	// }
+
+	// protected static void startFastestRun() {
+	// Thread thread = new Thread(){
+	// @Override
+	// public void run(){
+	// RobotManager.startFastestRun();
+	// }
+	// };
+	// thread.start();
+	// }
 
 	/**
 	 * The real function that draws the robot
+	 * 
 	 * @param robotHeadX
 	 * @param robotHeadY
 	 */
@@ -130,10 +159,10 @@ public class MapManager {
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
 				if (y == robotHeadY || x == robotHeadX) {
 					arena.get(XYToId(x, y)).setRobotHead();
-//					robotMap.get(XYToId(x, y)).setRobotHead();
+					// robotMap.get(XYToId(x, y)).setRobotHead();
 				} else {
 					arena.get(XYToId(x, y)).setRobot();
-//					robotMap.get(XYToId(x, y)).setRobot();
+					// robotMap.get(XYToId(x, y)).setRobot();
 				}
 			}
 		}
@@ -143,9 +172,9 @@ public class MapManager {
 		for (MapComponent mapComponent : arena) {
 			mapComponent.setOpenSpace();
 		}
-//		for (MapComponent mapComponent : robotMap) {
-//			mapComponent.reset();
-//		}
+		// for (MapComponent mapComponent : robotMap) {
+		// mapComponent.reset();
+		// }
 		drawStartZone();
 		drawGoalZone();
 		RobotManager.reset();
@@ -154,8 +183,8 @@ public class MapManager {
 	protected static void setObstacle(int id) {
 		arena.get(id).setObstacle();
 	}
-	
-	protected static void setOpenSpace(int id){
+
+	protected static void setOpenSpace(int id) {
 		arena.get(id).setOpenSpace();
 	}
 
@@ -217,15 +246,15 @@ public class MapManager {
 			Thread.currentThread().interrupt();
 		}
 	}
-	
-	public static void blockSetObstacle(){
-		for(MapComponent mapComponent : arena){
+
+	public static void blockSetObstacle() {
+		for (MapComponent mapComponent : arena) {
 			mapComponent.setEnabled(false);
 		}
 	}
-	
-	public static void AllowSetObstacle(){
-		for(MapComponent mapComponent : arena){
+
+	public static void AllowSetObstacle() {
+		for (MapComponent mapComponent : arena) {
 			mapComponent.setEnabled(true);
 		}
 	}

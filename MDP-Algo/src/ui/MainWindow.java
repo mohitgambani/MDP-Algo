@@ -266,7 +266,8 @@ public class MainWindow extends JFrame implements WindowListener{
 			Thread thread = new Thread(){
 				@Override
 				public void run(){
-					TCPServerManager.startFastestRun();
+//					TCPServerManager.startFastestRun();
+					RobotManager.startFastestRun();
 				}
 			};
 			thread.start();

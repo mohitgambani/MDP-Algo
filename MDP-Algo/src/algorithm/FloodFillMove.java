@@ -5,19 +5,21 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Hashtable;
 import java.util.Stack;
-
-import algorithm.Movable.GRID_TYPE;
 import algorithm.RobotManager.ORIENTATION;
 
 public class FloodFillMove extends Movable {
 
+	
 	private ArrayList<Integer> mapTraversed;
 	private Deque<MOVE> callStack;
+	private int robotPosX;
+	private int robotPosY;
+	private ORIENTATION robotOri;
+	
 	private Deque<Integer> robotPositionStack;
 
 	private Hashtable<Integer, GRID_TYPE> mapExplored;
 	
-//	private int counter = 0;
 
 	private static Stack<MOVE> listOfBackTrackingMoves = new Stack<MOVE>();
 	private static int count = 0;
@@ -40,26 +42,26 @@ public class FloodFillMove extends Movable {
 		Enum<MOVE> lastMove = callStack.removeLast();
 
 		if (lastMove == MOVE.EAST) {
-			if (RobotManager.getRobotOrientation() == ORIENTATION.EAST) {
+			if (robotOri == ORIENTATION.EAST) {
 				nextMove = MOVE.WEST_R;
 			} else {
 				nextMove = MOVE.WEST;
 			}
 		} else if (lastMove == MOVE.NORTH) {
-			if (RobotManager.getRobotOrientation() == ORIENTATION.NORTH) {
+			if (robotOri == ORIENTATION.NORTH) {
 				nextMove = MOVE.SOUTH_R;
 			} else {
 				nextMove = MOVE.SOUTH;
 			}
 
 		} else if (lastMove == MOVE.SOUTH) {
-			if (RobotManager.getRobotOrientation() == ORIENTATION.SOUTH) {
+			if (robotOri == ORIENTATION.SOUTH) {
 				nextMove = MOVE.NORTH_R;
 			} else {
 				nextMove = MOVE.NORTH;
 			}
 		} else if (lastMove == MOVE.WEST) {
-			if (RobotManager.getRobotOrientation() == ORIENTATION.WEST) {
+			if (robotOri == ORIENTATION.WEST) {
 				nextMove = MOVE.EAST_R;
 			} else {
 				nextMove = MOVE.EAST;
@@ -198,8 +200,7 @@ public class FloodFillMove extends Movable {
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (x = RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH, y = RobotManager
-				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
+		for (x = robotPosX + RobotManager.ROBOT_WIDTH, y = robotPosY; y < robotPosY + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -227,8 +228,7 @@ public class FloodFillMove extends Movable {
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (y = RobotManager.getRobotPositionY() - 1, x = RobotManager
-				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH; ++x) {
+		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.ROBOT_WIDTH; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -256,8 +256,7 @@ public class FloodFillMove extends Movable {
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (y = RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT, x = RobotManager
-				.getRobotPositionX(); x < RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH; ++x) {
+		for (y = robotPosY + RobotManager.ROBOT_HEIGHT, x = robotPosX; x < robotPosX + RobotManager.ROBOT_WIDTH; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -285,8 +284,7 @@ public class FloodFillMove extends Movable {
 		boolean noMove = false;
 		boolean explored = true;
 
-		for (x = RobotManager.getRobotPositionX() - 1, y = RobotManager
-				.getRobotPositionY(); y < RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT; ++y) {
+		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.ROBOT_HEIGHT; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y) || isObstacle(id)) {
 				noMove = true;
@@ -312,10 +310,9 @@ public class FloodFillMove extends Movable {
 	public MOVE nextMove() {
 		MOVE nextMove = MOVE.STOP;
 		
-//		++counter;
-//		if(counter == 3){
-//			return MOVE.STOP;
-//		}
+		robotPosX = RobotManager.getRobotPositionX();
+		robotPosY = RobotManager.getRobotPositionY();
+		robotOri = RobotManager.getRobotOrientation();
 
 		if (isConditionalStop()) {
 			if (count == 0) {
@@ -342,8 +339,6 @@ public class FloodFillMove extends Movable {
 				return nextMove;
 			}
 		}
-
-		addRobotToTraversed();
 		if(!listOfBackTrackingMoves.empty()){
 			if(listOfBackTrackingMoves.peek() == MOVE.STOP)
 				listOfBackTrackingMoves.pop();
@@ -351,6 +346,7 @@ public class FloodFillMove extends Movable {
 				return listOfBackTrackingMoves.pop();
 		}
 		
+		addRobotToTraversed();
 		nextMove = attemptEast();
 		if (nextMove == MOVE.NO_MOVE) {
 			nextMove = attemptSouth();
@@ -380,9 +376,9 @@ public class FloodFillMove extends Movable {
 
 	private void addRobotToTraversed() {
 		int x, y;
-		for (x = RobotManager.getRobotPositionX(); x < RobotManager.getRobotPositionX()
+		for (x = robotPosX; x < robotPosX
 				+ RobotManager.ROBOT_WIDTH; ++x) {
-			for (y = RobotManager.getRobotPositionY(); y < RobotManager.getRobotPositionY()
+			for (y = robotPosY; y < robotPosY
 					+ RobotManager.ROBOT_HEIGHT; ++y) {
 				if (!mapTraversed.contains(XYToId(x, y))) {
 					mapTraversed.add(XYToId(x, y));
@@ -392,14 +388,14 @@ public class FloodFillMove extends Movable {
 		}
 	}
 
-	private void addRobotToMapExplored() {
-		int x, y;
-		for (x = RobotManager.getRobotPositionX(); x < ROBOT_WIDTH; ++x) {
-			for (y = RobotManager.getRobotPositionY(); y < ROBOT_HEIGHT; ++y) {
-				getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
-			}
-		}
-	}
+//	private void addRobotToMapExplored() {
+//		int x, y;
+//		for (x = RobotManager.getRobotPositionX(); x < ROBOT_WIDTH; ++x) {
+//			for (y = RobotManager.getRobotPositionY(); y < ROBOT_HEIGHT; ++y) {
+//				getMapUpdate(XYToId(x, y), GRID_TYPE.OPEN_SPACE);
+//			}
+//		}
+//	}
 
 	private boolean isObstacle(int index) {
 		return getMapExplored().get(index) == Movable.GRID_TYPE.OBSTACLE ? true : false;

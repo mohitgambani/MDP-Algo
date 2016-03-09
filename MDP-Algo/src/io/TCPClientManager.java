@@ -47,8 +47,10 @@ public class TCPClientManager {
 	public static void sendMessage(String message) {
 		Thread thread = new Thread() {
 			public void run() {
-				out.println(message);
-				out.flush();
+				if(out != null){
+					out.println(message);
+					out.flush();
+				}
 			}
 		};
 		thread.start();

@@ -50,6 +50,7 @@ public class TCPClientManager {
 				if(out != null){
 					out.println(message);
 					out.flush();
+					System.out.println("Sent:" + message);
 				}
 			}
 		};
@@ -75,7 +76,18 @@ public class TCPClientManager {
 				Thread thread = new Thread() {
 					@Override
 					public void run() {
-						RobotManager.startFastestRun();
+//						RobotManager.startFastestRun();
+						RobotManager.initialiseFastestRun();
+						RobotManager.startRealFastestRun();
+					}
+				};
+				thread.start();
+			} else if(content.matches("DONE")){
+				Thread thread = new Thread() {
+					@Override
+					public void run() {
+//						RobotManager.startFastestRun();
+						RobotManager.startRealFastestRun();
 					}
 				};
 				thread.start();

@@ -2,6 +2,7 @@ package algorithm;
 
 import java.util.Hashtable;
 
+import algorithm.Movable.MOVE;
 import ui.MapManager;
 
 public abstract class Movable {
@@ -30,6 +31,8 @@ public abstract class Movable {
 	public abstract MOVE nextMove();
 
 	public abstract int movesToStartZone();
+	
+	public abstract MOVE peekMove();
 
 	public int idToX(int id) {
 		return id % MAP_WIDTH;

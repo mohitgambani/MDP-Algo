@@ -227,6 +227,11 @@ public class ShortestPath extends Movable {
 	public MOVE nextMove(){
 		return listOfMoves.pop();
 	}
+	
+	@Override
+	public MOVE peekMove(){
+		return listOfMoves.peek();
+	}
 
 	@Override
 	public int movesToStartZone() {

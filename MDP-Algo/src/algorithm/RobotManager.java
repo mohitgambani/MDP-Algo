@@ -82,7 +82,7 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		explorationStrategy = new FloodFillMove();
+		explorationStrategy = new FloodFillMove1();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;

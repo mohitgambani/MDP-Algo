@@ -146,11 +146,19 @@ public class MapComponent extends JButton {
 	public void setRobot() {
 		isRobot = true;
 		setBackground(Color.GREEN);
+		
+//		if(isObstacle){
+//			System.out.println("Wrong");
+//		}
 	}
 
 	public void setRobotHead() {
 		isRobot = true;
 		setBackground(Color.MAGENTA);
+		
+//		if(isObstacle){
+//			System.out.println("Wrong");
+//		}
 	}
 
 	public void setExplored() {

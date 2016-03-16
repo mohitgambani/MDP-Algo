@@ -12,8 +12,8 @@ public class MapManager {
 
 	private static final int START_ZONE_WIDTH = 3;
 	private static final int START_ZONE_HEIGHT = 3;
-	private static final int GOAL_ZONE_WIDTH = 3;
-	private static final int GOAL_ZONE_HEIGHT = 3;
+	public static final int GOAL_ZONE_WIDTH = 3;
+	public static final int GOAL_ZONE_HEIGHT = 3;
 	private static final int START_X = 0;
 	private static final int START_Y = 0;
 	private static final int GOAL_X = MAP_WIDTH - 1;
@@ -73,53 +73,53 @@ public class MapManager {
 	}
 
 	public static void headWest(boolean delay) {
-//		Thread thread = new Thread() {
-//			@Override
-//			public void run(){
-				robotTurn(RobotManager.getRobotPositionX(), -1);
-//				
-//			}
-//
-//		};
-//		thread.start();
+		// Thread thread = new Thread() {
+		// @Override
+		// public void run(){
+		robotTurn(RobotManager.getRobotPositionX(), -1);
+		//
+		// }
+		//
+		// };
+		// thread.start();
 		if (delay)
 			pause();
 	}
 
 	public static void headEast(boolean delay) {
-//		Thread thread = new Thread() {
-//			@Override
-//			public void run(){
-				robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
-//				
-//			}
-//		};
-//		thread.start();
+		// Thread thread = new Thread() {
+		// @Override
+		// public void run(){
+		robotTurn(RobotManager.getRobotPositionX() + RobotManager.ROBOT_WIDTH - 1, -1);
+		//
+		// }
+		// };
+		// thread.start();
 		if (delay)
 			pause();
 	}
 
 	public static void headNorth(boolean delay) {
-//		Thread thread = new Thread() {
-//			@Override
-//			public void run(){
-				robotTurn(-1, RobotManager.getRobotPositionY());
-//				
-//			}
-//		};
-//		thread.start();
+		// Thread thread = new Thread() {
+		// @Override
+		// public void run(){
+		robotTurn(-1, RobotManager.getRobotPositionY());
+		//
+		// }
+		// };
+		// thread.start();
 		if (delay)
 			pause();
 	}
 
 	public static void headSouth(boolean delay) {
-//		Thread thread = new Thread() {
-//			@Override
-//			public void run(){
-				robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
-//			}
-//		};
-//		thread.start();
+		// Thread thread = new Thread() {
+		// @Override
+		// public void run(){
+		robotTurn(-1, RobotManager.getRobotPositionY() + RobotManager.ROBOT_HEIGHT - 1);
+		// }
+		// };
+		// thread.start();
 		if (delay)
 			pause();
 	}
@@ -205,22 +205,35 @@ public class MapManager {
 	}
 
 	public static void readMap() {
-		String map = "";
+		String hexaMap = "";
+		String binaryMap = "";
 		try {
-			map = FileIOManager.readFile();
+			hexaMap = FileIOManager.readFile();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		int index;
-		for (index = 0; index < MAP_HEIGHT * MAP_WIDTH; ++index) {
-			if (index < map.length()) {
-				if (map.charAt(index) == '1') {
-					setObstacle(index);
+
+		// binaryMap += String.format("%4s",
+		// Integer.toBinaryString(Integer.parseInt(hexaMap.substring(0, 1),
+		// 16))).replace(' ', '0');
+
+		for (index = 0; index < hexaMap.length(); ++index) {
+			binaryMap += String
+					.format("%4s", Integer.toBinaryString(Integer.parseInt(hexaMap.substring(index, index + 1), 16)))
+					.replace(' ', '0');
+		}
+
+		int x, y;
+		index = 0;
+		for (x = 0; x < MAP_WIDTH; x = x + 1) {
+			for (y = 0; y < MAP_HEIGHT; ++y) {
+				if (binaryMap.charAt(index) == '1') {
+					setObstacle(XYToId(x, y));
 				} else {
-					setOpenSpace(index);
+					setOpenSpace(XYToId(x, y));
 				}
-			} else {
-				setOpenSpace(index);
+				++index;
 			}
 		}
 		drawStartZone();

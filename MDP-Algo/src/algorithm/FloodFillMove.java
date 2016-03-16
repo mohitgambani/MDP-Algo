@@ -347,11 +347,11 @@ public class FloodFillMove extends Movable {
 		}
 		
 		addRobotToTraversed();
-		nextMove = attemptEast();
+		nextMove = attemptNorth();
 		if (nextMove == MOVE.NO_MOVE) {
-			nextMove = attemptSouth();
+			nextMove = attemptEast();
 			if (nextMove == MOVE.NO_MOVE) {
-				nextMove = attemptNorth();
+				nextMove = attemptSouth();
 				if (nextMove == MOVE.NO_MOVE) {
 					nextMove = attemptWest();
 					if (nextMove == MOVE.NO_MOVE) {

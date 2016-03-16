@@ -82,7 +82,9 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		explorationStrategy = new FloodFillMove1();
+//		explorationStrategy = new ZigzagMove();
+//		explorationStrategy = new FloodFillMove();
+		explorationStrategy = new DoubleLMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -94,13 +96,13 @@ public class RobotManager {
 			getNewSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
 			decodeMove(nextMove);
-			
 			++moveCounter;
 			displayExplorationPercentage();
 			displayMoves(nextMove, moveCounter);
+//			System.out.println(nextMove);
 		} while (nextMove != Movable.MOVE.STOP);
-		String nextMoveStr = decodeMove(nextMove);
-		TCPClientManager.sendMessage("A" + nextMoveStr);
+//		String nextMoveStr = decodeMove(nextMove);
+//		TCPClientManager.sendMessage("A" + nextMoveStr);
 		timer.stop();
 		writeMap();
 	}
@@ -122,7 +124,8 @@ public class RobotManager {
 
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
-		explorationStrategy = new FloodFillMove();
+//		explorationStrategy = new FloodFillMove();
+		explorationStrategy = new DoubleLMove();
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
@@ -150,6 +153,7 @@ public class RobotManager {
 			}
 			moveEast();
 			break;
+		case TURN_EAST_M:
 		case TURN_EAST:
 			if (orientation == ORIENTATION.NORTH) {
 				result = "R"; // right
@@ -176,6 +180,7 @@ public class RobotManager {
 			}
 			moveSouth();
 			break;
+		case TURN_SOUTH_M:
 		case TURN_SOUTH:
 			if (orientation == ORIENTATION.EAST) {
 				result = "R";
@@ -203,6 +208,7 @@ public class RobotManager {
 
 			moveNorth();
 			break;
+		case TURN_NORTH_M:
 		case TURN_NORTH:
 			if (orientation == ORIENTATION.EAST) {
 				result = "L";
@@ -229,6 +235,7 @@ public class RobotManager {
 			}
 			moveWest();
 			break;
+		case TURN_WEST_M:
 		case TURN_WEST:
 			if (orientation == ORIENTATION.NORTH) {
 				result = "L";

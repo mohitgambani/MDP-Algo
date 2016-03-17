@@ -83,7 +83,7 @@ public class RobotManager {
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
 //		explorationStrategy = new ZigzagMove();
-//		explorationStrategy = new FloodFillMove();
+//		explorationStrategy = new FloodFillMove1();
 		explorationStrategy = new DoubleLMove();
 		addInitialRobotToMapExplored();
 		timer.start();
@@ -153,6 +153,7 @@ public class RobotManager {
 			}
 			moveEast();
 			break;
+		case TURN_EAST_B:
 		case TURN_EAST_M:
 		case TURN_EAST:
 			if (orientation == ORIENTATION.NORTH) {
@@ -180,6 +181,7 @@ public class RobotManager {
 			}
 			moveSouth();
 			break;
+		case TURN_SOUTH_B:
 		case TURN_SOUTH_M:
 		case TURN_SOUTH:
 			if (orientation == ORIENTATION.EAST) {
@@ -208,6 +210,7 @@ public class RobotManager {
 
 			moveNorth();
 			break;
+		case TURN_NORTH_B:
 		case TURN_NORTH_M:
 		case TURN_NORTH:
 			if (orientation == ORIENTATION.EAST) {
@@ -235,6 +238,7 @@ public class RobotManager {
 			}
 			moveWest();
 			break;
+		case TURN_WEST_B:
 		case TURN_WEST_M:
 		case TURN_WEST:
 			if (orientation == ORIENTATION.NORTH) {

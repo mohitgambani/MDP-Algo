@@ -16,6 +16,10 @@ public class DoubleLMove extends Movable {
 	private int robotPosX;
 	private int robotPosY;
 	private ORIENTATION robotOri;
+	
+//	private boolean backTrackingMode;
+//	private Deque<MOVE> backTrackingMoves;
+//	private Movable backTrackingStrategy;
 
 	private Deque<Integer> robotPositionStack;
 
@@ -34,6 +38,10 @@ public class DoubleLMove extends Movable {
 		mapTraversed = new ArrayList<Integer>();
 		callStack = new ArrayDeque<MOVE>();
 		robotPositionStack = new ArrayDeque<Integer>();
+		
+//		backTrackingMode = false;
+//		backTrackingMoves = new ArrayDeque<MOVE>();
+		
 	}
 
 	private MOVE backTrack() {
@@ -72,6 +80,85 @@ public class DoubleLMove extends Movable {
 		}
 		return nextMove;
 	}
+	
+//	private MOVE backTrack() {
+//		
+//		int currentRobotX = robotPosX;
+//		int currentRobotY = robotPosY;
+//		int goalX, goalY;
+//		MOVE nextMove = MOVE.STOP;
+//		
+//		if (callStack.isEmpty()){
+//			System.out.println("Empty");
+//			return MOVE.STOP;
+//		}
+//			
+//		
+//		if(backTrackingMode){
+//			nextMove = backTrackingStrategy.nextMove();
+//			if(nextMove == MOVE.STOP){
+//				backTrackingMode = false;
+//				return MOVE.NO_BACKTRACKING_MOVE;
+//			}	
+//			return nextMove;
+//		}
+//
+//		MOVE lastMove;
+//		
+//		System.out.println(callStack);
+//		
+//		do{
+//			lastMove = callStack.removeLast();
+//			switch (lastMove) {
+//			case EAST:
+//				--robotPosX;
+//				break;
+//			case WEST:
+//				++robotPosX;
+//				break;
+//			case NORTH:
+//				++robotPosY;
+//				break;
+//			case SOUTH:
+//				--robotPosY;
+//				break;
+//			default:
+//				break;
+//			}
+//			System.out.println("CurrentPos:" + robotPosX + "," + robotPosY);
+//			nextMove = attemptNorth();
+//			System.out.println("North:" + nextMove);
+//			if(nextMove == MOVE.NO_MOVE){
+//				nextMove = attemptEast();
+//				System.out.println("East:" + nextMove);
+//				if(nextMove == MOVE.NO_MOVE){
+//					
+//					nextMove = attemptSouth();
+//					System.out.println("South:" + nextMove);
+//					if(nextMove == MOVE.NO_MOVE){
+//						nextMove = attemptWest();
+//						System.out.println("West:" + nextMove);
+//					}
+//				}
+//			}
+//		}while(!callStack.isEmpty() && nextMove == MOVE.NO_MOVE);
+//		
+//		System.out.println("nextmove:" + nextMove);
+//		
+//		goalX = robotPosX;
+//		goalY = robotPosY;
+//		robotPosX = currentRobotX;
+//		robotPosY = currentRobotY;
+//		
+//		System.out.println("Start:" + robotPosX + "," + robotPosY);
+//		System.out.println("Goal:" + goalX + "," + goalY);
+//		backTrackingStrategy = new ShortestPath(XYToId(robotPosX, robotPosY), XYToId(goalX, goalY), getMapExplored());
+//		backTrackingMode = true;
+//		System.out.println(callStack);
+//		
+//		return backTrackingStrategy.nextMove();
+//	}
+
 
 	private MOVE attemptEast() {
 		int x, y;
@@ -318,13 +405,20 @@ public class DoubleLMove extends Movable {
 				return listOfBackTrackingMoves.pop();
 		}
 
-		addRobotToTraversed();
+//		if(backTrackingMode){
+//			nextMove = backTrack();
+//			if(nextMove != MOVE.NO_BACKTRACKING_MOVE){
+//				return nextMove;
+//			}else{
+//				System.out.println("****************");
+//			}
+//		}
 
+		addRobotToTraversed();
 		eastDecision = attemptEast();
 		westDecision = attemptWest();
 		northDecision = attemptNorth();
 		southDecision = attemptSouth();
-
 		if (!isGoalZoneTraversed()) {
 			
 			if(westDecision == MOVE.TURN_WEST_B){
@@ -474,6 +568,8 @@ public class DoubleLMove extends Movable {
 		return x == 0 || y == 0 || x == RobotManager.MAP_WIDTH - 1 || y == RobotManager.MAP_HEIGHT - 1;
 	}
 }
+
+
 
 //package algorithm;
 //

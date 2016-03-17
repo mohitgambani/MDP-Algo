@@ -82,9 +82,7 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-//		explorationStrategy = new ZigzagMove();
-//		explorationStrategy = new FloodFillMove1();
-		explorationStrategy = new DoubleLMove();
+		explorationStrategy = new DoubleLOptimisedMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -101,8 +99,6 @@ public class RobotManager {
 			displayMoves(nextMove, moveCounter);
 //			System.out.println(nextMove);
 		} while (nextMove != Movable.MOVE.STOP);
-//		String nextMoveStr = decodeMove(nextMove);
-//		TCPClientManager.sendMessage("A" + nextMoveStr);
 		timer.stop();
 		writeMap();
 	}
@@ -124,8 +120,7 @@ public class RobotManager {
 
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
-//		explorationStrategy = new FloodFillMove();
-		explorationStrategy = new DoubleLMove();
+		explorationStrategy = new DoubleLOptimisedMove();
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
@@ -421,91 +416,91 @@ public class RobotManager {
 		moveSouth(ORIENTATION.SOUTH);
 	}
 
-	private static String convertMove(MOVE move) {
-		String result = "STOP";
-		if (move == Movable.MOVE.EAST) {
-			if (orientation == ORIENTATION.NORTH) {
-				result = "RF"; // right forward
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "LF"; // left forward
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "RRF"; // right right forward
-			} else {
-				result = "F"; // forward
-			}
-		} else if (move == Movable.MOVE.EAST_R) {
-			result = "B"; // back
-		} else if (move == Movable.MOVE.TURN_EAST) {
-			if (orientation == ORIENTATION.NORTH) {
-				result = "R"; // right
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "L"; // left
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "RR"; // right right
-			}
-		} else if (move == Movable.MOVE.NORTH) {
-			if (orientation == ORIENTATION.EAST) {
-				result = "LF";
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "RRF";
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "RF";
-			} else {
-				result = "F";
-			}
-		} else if (move == Movable.MOVE.NORTH_R) {
-			result = "B";
-		} else if (move == Movable.MOVE.TURN_NORTH) {
-			if (orientation == ORIENTATION.EAST) {
-				result = "L";
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "R";
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "RR";
-			}
-		} else if (move == Movable.MOVE.SOUTH) {
-			if (orientation == ORIENTATION.EAST) {
-				result = "RF";
-			} else if (orientation == ORIENTATION.NORTH) {
-				result = "RRF";
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "LF";
-			} else {
-				result = "F";
-			}
-		} else if (move == Movable.MOVE.SOUTH_R) {
-			result = "B";
-		} else if (move == Movable.MOVE.TURN_SOUTH) {
-			if (orientation == ORIENTATION.EAST) {
-				result = "R";
-			} else if (orientation == ORIENTATION.WEST) {
-				result = "L";
-			} else if (orientation == ORIENTATION.NORTH) {
-				result = "RR";
-			}
-		} else if (move == Movable.MOVE.WEST) {
-			if (orientation == ORIENTATION.EAST) {
-				result = "RRF";
-			} else if (orientation == ORIENTATION.NORTH) {
-				result = "LF";
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "RF";
-			} else {
-				result = "F";
-			}
-		} else if (move == Movable.MOVE.WEST_R) {
-			result = "B";
-		} else if (move == Movable.MOVE.TURN_WEST) {
-			if (orientation == ORIENTATION.NORTH) {
-				result = "L";
-			} else if (orientation == ORIENTATION.SOUTH) {
-				result = "R";
-			} else if (orientation == ORIENTATION.EAST) {
-				result = "RR";
-			}
-		}
-		return result;
-	}
+//	private static String convertMove(MOVE move) {
+//		String result = "STOP";
+//		if (move == Movable.MOVE.EAST) {
+//			if (orientation == ORIENTATION.NORTH) {
+//				result = "RF"; // right forward
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "LF"; // left forward
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "RRF"; // right right forward
+//			} else {
+//				result = "F"; // forward
+//			}
+//		} else if (move == Movable.MOVE.EAST_R) {
+//			result = "B"; // back
+//		} else if (move == Movable.MOVE.TURN_EAST) {
+//			if (orientation == ORIENTATION.NORTH) {
+//				result = "R"; // right
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "L"; // left
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "RR"; // right right
+//			}
+//		} else if (move == Movable.MOVE.NORTH) {
+//			if (orientation == ORIENTATION.EAST) {
+//				result = "LF";
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "RRF";
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "RF";
+//			} else {
+//				result = "F";
+//			}
+//		} else if (move == Movable.MOVE.NORTH_R) {
+//			result = "B";
+//		} else if (move == Movable.MOVE.TURN_NORTH) {
+//			if (orientation == ORIENTATION.EAST) {
+//				result = "L";
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "R";
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "RR";
+//			}
+//		} else if (move == Movable.MOVE.SOUTH) {
+//			if (orientation == ORIENTATION.EAST) {
+//				result = "RF";
+//			} else if (orientation == ORIENTATION.NORTH) {
+//				result = "RRF";
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "LF";
+//			} else {
+//				result = "F";
+//			}
+//		} else if (move == Movable.MOVE.SOUTH_R) {
+//			result = "B";
+//		} else if (move == Movable.MOVE.TURN_SOUTH) {
+//			if (orientation == ORIENTATION.EAST) {
+//				result = "R";
+//			} else if (orientation == ORIENTATION.WEST) {
+//				result = "L";
+//			} else if (orientation == ORIENTATION.NORTH) {
+//				result = "RR";
+//			}
+//		} else if (move == Movable.MOVE.WEST) {
+//			if (orientation == ORIENTATION.EAST) {
+//				result = "RRF";
+//			} else if (orientation == ORIENTATION.NORTH) {
+//				result = "LF";
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "RF";
+//			} else {
+//				result = "F";
+//			}
+//		} else if (move == Movable.MOVE.WEST_R) {
+//			result = "B";
+//		} else if (move == Movable.MOVE.TURN_WEST) {
+//			if (orientation == ORIENTATION.NORTH) {
+//				result = "L";
+//			} else if (orientation == ORIENTATION.SOUTH) {
+//				result = "R";
+//			} else if (orientation == ORIENTATION.EAST) {
+//				result = "RR";
+//			}
+//		}
+//		return result;
+//	}
 
 	private static void writeMap() {
 		Hashtable<Integer, GRID_TYPE> map = explorationStrategy.getMapExplored();

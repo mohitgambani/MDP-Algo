@@ -163,7 +163,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		
 
 		freeOutput = new JTextArea();
-		freeOutput.setEditable(false);
+//		freeOutput.setEditable(false);
 		scrollPane = new JScrollPane(freeOutput);
 		DefaultCaret caret = (DefaultCaret) freeOutput.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);

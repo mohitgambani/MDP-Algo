@@ -1,8 +1,6 @@
 package algorithm;
 
 import java.util.Hashtable;
-
-import algorithm.Movable.MOVE;
 import ui.MapManager;
 
 public abstract class Movable {
@@ -22,7 +20,8 @@ public abstract class Movable {
 
 	public enum MOVE {
 		NORTH, SOUTH, EAST, WEST, STOP, TURN_NORTH, TURN_SOUTH, TURN_EAST, TURN_WEST, NO_MOVE, NORTH_R, SOUTH_R, EAST_R, WEST_R,
-		TURN_EAST_M, TURN_WEST_M, TURN_NORTH_M, TURN_SOUTH_M, TURN_EAST_B, TURN_WEST_B, TURN_NORTH_B, TURN_SOUTH_B
+		TURN_EAST_M, TURN_WEST_M, TURN_NORTH_M, TURN_SOUTH_M, TURN_EAST_B, TURN_WEST_B, TURN_NORTH_B, TURN_SOUTH_B,
+		NO_BACKTRACKING_MOVE
 	}
 
 	public enum GRID_TYPE {

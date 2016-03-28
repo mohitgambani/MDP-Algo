@@ -82,7 +82,8 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		explorationStrategy = new DoubleLOptimisedMove();
+		explorationStrategy = new DFSEastFirstMove();
+//		explorationStrategy = new DFSSouthFirstMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -91,10 +92,16 @@ public class RobotManager {
 		do {
 			String sensingInfo = SimulatedSensor.getSensoryInfo();
 			sensorDecoder.getReadingsFromExt(sensingInfo);
+			
+//			TCPClientManager.sendMessage("B" + sensingInfo);
+			
 			getNewSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
-			decodeMove(nextMove);
+			String nextMoveStr = decodeMove(nextMove);
 			++moveCounter;
+			
+//			TCPClientManager.sendMessage("B" + nextMoveStr);
+			
 			displayExplorationPercentage();
 			displayMoves(nextMove, moveCounter);
 //			System.out.println(nextMove);
@@ -120,7 +127,7 @@ public class RobotManager {
 
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
-		explorationStrategy = new DoubleLOptimisedMove();
+		explorationStrategy = new DFSEastFirstMove();
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");

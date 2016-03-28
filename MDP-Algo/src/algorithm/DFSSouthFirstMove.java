@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.Stack;
 import ui.MapManager;
 
-public class DoubleLOptimisedMove extends Movable {
+public class DFSSouthFirstMove extends Movable {
 
 	private ArrayList<Integer> mapTraversed;
 	private Deque<MOVE> callStack;
@@ -24,7 +24,7 @@ public class DoubleLOptimisedMove extends Movable {
 	private static Stack<MOVE> listOfBackTrackingMoves = new Stack<MOVE>();
 	private static int count = 0;
 
-	public DoubleLOptimisedMove() {
+	public DFSSouthFirstMove() {
 		super();
 		mapTraversed = new ArrayList<Integer>();
 		callStack = new ArrayDeque<MOVE>();
@@ -46,13 +46,10 @@ public class DoubleLOptimisedMove extends Movable {
 			}
 			return nextMove;
 		}
-
 		if (callStack.isEmpty()) {
 			return MOVE.STOP;
 		}
-
 		MOVE lastMove;
-
 		do {
 			lastMove = callStack.removeLast();
 			switch (lastMove) {
@@ -113,7 +110,7 @@ public class DoubleLOptimisedMove extends Movable {
 
 		boolean atBoundary = false;
 
-		for (x = robotPosX + RobotManager.ROBOT_WIDTH, y = robotPosY; y < robotPosY + RobotManager.ROBOT_HEIGHT
+		for (x = robotPosX + ROBOT_WIDTH, y = robotPosY; y < robotPosY + ROBOT_HEIGHT
 				&& !outBoundary; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y)) {
@@ -123,12 +120,12 @@ public class DoubleLOptimisedMove extends Movable {
 			} else if (!getMapExplored().containsKey(id)) {
 				explored = false;
 				if (isAtBoundary(x, y)) {
-					atBoundary = true;
+					if(singleWayOfSensing(x, y))
+						atBoundary = true;
 				}
 			} else if (!mapTraversed.contains(id)) {
 				traversed = false;
 			}
-
 		}
 		if (outBoundary) {
 			return MOVE.NO_MOVE;
@@ -165,7 +162,7 @@ public class DoubleLOptimisedMove extends Movable {
 		boolean outBoundary = false;
 		boolean atBoundary = false;
 
-		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + RobotManager.ROBOT_WIDTH && !outBoundary; ++x) {
+		for (y = robotPosY - 1, x = robotPosX; x < robotPosX + ROBOT_WIDTH && !outBoundary; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y)) {
 				outBoundary = true;
@@ -174,7 +171,8 @@ public class DoubleLOptimisedMove extends Movable {
 			} else if (!getMapExplored().containsKey(id)) {
 				explored = false;
 				if (isAtBoundary(x, y)) {
-					atBoundary = true;
+					if(singleWayOfSensing(x, y))
+						atBoundary = true;
 				}
 			} else if (!mapTraversed.contains(id)) {
 				traversed = false;
@@ -216,7 +214,7 @@ public class DoubleLOptimisedMove extends Movable {
 		boolean outBoundary = false;
 		boolean atBoundary = false;
 
-		for (y = robotPosY + RobotManager.ROBOT_HEIGHT, x = robotPosX; x < robotPosX + RobotManager.ROBOT_WIDTH
+		for (y = robotPosY + ROBOT_HEIGHT, x = robotPosX; x < robotPosX + ROBOT_WIDTH
 				&& !outBoundary; ++x) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y)) {
@@ -226,7 +224,8 @@ public class DoubleLOptimisedMove extends Movable {
 			} else if (!getMapExplored().containsKey(id)) {
 				explored = false;
 				if (isAtBoundary(x, y)) {
-					atBoundary = true;
+					if(singleWayOfSensing(x, y))
+						atBoundary = true;
 				}
 			} else if (!mapTraversed.contains(id)) {
 				traversed = false;
@@ -267,7 +266,7 @@ public class DoubleLOptimisedMove extends Movable {
 		boolean outBoundary = false;
 		boolean atBoundary = false;
 
-		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + RobotManager.ROBOT_HEIGHT && !outBoundary; ++y) {
+		for (x = robotPosX - 1, y = robotPosY; y < robotPosY + ROBOT_HEIGHT && !outBoundary; ++y) {
 			int id = XYToId(x, y);
 			if (isOutBoundary(x, y)) {
 				outBoundary = true;
@@ -276,7 +275,8 @@ public class DoubleLOptimisedMove extends Movable {
 			} else if (!getMapExplored().containsKey(id)) {
 				explored = false;
 				if (isAtBoundary(x, y)) {
-					atBoundary = true;
+					if(singleWayOfSensing(x, y))
+						atBoundary = true;
 				}
 			} else if (!mapTraversed.contains(id)) {
 				traversed = false;
@@ -362,94 +362,91 @@ public class DoubleLOptimisedMove extends Movable {
 		southDecision = attemptSouth();
 		if (!isGoalZoneTraversed()) {
 
-			if (westDecision == MOVE.TURN_WEST_B) {
-				return westDecision;
+			if (northDecision == MOVE.TURN_NORTH_B) {
+				return northDecision;
+			}else if (eastDecision == MOVE.TURN_EAST_B) {
+				return eastDecision;
 			} else if (southDecision == MOVE.TURN_SOUTH_B) {
 				return southDecision;
-			} else if (eastDecision == MOVE.TURN_EAST_B) {
-				return eastDecision;
-			} else if (northDecision == MOVE.TURN_NORTH_B) {
-				return northDecision;
-			}
-
-			if (northDecision == MOVE.NORTH) {
-				callStack.add(northDecision);
-				return northDecision;
-			} else if (northDecision == MOVE.TURN_NORTH_M) {
-				return northDecision;
+			} else if (westDecision == MOVE.TURN_WEST_B) {
+				return westDecision;
+			} 
+			
+			if (westDecision == MOVE.WEST) {
+				callStack.add(westDecision);
+				return westDecision;
+			} else if (westDecision == MOVE.TURN_WEST_M) {
+				return westDecision;
+			}else if (southDecision == MOVE.SOUTH) {
+				callStack.add(southDecision);
+				return southDecision;
+			} else if (southDecision == MOVE.TURN_SOUTH_M) {
+				return southDecision;
 			} else if (eastDecision == MOVE.EAST) {
 				callStack.add(eastDecision);
 				return eastDecision;
 			} else if (eastDecision == MOVE.TURN_EAST_M) {
 				return eastDecision;
-			} else if (southDecision == MOVE.SOUTH) {
-				callStack.add(southDecision);
-				return southDecision;
-			} else if (southDecision == MOVE.TURN_SOUTH_M) {
-				return southDecision;
-			} else if (westDecision == MOVE.WEST) {
-				callStack.add(westDecision);
-				return westDecision;
-			} else if (westDecision == MOVE.TURN_WEST_M) {
-				return westDecision;
-			}
-
-			if (northDecision == MOVE.TURN_NORTH) {
-				return northDecision;
-			}
-			if (eastDecision == MOVE.TURN_EAST) {
-				return eastDecision;
-			}
-			if (southDecision == MOVE.TURN_SOUTH) {
-				return southDecision;
-			}
-			if (westDecision == MOVE.TURN_WEST) {
-				return westDecision;
-			}
-
-			return backTrack();
-
-		} else {
-
-			if (eastDecision == MOVE.TURN_EAST_B) {
-				return eastDecision;
-			} else if (northDecision == MOVE.TURN_NORTH_B) {
-				return northDecision;
-			} else if (westDecision == MOVE.TURN_WEST_B) {
-				return westDecision;
-			} else if (southDecision == MOVE.TURN_SOUTH_B) {
-				return southDecision;
-			}
-
-			if (southDecision == MOVE.SOUTH) {
-				callStack.add(southDecision);
-				return southDecision;
-			} else if (southDecision == MOVE.TURN_SOUTH_M) {
-				return southDecision;
-			} else if (westDecision == MOVE.WEST) {
-				callStack.add(westDecision);
-				return westDecision;
-			} else if (westDecision == MOVE.TURN_WEST_M) {
-				return westDecision;
 			} else if (northDecision == MOVE.NORTH) {
 				callStack.add(northDecision);
 				return northDecision;
 			} else if (northDecision == MOVE.TURN_NORTH_M) {
 				return northDecision;
-			} else if (eastDecision == MOVE.EAST) {
+			} 
+
+			if (westDecision == MOVE.TURN_WEST) {
+				return westDecision;
+			}else if (southDecision == MOVE.TURN_SOUTH) {
+				return southDecision;
+			} else if (eastDecision == MOVE.TURN_EAST) {
+				return eastDecision;
+			}else if (northDecision == MOVE.TURN_NORTH) {
+				return northDecision;
+			}
+
+			return backTrack();
+
+		} else {
+			if (southDecision == MOVE.TURN_SOUTH_B) {
+				return southDecision;
+			}else if (westDecision == MOVE.TURN_WEST_B) {
+				return westDecision;
+			} else if (northDecision == MOVE.TURN_NORTH_B) {
+				return northDecision;
+			} else if (eastDecision == MOVE.TURN_EAST_B) {
+				return eastDecision;
+			} 
+
+			if (eastDecision == MOVE.EAST) {
 				callStack.add(eastDecision);
 				return eastDecision;
 			} else if (eastDecision == MOVE.TURN_EAST_M) {
 				return eastDecision;
-			}
-			if (southDecision == MOVE.TURN_SOUTH) {
+			}else if (northDecision == MOVE.NORTH) {
+				callStack.add(northDecision);
+				return northDecision;
+			} else if (northDecision == MOVE.TURN_NORTH_M) {
+				return northDecision;
+			} else if (westDecision == MOVE.WEST) {
+				callStack.add(westDecision);
+				return westDecision;
+			} else if (westDecision == MOVE.TURN_WEST_M) {
+				return westDecision;
+			} else if (southDecision == MOVE.SOUTH) {
+				callStack.add(southDecision);
 				return southDecision;
+			} else if (southDecision == MOVE.TURN_SOUTH_M) {
+				return southDecision;
+			} 
+
+			if (eastDecision == MOVE.TURN_EAST) {
+				return eastDecision;
+			}else if (northDecision == MOVE.TURN_NORTH) {
+				return northDecision;
 			} else if (westDecision == MOVE.TURN_WEST) {
 				return westDecision;
-			} else if (northDecision == MOVE.TURN_NORTH) {
-				return northDecision;
-			} else if (eastDecision == MOVE.TURN_EAST) {
-				return eastDecision;
+			} else if (southDecision == MOVE.TURN_SOUTH) {
+				return southDecision;
 			}
 
 			return backTrack();
@@ -469,8 +466,8 @@ public class DoubleLOptimisedMove extends Movable {
 
 	private void addRobotToTraversed() {
 		int x, y;
-		for (x = robotPosX; x < robotPosX + RobotManager.ROBOT_WIDTH; ++x) {
-			for (y = robotPosY; y < robotPosY + RobotManager.ROBOT_HEIGHT; ++y) {
+		for (x = robotPosX; x < robotPosX + ROBOT_WIDTH; ++x) {
+			for (y = robotPosY; y < robotPosY + ROBOT_HEIGHT; ++y) {
 				if (!mapTraversed.contains(XYToId(x, y))) {
 					mapTraversed.add(XYToId(x, y));
 				}
@@ -484,15 +481,14 @@ public class DoubleLOptimisedMove extends Movable {
 
 	@Override
 	public MOVE peekMove() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	private boolean isGoalZoneTraversed() {
 		boolean traversed = true;
 		int x, y;
-		for (x = RobotManager.MAP_WIDTH - 1; x >= RobotManager.MAP_WIDTH - MapManager.GOAL_ZONE_WIDTH; --x) {
-			for (y = RobotManager.MAP_HEIGHT - 1; y >= RobotManager.MAP_HEIGHT - MapManager.GOAL_ZONE_HEIGHT; --y) {
+		for (x = MAP_WIDTH - 1; x >= MAP_WIDTH - MapManager.GOAL_ZONE_WIDTH; --x) {
+			for (y = MAP_HEIGHT - 1; y >= MAP_HEIGHT - MapManager.GOAL_ZONE_HEIGHT; --y) {
 				if (!mapTraversed.contains(XYToId(x, y))) {
 					traversed = false;
 				}
@@ -502,6 +498,130 @@ public class DoubleLOptimisedMove extends Movable {
 	}
 
 	private boolean isAtBoundary(int x, int y) {
-		return x == 0 || y == 0 || x == RobotManager.MAP_WIDTH - 1 || y == RobotManager.MAP_HEIGHT - 1;
+		return x == 0 || y == 0 || x == MAP_WIDTH - 1 || y == MAP_HEIGHT - 1;
+	}
+
+	private boolean singleWayOfSensing(int x, int y) {
+		int counter = 0;
+
+		counter = numOfWaysFromEast(x, y) + numOfWaysFromNorth(x, y) + numOfWaysFromSouth(x, y)
+				+ numOfWaysFromWest(x, y);
+		return counter == 1;
+	}
+
+	private int numOfWaysFromEast(int targetX, int targetY) {
+		int counter = 0;
+		int x, y, top;
+		boolean impossible = false;
+
+		if (targetX == 0) {
+			return 0;
+		}
+
+		for (top = targetY - ROBOT_HEIGHT + 1; top <= targetY; ++top) {
+			for (y = top; y < top + ROBOT_HEIGHT; ++y) {
+				for (x = targetX - ROBOT_WIDTH; x < targetX; ++x) {
+					if (isOutBoundary(x, y) || isObstacle(XYToId(x, y)) || !getMapExplored().containsKey(XYToId(x, y))) {
+						impossible = true;
+						break;
+					}
+				}
+				if (impossible) {
+					break;
+				}
+			}
+			if (!impossible) {
+				++counter;
+			}
+			impossible = false;
+		}
+		return counter;
+	}
+
+	private int numOfWaysFromNorth(int targetX, int targetY) {
+		int counter = 0;
+		int x, y, top;
+		boolean impossible = false;
+
+		if (targetY == 0) {
+			return 0;
+		}
+
+		for (top = targetX - ROBOT_WIDTH + 1; top <= targetX; ++top) {
+			for (x = top; x < top + ROBOT_WIDTH; ++x) {
+				for (y = targetY - ROBOT_HEIGHT; y < targetY; ++y) {
+					if (isOutBoundary(x, y) ||isObstacle(XYToId(x, y)) || !getMapExplored().containsKey(XYToId(x, y))) {
+						impossible = true;
+						break;
+					}
+				}
+				if (impossible) {
+					break;
+				}
+			}
+			if (!impossible) {
+				++counter;
+			}
+			impossible = false;
+		}
+		return counter;
+	}
+
+	private int numOfWaysFromSouth(int targetX, int targetY) {
+		int counter = 0;
+		int x, y, top;
+		boolean impossible = false;
+
+		if (targetY == MAP_HEIGHT - 1) {
+			return 0;
+		}
+
+		for (top = targetX - ROBOT_WIDTH + 1; top <= targetX; ++top) {
+			for (x = top; x < top + ROBOT_WIDTH; ++x) {
+				for (y = targetY + 1; y <= targetY + ROBOT_HEIGHT; ++y) {
+					if (isOutBoundary(x, y) || isObstacle(XYToId(x, y)) || !getMapExplored().containsKey(XYToId(x, y))) {
+						impossible = true;
+						break;
+					}
+				}
+				if (impossible) {
+					break;
+				}
+			}
+			if (!impossible) {
+				++counter;
+			}
+			impossible = false;
+		}
+		return counter;
+	}
+
+	private int numOfWaysFromWest(int targetX, int targetY) {
+		int counter = 0;
+		int x, y, top;
+		boolean impossible = false;
+
+		if (targetX == MAP_WIDTH - 1) {
+			return 0;
+		}
+
+		for (top = targetY - ROBOT_HEIGHT + 1; top <= targetY; ++top) {
+			for (y = top; y < top + ROBOT_HEIGHT; ++y) {
+				for (x = targetX + 1; x <= targetX + ROBOT_WIDTH; ++x) {
+					if (isOutBoundary(x, y) || isObstacle(XYToId(x, y)) || !getMapExplored().containsKey(XYToId(x, y))) {
+						impossible = true;
+						break;
+					}
+				}
+				if (impossible) {
+					break;
+				}
+			}
+			if (!impossible) {
+				++counter;
+			}
+			impossible = false;
+		}
+		return counter;
 	}
 }

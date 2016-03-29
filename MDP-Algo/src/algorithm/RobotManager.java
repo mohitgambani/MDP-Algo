@@ -127,8 +127,8 @@ public class RobotManager {
 
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
-		explorationStrategy = new DFSEastFirstMove();
-//		explorationStrategy = new DFSSouthFirstMove();
+//		explorationStrategy = new DFSEastFirstMove();
+		explorationStrategy = new DFSSouthFirstMove();
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");

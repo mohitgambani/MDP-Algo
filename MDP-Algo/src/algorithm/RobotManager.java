@@ -82,8 +82,8 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		explorationStrategy = new DFSEastFirstMove();
-//		explorationStrategy = new DFSSouthFirstMove();
+//		explorationStrategy = new DFSEastFirstMove();
+		explorationStrategy = new DFSSouthFirstMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -97,7 +97,7 @@ public class RobotManager {
 			
 			getNewSensoryInfo();
 			nextMove = explorationStrategy.nextMove();
-			String nextMoveStr = decodeMove(nextMove);
+			decodeMove(nextMove);
 			++moveCounter;
 			
 //			TCPClientManager.sendMessage("B" + nextMoveStr);
@@ -128,6 +128,7 @@ public class RobotManager {
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
 		explorationStrategy = new DFSEastFirstMove();
+//		explorationStrategy = new DFSSouthFirstMove();
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
@@ -283,21 +284,9 @@ public class RobotManager {
 			nextMoveStr += fastestRunMoveSequence.substring(currentMovePos, currentMovePos + 1);
 			System.out.println(nextMoveStr + "," + nextMoveStr.contains("F"));
 			++currentMovePos;
-//			++moveCounter;
-//			displayMoves(nextMove, moveCounter);
 			System.out.println(fastestRunMoveSequence.substring(currentMovePos, currentMovePos + 1).equals("F"));
 		}while(nextMoveStr.contains("F") && fastestRunMoveSequence.substring(currentMovePos, currentMovePos + 1).equals("F"));
 		
-//		MOVE nextMove ;
-//		String nextMoveStr = "";
-//		do{
-//			nextMove = fastestRunStrategy.nextMove();
-//			nextMoveStr += decodeMove(nextMove);
-//			System.out.println(nextMove + "," + nextMoveStr + "," + nextMoveStr.contains("F"));
-//			++moveCounter;
-//			displayMoves(nextMove, moveCounter);
-//		}while(nextMoveStr.contains("F") && convertMove(fastestRunStrategy.peekMove()).equals("F"));
-//		
 		if(nextMoveStr.length() == 1){
 			TCPClientManager.sendMessage("A" + nextMoveStr);
 		}else{

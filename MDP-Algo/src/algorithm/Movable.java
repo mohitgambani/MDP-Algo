@@ -32,7 +32,7 @@ public abstract class Movable {
 
 	public abstract int movesToStartZone();
 	
-	public abstract MOVE peekMove();
+//	public abstract MOVE peekMove();
 
 	public int idToX(int id) {
 		return id % MAP_WIDTH;

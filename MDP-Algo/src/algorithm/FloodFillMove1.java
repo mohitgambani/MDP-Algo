@@ -977,11 +977,4 @@ public class FloodFillMove1 extends Movable {
 		return getMapExplored().get(index) == Movable.GRID_TYPE.OBSTACLE ? true : false;
 	}
 
-
-	@Override
-	public MOVE peekMove() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

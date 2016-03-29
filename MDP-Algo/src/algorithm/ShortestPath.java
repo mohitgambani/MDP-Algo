@@ -229,11 +229,6 @@ public class ShortestPath extends Movable {
 	}
 	
 	@Override
-	public MOVE peekMove(){
-		return listOfMoves.peek();
-	}
-
-	@Override
 	public int movesToStartZone() {
 		// TODO Auto-generated method stub
 		return 0;

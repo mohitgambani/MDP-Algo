@@ -356,13 +356,6 @@ public class ZigzagMove extends Movable {
 	private boolean isObstacle(int index) {
 		return getMapExplored().get(index) == Movable.GRID_TYPE.OBSTACLE ? true : false;
 	}
-
-	@Override
-	public MOVE peekMove() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
 //package algorithm;
 //

@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Stack;
 
 
-public class ShortestPath1 extends Movable {
+public class ShortestPath2 extends Movable {
 	
 	private Node start;
 	private Node goal;
@@ -14,9 +14,8 @@ public class ShortestPath1 extends Movable {
 	private ArrayList<Node> closed = new ArrayList<Node>();
 	private Hashtable<Integer, GRID_TYPE> mapExplored;
 	private Stack<MOVE> listOfMoves = new Stack<MOVE>();
-	private Stack<MOVE> finalListOfMoves = new Stack<MOVE>();
 	
-	public ShortestPath1(Hashtable<Integer, GRID_TYPE> mapExplored){
+	public ShortestPath2(Hashtable<Integer, GRID_TYPE> mapExplored){
 		super();
 		this.mapExplored = mapExplored;
 		start = new Node(XYToId(RobotManager.getRobotPositionX(), 
@@ -24,25 +23,12 @@ public class ShortestPath1 extends Movable {
 		goal = new Node(XYToId(MAP_WIDTH - ROBOT_WIDTH, MAP_HEIGHT - ROBOT_HEIGHT));
 		start.setGCost(0);
 		start.setHCost(distanceToGoal(start.getId()));
-		start.setParent(new Node(-1));
+		start.setParent(null);
 		
-		start.setMove(MOVE.SOUTH);
 		coreAlgorithm();
-		finalListOfMoves = (Stack <MOVE>) getListOfMoves().clone();
-		int num1 = findNumberOfTurns();
-		emptyListOfMoves();
-		open.clear();
-		closed.clear();
-		start.setMove(MOVE.EAST);
-		coreAlgorithm();
-		int num2 = findNumberOfTurns();
-		System.out.println(num2);
-		if (num1 < num2){
-			setListOfMoves(finalListOfMoves);
-		}
 	}
 	
-	public ShortestPath1(int startPos, int goalPos,
+	public ShortestPath2(int startPos, int goalPos,
 			Hashtable<Integer, GRID_TYPE> mapExplored){
 		super();
 		this.mapExplored = mapExplored;
@@ -63,7 +49,7 @@ public class ShortestPath1 extends Movable {
 			return;
 		}
 		
-		MOVE old_move = MOVE.NO_MOVE;
+		MOVE old_move = Movable.MOVE.NO_MOVE;
 		open.add(start);
 		ArrayList<Node> neighbours;
 		while(!open.isEmpty()){
@@ -257,7 +243,7 @@ public class ShortestPath1 extends Movable {
 	
 	public void getAllMovesFromLastNode(Node node){
 		listOfMoves.push(MOVE.STOP);
-		while(node.getParent().getId() != -1){
+		while(node.getMove() != MOVE.NO_MOVE){
 			System.out.println(node.getMove());
 			listOfMoves.push(node.getMove());
 			node = node.getParent();
@@ -266,22 +252,6 @@ public class ShortestPath1 extends Movable {
 	
 	public MOVE nextMove(){
 		return listOfMoves.pop();
-	}
-	
-	public int findNumberOfTurns(){
-		@SuppressWarnings("unchecked")
-		Stack <MOVE>moveList = (Stack<MOVE>) listOfMoves.clone();
-		ArrayList <Movable.MOVE> moves = new ArrayList <Movable.MOVE>();
-		while(!moveList.isEmpty()){
-			moves.add(moveList.pop());
-		}
-		int c = 1;
-		for(int i = 0; i < moves.size() - 1; i++){
-			if(moves.get(i) != moves.get(i+1)){
-				c++;
-			}
-		}
-		return c;
 	}
 	
 	@Override
@@ -308,16 +278,6 @@ public class ShortestPath1 extends Movable {
 
 	public Stack<MOVE> getListOfMoves() {
 		return listOfMoves;
-	}
-	
-	private void emptyListOfMoves() {
-		listOfMoves.clear();
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void setListOfMoves (Stack <MOVE> list){
-		listOfMoves.clear();
-		listOfMoves = (Stack <MOVE>) list.clone();
 	}
 
 }

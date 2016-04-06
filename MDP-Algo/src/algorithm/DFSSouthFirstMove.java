@@ -18,7 +18,7 @@ public class DFSSouthFirstMove extends DFSMove {
 			return backToStart();
 		}
 		
-		if (numOfExploredSpace() == MAP_HEIGHT * MAP_WIDTH - COMPRO_AMOUNT) {
+		if (numOfExploredSpace() >= MAP_HEIGHT * MAP_WIDTH - COMPRO_AMOUNT) {
 			return backToStart();
 		}
 
@@ -38,6 +38,9 @@ public class DFSSouthFirstMove extends DFSMove {
 		westDecision = attemptWest();
 		northDecision = attemptNorth();
 		southDecision = attemptSouth();
+		
+		
+		
 		if (!isGoalZoneTraversed()) {
 
 			if (northDecision == MOVE.TURN_NORTH_B) {

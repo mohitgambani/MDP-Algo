@@ -47,7 +47,8 @@ public abstract class Movable {
 	}
 
 	public void getMapUpdate(int id, GRID_TYPE type) {
-		mapExplored.put(id, type);
+//		if(!mapExplored.containsKey(id) || mapExplored.get(id) == GRID_TYPE.OBSTACLE)
+			mapExplored.put(id, type);
 	}
 
 	public Hashtable<Integer, GRID_TYPE> getMapExplored() {

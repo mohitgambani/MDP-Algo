@@ -168,6 +168,8 @@ public class MapComponent extends JButton {
 		}
 		isExplored = true;
 	}
+	
+//	public boolean isExplored
 
 	public void unsetRobot() {
 		isRobot = false;

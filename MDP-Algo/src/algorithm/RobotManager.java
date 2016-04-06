@@ -79,11 +79,12 @@ public class RobotManager {
 	}
 
 	public static void startExploration() {
+		isDelay  = true;
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-//		explorationStrategy = new DFSEastFirstMove();
-		explorationStrategy = new DFSSouthFirstMove();
+		explorationStrategy = new DFSEastFirstMove();
+//		explorationStrategy = new DFSSouthFirstMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -127,14 +128,19 @@ public class RobotManager {
 
 	public static void initialiseRealExploration() {
 		sensorDecoder = new SensorDecoder();
-//		explorationStrategy = new DFSEastFirstMove();
-		explorationStrategy = new DFSSouthFirstMove();
+		
+		
+		explorationStrategy = new DFSEastFirstMove();
+//		explorationStrategy = new DFSSouthFirstMove();
+		
+		
 		moveCounter = 0;
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		MainControl.mainWindow.setFreeOutput("---Waiting for Sensors---\n");
 		addInitialRobotToMapExplored();
 		initialiseTimer();
 		timer.start();
+		isDelay = false;
 	}
 
 	private static String decodeMove(MOVE move) {
@@ -336,6 +342,7 @@ public class RobotManager {
 			fastestRunMoveSequence += decodeMove(nextMove);
 		}while(nextMove != MOVE.STOP);
 		System.out.println(fastestRunMoveSequence);
+		currentMovePos = 0;
 //		initialiseTimer();
 //		timer.start();
 //		moveCounter = 0;

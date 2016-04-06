@@ -193,6 +193,7 @@ public class MapManager {
 	}
 
 	public static void setObstacle(int x, int y) {
+//		if(!arena.get(XYToId(x, y)))
 		arena.get(XYToId(x, y)).setObstacle();
 	}
 

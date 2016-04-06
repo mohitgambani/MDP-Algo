@@ -7,7 +7,7 @@ import ui.MapManager;
 
 public abstract class DFSMove extends Movable{
 
-	public final int COMPRO_AMOUNT = 3;
+	public final int COMPRO_AMOUNT = 0;
 	
 	private ArrayList<Integer> mapTraversed;
 	protected Deque<MOVE> callStack;
@@ -106,8 +106,8 @@ public abstract class DFSMove extends Movable{
 		robotPosX = currentRobotX;
 		robotPosY = currentRobotY;
 
-		// System.out.println("Start:" + robotPosX + "," + robotPosY);
-		// System.out.println("Goal:" + goalX + "," + goalY);
+		 System.out.println("Start:" + robotPosX + "," + robotPosY);
+		 System.out.println("Goal:" + goalX + "," + goalY);
 		backTrackingStrategy = new ShortestPath(XYToId(robotPosX, robotPosY), XYToId(goalX, goalY), getMapExplored());
 		backTrackingMode = true;
 		// System.out.println(callStack);

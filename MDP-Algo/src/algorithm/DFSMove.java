@@ -15,10 +15,10 @@ public abstract class DFSMove extends Movable{
 	protected int robotPosY;
 
 	protected boolean backTrackingMode;
-	protected ShortestPath backTrackingStrategy;
+	protected ShortestPath1 backTrackingStrategy;
 
 	protected boolean backToStartMode;
-	protected ShortestPath backToStartStrategy;
+	protected ShortestPath1 backToStartStrategy;
 	
 	
 	public DFSMove() {
@@ -40,7 +40,7 @@ public abstract class DFSMove extends Movable{
 		if (backToStartMode) {
 			return backToStartStrategy.nextMove();
 		}
-		backToStartStrategy = new ShortestPath(XYToId(robotPosX, robotPosY), 0, getMapExplored());
+		backToStartStrategy = new ShortestPath1(XYToId(robotPosX, robotPosY), 0, getMapExplored());
 		backToStartMode = true;
 		return backToStartStrategy.nextMove();
 	}
@@ -108,7 +108,7 @@ public abstract class DFSMove extends Movable{
 
 		 System.out.println("Start:" + robotPosX + "," + robotPosY);
 		 System.out.println("Goal:" + goalX + "," + goalY);
-		backTrackingStrategy = new ShortestPath(XYToId(robotPosX, robotPosY), XYToId(goalX, goalY), getMapExplored());
+		backTrackingStrategy = new ShortestPath1(XYToId(robotPosX, robotPosY), XYToId(goalX, goalY), getMapExplored());
 		backTrackingMode = true;
 		// System.out.println(callStack);
 
@@ -481,5 +481,10 @@ public abstract class DFSMove extends Movable{
 		}
 		return counter;
 	}
-
+	
+	@Override
+	public void getMapUpdate(int id, GRID_TYPE type) {
+		if(!(mapTraversed.contains(id) && type == GRID_TYPE.OBSTACLE))
+			getMapExplored().put(id, type);
+	}
 }

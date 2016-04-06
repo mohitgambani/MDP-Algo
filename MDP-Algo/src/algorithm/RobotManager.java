@@ -32,7 +32,7 @@ public class RobotManager {
 	private static int positionX, positionY;
 	private static ORIENTATION orientation;
 
-	private static Movable explorationStrategy = null;
+	private static DFSMove explorationStrategy = null;
 	private static Movable fastestRunStrategy = null;
 
 	private static SensorDecoder sensorDecoder = null;

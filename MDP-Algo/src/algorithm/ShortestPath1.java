@@ -50,7 +50,7 @@ public class ShortestPath1 extends Movable {
 		goal = new Node(goalPos);
 		start.setGCost(0);
 		start.setHCost(distanceToGoal(start.getId()));
-		start.setParent(null);
+		start.setParent(new Node(-1));
 		
 		coreAlgorithm();
 	}

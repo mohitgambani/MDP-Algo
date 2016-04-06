@@ -262,7 +262,7 @@ public class RobotManager {
 	}
 
 	public static void startFastestRun() {
-		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
+		fastestRunStrategy = new ShortestPath1(explorationStrategy.getMapExplored());
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
 		initialiseTimer();
 		timer.start();
@@ -327,7 +327,7 @@ public class RobotManager {
 	}
 
 	public static void initialiseFastestRun() {
-		fastestRunStrategy = new ShortestPath(explorationStrategy.getMapExplored());
+		fastestRunStrategy = new ShortestPath1(explorationStrategy.getMapExplored());
 		MainControl.mainWindow.setFreeOutput("---Fastest Run Started---\n");
 		fastestRunMoveSequence = "";
 		MOVE nextMove;

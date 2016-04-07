@@ -82,18 +82,18 @@ public abstract class DFSMove extends Movable{
 			default:
 				break;
 			}
-			// System.out.println("CurrentPos:" + robotPosX + "," + robotPosY);
+//			 System.out.println("CurrentPos:" + robotPosX + "," + robotPosY);
 			nextMove = attemptNorth();
-			// System.out.println("North:" + nextMove);
+//			 System.out.println("North:" + nextMove);
 			if (nextMove == MOVE.NO_MOVE) {
 				nextMove = attemptEast();
-				// System.out.println("East:" + nextMove);
+//				 System.out.println("East:" + nextMove);
 				if (nextMove == MOVE.NO_MOVE) {
 					nextMove = attemptSouth();
-					// System.out.println("South:" + nextMove);
-					if (nextMove == MOVE.NO_MOVE) {
+//					 System.out.println("South:" + nextMove);
+					if (nextMove == MOVE.NO_MOVE)  {
 						nextMove = attemptWest();
-						// System.out.println("West:" + nextMove);
+//						 System.out.println("West:" + nextMove);
 					}
 				}
 			}

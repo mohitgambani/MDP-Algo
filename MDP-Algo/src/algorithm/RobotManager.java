@@ -83,8 +83,8 @@ public class RobotManager {
 		timeLimit = MainControl.mainWindow.getTimeLimit();
 		MainControl.mainWindow.setFreeOutput("---Exploration Started---\n");
 		initialiseTimer(timeLimit);
-		explorationStrategy = new DFSEastFirstMove();
-//		explorationStrategy = new DFSSouthFirstMove();
+//		explorationStrategy = new DFSEastFirstMove();
+		explorationStrategy = new DFSSouthFirstMove();
 		addInitialRobotToMapExplored();
 		timer.start();
 		moveCounter = 0;
@@ -130,8 +130,8 @@ public class RobotManager {
 		sensorDecoder = new SensorDecoder();
 		
 		
-		explorationStrategy = new DFSEastFirstMove();
-//		explorationStrategy = new DFSSouthFirstMove();
+//		explorationStrategy = new DFSEastFirstMove();
+		explorationStrategy = new DFSSouthFirstMove();
 		
 		
 		moveCounter = 0;

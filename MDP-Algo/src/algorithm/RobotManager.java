@@ -342,7 +342,23 @@ public class RobotManager {
 			fastestRunMoveSequence += decodeMove(nextMove);
 		}while(nextMove != MOVE.STOP);
 		System.out.println(fastestRunMoveSequence);
-		currentMovePos = 0;
+//		currentMovePos = 0;
+		isDelay = false;
+		
+		int index; 
+		String firstStr = "";
+		for(index = 0; index < fastestRunMoveSequence.length(); ++index){
+			if(fastestRunMoveSequence.charAt(index) != 'F'){
+				firstStr += fastestRunMoveSequence.charAt(index);
+			}else{
+				break;
+			}
+		}
+		currentMovePos = index;
+//		fastestRunMoveSequence = fastestRunMoveSequence.substring(index, fastestRunMoveSequence.length());
+		if(firstStr != ""){
+			TCPClientManager.sendMessage("A" + firstStr);
+		}
 //		initialiseTimer();
 //		timer.start();
 //		moveCounter = 0;

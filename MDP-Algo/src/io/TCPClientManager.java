@@ -77,7 +77,7 @@ public class TCPClientManager {
 					@Override
 					public void run() {
 //						RobotManager.startFastestRun();
-						RobotManager.initialiseFastestRun();
+//						RobotManager.initialiseFastestRun();
 						RobotManager.startRealFastestRun();
 					}
 				};
@@ -88,6 +88,15 @@ public class TCPClientManager {
 					public void run() {
 //						RobotManager.startFastestRun();
 						RobotManager.startRealFastestRun();
+					}
+				};
+				thread.start();
+			} else if(content.matches("CDONE")){
+				Thread thread = new Thread() {
+					@Override
+					public void run() {
+//						RobotManager.startFastestRun();
+						RobotManager.initialiseFastestRun();
 					}
 				};
 				thread.start();
